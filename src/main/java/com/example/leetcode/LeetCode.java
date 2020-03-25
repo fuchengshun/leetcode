@@ -1,5 +1,8 @@
 package com.example.leetcode;
 
+import com.sun.deploy.util.ArrayUtil;
+
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class LeetCode {
@@ -152,16 +155,16 @@ public class LeetCode {
     }
 
     private void backtrack3(char[][] board, int row, int col) {
-        if (row ==9) {
+        if (row == 9) {
             System.out.println(8888);
             return;
         }
-//        if (board[row][col] != '.') {
-//            if (col + 1 < board[row].length)
-//                backtrack3(board, row, col + 1);
-//            else
-//                backtrack3(board, row + 1, 0);
-//        }
+        if (board[row][col] != '.') {
+            if (col + 1 < board[row].length)
+                backtrack3(board, row, col + 1);
+            else
+                backtrack3(board, row + 1, 0);
+        }
 
         for (char i = '1'; i <= '9'; i++) {
             if (!isValid2(board, row, col, i))
@@ -192,5 +195,80 @@ public class LeetCode {
             }
         }
         return true;
+    }
+
+    public int fib(int n) {
+        int[] table = new int[n];
+        return f(table, n);
+    }
+
+    public int f(int[] table, int n) {
+        if (n < 2) {
+            return n;
+        }
+        if (table[n - 1] == 0) {
+            table[n - 1] = f(table, n - 1) + f(table, n - 2);
+        }
+        return table[n - 1];
+    }
+
+    public int coinChange2(int[] dp, int[] coins, int amount) {
+        if (amount == 0) {
+            return 0;
+        }
+        if (amount < 0) {
+            return -1;
+        }
+        if (dp[amount] != 0) {
+            return dp[amount];
+        }
+        double maxValue = Double.MAX_VALUE;
+        for (int coin : coins) {
+            int temp = coinChange2(dp, coins, amount - coin);
+            if (temp < maxValue && temp != -1) {
+                maxValue = temp;
+            }
+        }
+        dp[amount] = maxValue == Double.MAX_VALUE ? -1 : (int) maxValue + 1;
+        return dp[amount];
+    }
+
+    public int coinChange(int[] coins, int amount) {
+        int[] dp = new int[amount + 1];
+        return coinChange2(dp, coins, amount);
+//        if (amount == 0)
+//            return 0;
+//        help(coins, new ArrayList<>(), amount);
+//        return c.size() == 0 ? -1 : c.size();
+    }
+
+    List<Integer> c = new ArrayList<>();
+
+    public void help(int[] coins, List<Integer> choose, int amount) {
+        if (sum(choose) >= amount) {
+            if (sum(choose) == amount && (c.size() == 0 || c.size() > choose.size())) {
+                c = new ArrayList<>(choose);
+            }
+            return;
+        }
+        for (int coin : coins) {
+//            if (!isValid3(choose, amount, coin))
+//                continue;
+            choose.add(coin);
+            help(coins, choose, amount);
+            choose.remove(choose.size() - 1);
+        }
+    }
+
+//    private boolean isValid3(List<Integer> choose, int amount, int coin) {
+//        sum(choose)
+//    }
+
+    private long sum(List<Integer> choose) {
+        long total = 0;
+        for (Integer integer : choose) {
+            total += integer;
+        }
+        return total;
     }
 }
