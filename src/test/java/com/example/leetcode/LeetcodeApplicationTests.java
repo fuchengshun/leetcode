@@ -10,8 +10,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        int[] in={1,2,5};
-        int fib = new LeetCode().coinChange(in,100);
+        int numberOfLIS = new LeetCode().findNumberOfLIS(new int[]{4,10,4,3,8,9});
     }
-
 }

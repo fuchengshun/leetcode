@@ -1,8 +1,5 @@
 package com.example.leetcode;
 
-import com.sun.deploy.util.ArrayUtil;
-
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class LeetCode {
@@ -270,5 +267,119 @@ public class LeetCode {
             total += integer;
         }
         return total;
+    }
+
+    /**
+     * s = "aab"
+     * p = "c*a*b"
+     * 输出: true
+     */
+    Map<String[], Boolean> dp = new HashMap<>();
+
+    public boolean isMatch(String text, String pattern) {
+        return isMatch2(dp, text, pattern);
+//        return isMatch2(text, pattern);
+    }
+
+    public boolean isMatch2(Map<String[], Boolean> dp, String text, String pattern) {
+//    public boolean isMatch2(String text, String pattern) {
+        String[] strings = {text, pattern};
+        if (dp.get(strings) != null) {
+            return dp.get(strings);
+        }
+        if (pattern.isEmpty()) {
+            return text.isEmpty();
+        }
+        boolean firstMatch = !text.isEmpty() && (text.charAt(0) == pattern.charAt(0) || pattern.charAt(0) == '.');
+        boolean r;
+        if (pattern.length() > 1 && pattern.charAt(1) == '*') {
+            r = isMatch2(dp, text, pattern.substring(2)) || firstMatch && isMatch2(dp, text.substring(1), pattern);
+//            r = isMatch2(text, pattern.substring(2)) || firstMatch && isMatch2(text.substring(1), pattern);
+        } else {
+            r = firstMatch && isMatch2(dp, text.substring(1), pattern.substring(1));
+//            r = firstMatch && isMatch2(text.substring(1), pattern.substring(1));
+        }
+        dp.put(strings, r);
+        return r;
+    }
+
+    public int minDistance(String word1, String word2) {
+        Integer[][] dp = new Integer[word1.length()][word2.length()];
+        return minDistance2(dp, word1, word2, word1.length() - 1, word2.length() - 1);
+    }
+
+    public int minDistance2(Integer[][] dp, String word1, String word2, int i, int j) {
+        if (i == -1) {
+            return j + 1;
+        }
+        if (j == -1) {
+            return i + 1;
+        }
+        if (dp[i][j] != null) {
+            return dp[i][j];
+        }
+        if (word1.charAt(i) == word2.charAt(j)) {
+            dp[i][j] = minDistance2(dp, word1, word2, i - 1, j - 1);
+        } else {
+            //删除
+            int i1 = minDistance2(dp, word1, word2, i - 1, j) + 1;
+            //插入
+            int i2 = minDistance2(dp, word1, word2, i, j - 1) + 1;
+            int i3 = minDistance2(dp, word1, word2, i - 1, j - 1) + 1;
+            dp[i][j] = Math.min(i1, Math.min(i2, i3));
+        }
+        return dp[i][j];
+    }
+
+    public int minDistance222(String word1, String word2) {
+        Integer[][] dp = new Integer[word1.length()][word2.length()];
+        return minDistance22(dp, word1, word2, word1.length() - 1, word2.length() - 1);
+    }
+
+    private int minDistance22(Integer[][] dp, String word1, String word2, int i, int j) {
+        if (i < 0) {
+            return j + 1;
+        }
+        if (j < 0) {
+            return i + 1;
+        }
+        if (dp[i][j] != null) {
+            return dp[i][j];
+        }
+        if (word1.charAt(i) == word2.charAt(j)) {
+            dp[i][j] = minDistance22(dp, word1, word2, i - 1, j - 1);
+        } else {
+            int i1 = minDistance22(dp, word1, word2, i - 1, j) + 1;
+            int i2 = minDistance22(dp, word1, word2, i, j - 1) + 1;
+            dp[i][j] = Math.min(i1, i2);
+        }
+        return dp[i][j];
+    }
+
+    public int lengthOfLIS(int[] nums) {
+        Integer[] dp = new Integer[nums.length + 1];
+        return lengthOfLIS2(dp, nums, nums.length - 1);
+    }
+
+    private int lengthOfLIS2(Integer[] dp, int[] nums, int i) {
+        if (i < 0) {
+            return 0;
+        }
+        if (i == 0) {
+            return 1;
+        }
+        if (dp[i] != null) {
+            return dp[i];
+        }
+        int max = 1;
+        for (int j = 0; j < i; j++) {
+            int temp = lengthOfLIS2(dp, nums, j);
+            if (nums[i] > nums[j]) {
+                temp += 1;
+            }
+            max = Math.max(max, temp);
+        }
+        dp[i] = max;
+        return dp[i];
     }
 }
