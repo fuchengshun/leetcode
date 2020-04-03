@@ -10,6 +10,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        int numberOfLIS = new LeetCode().findNumberOfLIS(new int[]{4,10,4,3,8,9});
+        new LeetCode().trailingZeroes(30);
     }
 }

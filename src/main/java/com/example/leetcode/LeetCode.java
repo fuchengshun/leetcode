@@ -357,8 +357,13 @@ public class LeetCode {
     }
 
     public int lengthOfLIS(int[] nums) {
-        Integer[] dp = new Integer[nums.length + 1];
-        return lengthOfLIS2(dp, nums, nums.length - 1);
+        Integer[] dp = new Integer[nums.length];
+        lengthOfLIS2(dp, nums, nums.length - 1);
+        int max = 0;
+        for (Integer integer : dp) {
+            max = Math.max(max, integer == null ? 0 : integer);
+        }
+        return max;
     }
 
     private int lengthOfLIS2(Integer[] dp, int[] nums, int i) {
@@ -366,6 +371,7 @@ public class LeetCode {
             return 0;
         }
         if (i == 0) {
+            dp[i] = 1;
             return 1;
         }
         if (dp[i] != null) {
@@ -375,11 +381,332 @@ public class LeetCode {
         for (int j = 0; j < i; j++) {
             int temp = lengthOfLIS2(dp, nums, j);
             if (nums[i] > nums[j]) {
-                temp += 1;
+                max = Math.max(max, temp + 1);
             }
-            max = Math.max(max, temp);
         }
         dp[i] = max;
         return dp[i];
+    }
+
+    public int lengthOfLIS3(int[] nums) {
+        int[] dp = new int[nums.length];
+        // dp 数组全都初始化为 1
+        Arrays.fill(dp, 1);
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+        }
+        int res = 0;
+        for (int value : dp) {
+            res = Math.max(res, value);
+        }
+        return res;
+    }
+
+    /**
+     * 输入: [1,2,3,1]
+     * 输出: 4
+     *
+     * @param nums
+     * @return
+     */
+    public int rob(int[] nums) {
+        return rob2(new Integer[nums.length], nums, 0);
+    }
+
+    private int rob2(Integer[] dp, int[] nums, int i) {
+        if (i >= nums.length)
+            return 0;
+        if (dp[i] != null)
+            return dp[i];
+        dp[i] = Math.max(nums[i] + rob2(dp, nums, i + 2), rob2(dp, nums, i + 1));
+        return dp[i];
+    }
+
+    /**
+     * 给定一个数字 n 。你需要使用最少的操作次数，在记事本中打印出恰好 n 个 'A'。输出能够打印出 n 个 'A' 的最少操作次数。
+     * 输入: 3
+     * 输出: 3
+     *
+     * @param n
+     * @return
+     */
+//    public int minSteps(int n) {
+//        int[] dp = new int[n+1];
+//        for (int i = 0; i < n+1; i++) {
+//
+//        }
+//    }
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+        HashMap<Character, Character> map = new HashMap<>();
+        map.put('(', ')');
+        map.put('{', '}');
+        map.put('[', ']');
+        for (int i = 0; i < s.length(); i++) {
+            if (map.containsKey(s.charAt(i))) {
+                stack.push(s.charAt(i));
+                continue;
+            }
+            if (stack.empty())
+                return false;
+            Character peek = stack.peek();
+            if (map.containsKey(peek)) {
+                if (s.charAt(i) != map.get(peek)) {
+                    return false;
+                }
+                stack.pop();
+            }
+        }
+        return stack.empty();
+    }
+
+    public int removeDuplicates(int[] nums) {
+        if (nums.length == 0)
+            return 0;
+        int slow = 0;
+        for (int fast = 1; fast < nums.length; fast++) {
+            if (nums[slow] != nums[fast]) {
+                nums[++slow] = nums[fast];
+            }
+        }
+        return slow + 1;
+    }
+
+    public void merge(int[] nums1, int m, int[] nums2, int n) {
+        int p = m-- + n-- - 1;
+        while (n >= 0 || m >= 0) {
+            if (m < 0) {
+                nums1[p--] = nums2[n--];
+                continue;
+            }
+            if (n < 0) {
+                nums1[p--] = nums1[m--];
+                continue;
+            }
+            if (nums1[m] > nums2[n]) {
+                nums1[p--] = nums1[m--];
+            } else {
+                nums1[p--] = nums2[n--];
+            }
+        }
+    }
+
+    /**
+     * 输入: [-2,1,-3,4,-1,2,1,-5,4],
+     * 输出: 6
+     * 解释: 连续子数组 [4,-1,2,1] 的和最大，为 6。
+     *
+     * @param nums
+     * @return
+     */
+    public int maxSubArray(int[] nums) {
+        Integer[] dp = new Integer[nums.length];
+        dp[0] = nums[0];
+        for (int i = 0; i < nums.length; i++) {
+            dp[i] = Math.max(nums[i], dp[i] + nums[i]);
+        }
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < nums.length; i++) {
+            max = Math.max(dp[i], max);
+        }
+        return max;
+    }
+
+    public int maxSubArray2(int[] nums, int i, Integer[] dp) {
+        if (i == 0) {
+            dp[0] = nums[0];
+            return nums[0];
+        }
+        if (dp[i] != null) {
+            return dp[i];
+        }
+        dp[i] = Math.max(nums[i], nums[i] + maxSubArray2(nums, i - 1, dp));
+        return dp[i];
+    }
+
+    public int maxDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (root.left == null && root.right == null) {
+            return 1;
+        }
+        return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
+    }
+
+    public int maxProfit(int[] prices) {
+        if (prices.length == 0)
+            return 0;
+        int buy = prices[0];
+        int maxProfit = 0;
+        for (int i = 0; i < prices.length; i++) {
+            if (i - 1 >= 0) {
+                buy = Math.min(buy, prices[i - 1]);
+            }
+            maxProfit = Math.max(maxProfit, prices[i] - buy);
+        }
+        return maxProfit;
+    }
+
+    public int maxProfit2(int[] prices) {
+        int maxProfit = 0;
+        for (int i = 0; i < prices.length; i++) {
+            if (i - 1 >= 0 && prices[i] > prices[i - 1]) {
+                maxProfit += prices[i] - prices[i - 1];
+            }
+        }
+        return maxProfit;
+    }
+
+    public boolean isPalindrome(String s) {
+        int l = 0, r = s.length() - 1;
+        s = s.toLowerCase();
+        while (l < r) {
+            while (isNotNumberOrLetter(s.charAt(l)) && l < r) {
+                l++;
+            }
+            while (isNotNumberOrLetter(s.charAt(r)) && l < r) {
+                r--;
+            }
+            if (s.charAt(l) != s.charAt(r)) {
+                return false;
+            }
+            l++;
+            r--;
+        }
+        return true;
+    }
+
+    private boolean isNotNumberOrLetter(char c) {
+        return ((c < '0' || c > '9') && (c < 'a' || c > 'z'));
+    }
+
+    public int singleNumber(int[] nums) {
+        int ans = 0;
+        for (int num : nums) {
+            ans ^= num;
+        }
+        return ans;
+    }
+
+    public int[] twoSum(int[] numbers, int target) {
+        int l = 0, r = numbers.length - 1;
+        while (l < r) {
+            if (numbers[l] + numbers[r] > target) {
+                r--;
+            }
+            if (numbers[l] + numbers[r] < target) {
+                l++;
+            }
+            if (numbers[l] + numbers[r] == target) {
+                return new int[]{l + 1, r + 1};
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
+    public int majorityElement(int[] nums) {
+        int candidate = nums[0], count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (count == 0) {
+                candidate = nums[i];
+                count = 1;
+            } else if (candidate == nums[i]) {
+                count++;
+            } else {
+                count--;
+            }
+        }
+        return candidate;
+    }
+
+    public int trailingZeroes(int n) {
+        int count = 0;
+        while (n > 0) {
+            int temp = n;
+            while (temp % 5 == 0 && temp != 0) {
+                count++;
+                temp /= 5;
+            }
+            n--;
+        }
+        return count;
+    }
+
+    public int reverseBits(int n) {
+        int ans = 0;
+        for (int i = 0; i < 32; i++) {
+            ans <<= 1;
+            ans |= n & 1;
+            n >>= 1;
+        }
+        return ans;
+    }
+
+    public int hammingWeight(int n) {
+        int ans = 0;
+        for (int i = 0; i < 32; i++) {
+            if ((n & 1) == 1) {
+                ans++;
+            }
+            n >>= 1;
+        }
+        return ans;
+    }
+
+    public ListNode removeElements(ListNode head, int val) {
+        ListNode sentinel = new ListNode(0);
+        sentinel.next = head;
+        ListNode pre = sentinel, cru = head;
+        while (cru != null) {
+            if (cru.val == val) {
+                pre.next = cru.next;
+            } else {
+                pre = cru;
+            }
+            cru = cru.next;
+        }
+        return sentinel.next;
+    }
+
+    public ListNode reverseList(ListNode head) {
+        Stack<ListNode> stack = new Stack<>();
+        while (head != null) {
+            stack.push(head);
+            head = head.next;
+        }
+        ListNode sentinel = new ListNode(0);
+        ListNode ans = sentinel;
+        while (!stack.empty()) {
+            sentinel.next = stack.pop();
+            sentinel = sentinel.next;
+        }
+        sentinel.next = null;
+        return ans.next;
+    }
+
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (map.get(nums[i]) != null && Math.abs(map.get(nums[i]) - i) <= k) {
+                return true;
+            } else {
+                map.put(nums[i], i);
+            }
+        }
+        return false;
+    }
+
+    public TreeNode invertTree(TreeNode root) {
+        if (root != null) {
+            TreeNode temp=root.left;
+            root.left = invertTree(root.right);
+            root.right = invertTree(temp);
+        }
+        return root;
     }
 }
