@@ -1,5 +1,6 @@
 package com.example.leetcode;
 
+
 import java.util.*;
 
 public class LeetCode {
@@ -703,10 +704,249 @@ public class LeetCode {
 
     public TreeNode invertTree(TreeNode root) {
         if (root != null) {
-            TreeNode temp=root.left;
+            TreeNode temp = root.left;
             root.left = invertTree(root.right);
             root.right = invertTree(temp);
         }
         return root;
+    }
+
+    public int subarraySum(int[] nums, int k) {
+        int ans = 0, sum = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        for (Integer num : nums) {
+            sum += num;
+            if (map.containsKey(sum - k)) {
+                ans += map.get(sum - k);
+            }
+            map.put(sum, map.getOrDefault(sum, 0) + 1);
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个二叉树，它的每个结点都存放着一个整数值。
+     * <p>
+     * 找出路径和等于给定数值的路径总数。
+     * <p>
+     * 路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+     * <p>
+     * 二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
+     * <p>
+     * 示例：
+     * <p>
+     * root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
+     * <p>
+     * 10
+     * /  \
+     * 5   -3
+     * / \    \
+     * 3   2   11
+     * / \   \
+     * 3  -2   1
+     * <p>
+     * 返回 3。和等于 8 的路径有:
+     * <p>
+     * 1.  5 -> 3
+     * 2.  5 -> 2 -> 1
+     * 3.  -3 -> 11
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/path-sum-iii
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param root
+     * @param sum
+     * @return
+     */
+
+    public int pathSum(TreeNode root, int sum) {
+        return preSum(root, 0, sum);
+    }
+
+    Map<Integer, Integer> map = new HashMap<>();
+
+    private int preSum(TreeNode root, int preSum, int sum) {
+        int ans = 0;
+        if (root == null)
+            return ans;
+        preSum += root.val;
+        if (preSum == sum)
+            ans++;
+        ans += map.getOrDefault(preSum - sum, 0);
+        map.put(preSum, map.getOrDefault(preSum, 0) + 1);
+        ans += preSum(root.left, preSum, sum) + preSum(root.right, preSum, sum);
+        map.put(preSum, map.get(preSum) - 1);
+        return ans;
+    }
+
+    /**
+     * 给定一个有相同值的二叉搜索树（BST），找出 BST 中的所有众数（出现频率最高的元素）。
+     * <p>
+     * 假定 BST 有如下定义：
+     * <p>
+     * 结点左子树中所含结点的值小于等于当前结点的值
+     * 结点右子树中所含结点的值大于等于当前结点的值
+     * 左子树和右子树都是二叉搜索树
+     * 例如：
+     * 给定 BST [1,null,2,2],
+     * <p>
+     * 1
+     * \
+     * 2
+     * /
+     * 2
+     * 返回[2].
+     * <p>
+     * 提示：如果众数超过1个，不需考虑输出顺序
+     * <p>
+     * 进阶：你可以不使用额外的空间吗？（假设由递归产生的隐式调用栈的开销不被计算在内）
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/find-mode-in-binary-search-tree
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param root
+     * @return
+     */
+    public int[] findMode(TreeNode root) {
+        Map<Integer, Integer> map = new HashMap<>();
+        dfs(map, root);
+        Iterator<Map.Entry<Integer, Integer>> iterator = map.entrySet().iterator();
+        Stack<Map.Entry<Integer, Integer>> stack = new Stack<>();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Integer> next = iterator.next();
+            if (stack.empty() || stack.peek().getValue() <= next.getValue())
+                stack.push(next);
+        }
+        ArrayList<Integer> list = new ArrayList<>();
+        Integer max = null;
+        while (!stack.empty()) {
+            if (max == null || max.equals(stack.peek().getValue())){
+                Map.Entry<Integer, Integer> pop = stack.pop();
+                list.add(pop.getKey());
+                max=pop.getValue();
+            }
+            else
+                break;
+        }
+        int[] ans = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            ans[i]=list.get(i);
+        }
+        return ans;
+    }
+
+    private void dfs(Map<Integer, Integer> map, TreeNode root) {
+        if (null == root)
+            return;
+        dfs(map, root.left);
+        map.put(root.val, map.getOrDefault(root.val, 0) + 1);
+        dfs(map, root.right);
+    }
+
+    public int subarraySum2(int[] nums, int k) {
+        int ans = 0, sum = 0;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int num : nums) {
+            sum += num;
+            if (sum == k) {
+                ans++;
+            }
+            ans += map.getOrDefault(sum - k, 0);
+            map.put(sum, map.getOrDefault(sum, 0) + 1);
+        }
+        return ans;
+    }
+
+    /**
+     * 给定两个数组，编写一个函数来计算它们的交集。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: nums1 = [1,2,2,1], nums2 = [2,2]
+     * 输出: [2]
+     * 示例 2:
+     * <p>
+     * 输入: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+     * 输出: [9,4]
+     * 说明:
+     * <p>
+     * 输出结果中的每个元素一定是唯一的。
+     * 我们可以不考虑输出结果的顺序。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/intersection-of-two-arrays
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int[] intersection(int[] nums1, int[] nums2) {
+        HashMap<Integer, Boolean> map = new HashMap<>();
+        for (int i : nums1) {
+            map.put(i, true);
+        }
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int i : nums2) {
+            if (map.get(i) != null) {
+                list.add(i);
+                map.put(i, null);
+            }
+        }
+        int[] ans = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            ans[i] = list.get(i);
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个整数 (32 位有符号整数)，请编写一个函数来判断它是否是 4 的幂次方。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: 16
+     * 输出: true
+     * 示例 2:
+     * <p>
+     * 输入: 5
+     * 输出: false
+     * 进阶：
+     * 你能不使用循环或者递归来完成本题吗？
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/power-of-four
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param num
+     * @return
+     */
+    public boolean isPowerOfFour(int num) {
+        return num > 0 && (num & (num - 1)) == 0 && (num - 1) % 3 == 0;
+    }
+
+    /**
+     * 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: [0,1,0,3,12]
+     * 输出: [1,3,12,0,0]
+     * 说明:
+     * <p>
+     * 必须在原数组上操作，不能拷贝额外的数组。
+     * 尽量减少操作次数。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/move-zeroes
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     */
+    public void moveZeroes(int[] nums) {
+
     }
 }
