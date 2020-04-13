@@ -10,7 +10,15 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        new LeetCode().subarraySum(new int[]{1, 2, 3, 4, 5, 6, 7, 1, 23, 21, 3, 1, 2, 1, 1, 1, 1, 1, 12, 2, 3, 2, 3, 2, 2},
-                1);
+        TreeNode treeNode3 = new TreeNode(3);
+        TreeNode treeNode9 = new TreeNode(9);
+        TreeNode treeNode20 = new TreeNode(20);
+        TreeNode treeNode15 = new TreeNode(15);
+        TreeNode treeNode7 = new TreeNode(7);
+        treeNode3.left=treeNode9;
+        treeNode3.right=treeNode20;
+        treeNode20.left=treeNode15;
+        treeNode20.right=treeNode7;
+        new LeetCode().levelOrder(treeNode3);
     }
 }

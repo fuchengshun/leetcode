@@ -1,6 +1,8 @@
 package com.example.leetcode;
 
 
+import com.sun.deploy.util.ArrayUtil;
+
 import java.util.*;
 
 public class LeetCode {
@@ -823,17 +825,16 @@ public class LeetCode {
         ArrayList<Integer> list = new ArrayList<>();
         Integer max = null;
         while (!stack.empty()) {
-            if (max == null || max.equals(stack.peek().getValue())){
+            if (max == null || max.equals(stack.peek().getValue())) {
                 Map.Entry<Integer, Integer> pop = stack.pop();
                 list.add(pop.getKey());
-                max=pop.getValue();
-            }
-            else
+                max = pop.getValue();
+            } else
                 break;
         }
         int[] ans = new int[list.size()];
         for (int i = 0; i < list.size(); i++) {
-            ans[i]=list.get(i);
+            ans[i] = list.get(i);
         }
         return ans;
     }
@@ -948,5 +949,258 @@ public class LeetCode {
      */
     public void moveZeroes(int[] nums) {
 
+    }
+
+    /**
+     * 给定一个字符串，逐个翻转字符串中的每个单词。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入: "the sky is blue"
+     * 输出: "blue is sky the"
+     * 示例 2：
+     * <p>
+     * 输入: "  hello world!  "
+     * 输出: "world! hello"
+     * 解释: 输入字符串可以在前面或者后面包含多余的空格，但是反转后的字符不能包括。
+     * 示例 3：
+     * <p>
+     * 输入: "a good   example"
+     * 输出: "example good a"
+     * 解释: 如果两个单词间有多余的空格，将反转后单词间的空格减少到只含一个。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/reverse-words-in-a-string
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public String reverseWords(String s) {
+        String[] words = s.split(" +");
+        Collections.reverse(Arrays.asList(words));
+        return String.join(" ", words);
+    }
+
+    public int[] sortArray(int[] nums) {
+//        int[] temp = new int[nums.length];
+//        mergeSort(nums, 0, nums.length - 1, temp);
+        quickSort(nums, 0, nums.length - 1);
+        return nums;
+    }
+
+    private void mergeSort(int[] nums, int left, int right, int[] temp) {
+        if (left == right) {
+            return;
+        }
+        int mid = (left + right) / 2;
+        mergeSort(nums, left, mid, temp);
+        mergeSort(nums, mid + 1, right, temp);
+        mergeArray(nums, left, mid, right, temp);
+    }
+
+    private void mergeArray(int[] nums, int left, int mid, int right, int[] temp) {
+        int i = left, j = mid + 1, p = 0;
+        while (i <= mid && j <= right) {
+            if (nums[i] < nums[j]) {
+                temp[p++] = nums[i++];
+            } else {
+                temp[p++] = nums[j++];
+            }
+        }
+        while (i <= mid) {
+            temp[p++] = nums[i++];
+        }
+        while (j <= right) {
+            temp[p++] = nums[j++];
+        }
+        p = 0;
+        while (left <= right) {
+            nums[left++] = temp[p++];
+        }
+    }
+
+    public void quickSort(int[] nums, int left, int right) {
+        if (left >= right)
+            return;
+        int i = left, j = right, x = nums[right];
+        while (i < j) {
+            while (i < j && nums[j] > x)
+                j--;
+            if (i < j)
+                nums[i++] = nums[j];
+            while (i < j && nums[i] < x)
+                i++;
+            if (i < j)
+                nums[j--] = nums[i];
+        }
+        nums[i] = x;
+        quickSort(nums, left, i - 1);
+        quickSort(nums, i + 1, right);
+    }
+
+    public boolean hasGroupsSizeX(int[] deck) {
+        int[] ints = new int[10000];
+        for (int i : deck) {
+            ints[i]++;
+        }
+        int ans = 0;
+        for (int anInt : ints) {
+            if (anInt != 0) {
+                ans = gcb(ans, anInt);
+            }
+        }
+        return ans > 1;
+    }
+
+    public int gcb(int a, int b) {
+        return a == 0 ? b : gcb(b % a, a);
+    }
+
+    /**
+     * 给定整数数组 A，每次 move 操作将会选择任意 A[i]，并将其递增 1。
+     * <p>
+     * 返回使 A 中的每个值都是唯一的最少操作次数。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入：[1,2,2]
+     * 输出：1
+     * 解释：经过一次 move 操作，数组将变为 [1, 2, 3]。
+     * 示例 2:
+     * <p>
+     * 输入：[3,2,1,2,1,7]
+     * 输出：6
+     * 解释：经过 6 次 move 操作，数组将变为 [3, 4, 1, 2, 5, 7]。
+     * 可以看出 5 次或 5 次以下的 move 操作是不能让数组的每个值唯一的。
+     * 提示：
+     * <p>
+     * 0 <= A.length <= 40000
+     * 0 <= A[i] < 40000
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/minimum-increment-to-make-array-unique
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param A
+     * @return
+     */
+    public int minIncrementForUnique(int[] A) {
+        Arrays.sort(A);
+        int ans = 0;
+        for (int i = 1; i < A.length; i++) {
+            if (A[i - 1] >= A[i]) {
+                ans += A[i - 1] - A[i] + 1;
+                A[i] = A[i - 1] + 1;
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * 从上到下按层打印二叉树，同一层的节点按从左到右的顺序打印，每一层打印到一行。
+     * <p>
+     *  
+     * <p>
+     * 例如:
+     * 给定二叉树: [3,9,20,null,null,15,7],
+     * <p>
+     * 3
+     * / \
+     * 9  20
+     * /  \
+     * 15   7
+     * 返回其层次遍历结果：
+     * <p>
+     * [
+     * [3],
+     * [9,20],
+     * [15,7]
+     * ]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param root
+     * @return
+     */
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> ans = new ArrayList<>();
+        if (root == null) {
+            return ans;
+        }
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            List<Integer> list = new ArrayList<>();
+            for (int i = queue.size(); i > 0; i--) {
+                TreeNode node = queue.poll();
+                list.add(node.val);
+                if (node.left != null) {
+                    queue.add(node.left);
+                }
+                if (node.right != null) {
+                    queue.add(node.right);
+                }
+            }
+            ans.add(list);
+        }
+        return ans;
+    }
+
+    class Point {
+        int x;
+        int y;
+
+        public Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    public int orangesRotting(int[][] grid) {
+        Deque<Point> deque = new LinkedList<>();
+        int fresh = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == 2) {
+                    deque.add(new Point(i, j));
+                }
+                if (grid[i][j] == 1) {
+                    fresh++;
+                }
+            }
+        }
+        int depth = 0;
+        while (fresh > 0 && !deque.isEmpty()) {
+            depth++;
+            for (int i = deque.size(); i > 0; i--) {
+                Point point = deque.poll();
+                if (point.x + 1 < grid.length && grid[point.x + 1][point.y] == 1) {
+                    grid[point.x + 1][point.y] = 2;
+                    fresh--;
+                    deque.add(new Point(point.x + 1, point.y));
+                }
+                if (point.x - 1 >= 0 && grid[point.x - 1][point.y] == 1) {
+                    grid[point.x - 1][point.y] = 2;
+                    fresh--;
+                    deque.add(new Point(point.x - 1, point.y));
+                }
+                if (point.y + 1 < grid[point.x].length && grid[point.x][point.y + 1] == 1) {
+                    grid[point.x][point.y + 1] = 2;
+                    fresh--;
+                    deque.add(new Point(point.x, point.y + 1));
+                }
+                if (point.y - 1 >= 0 && grid[point.x][point.y - 1] == 1) {
+                    grid[point.x][point.y - 1] = 2;
+                    fresh--;
+                    deque.add(new Point(point.x, point.y - 1));
+                }
+            }
+        }
+        return fresh > 0 ? -1 : depth;
     }
 }
