@@ -1203,4 +1203,609 @@ public class LeetCode {
         }
         return fresh > 0 ? -1 : depth;
     }
+
+    public int maxDepth(Node root) {
+        Deque<Node> deque = new LinkedList<>();
+        if (root == null) {
+            return 0;
+        }
+        int ans = 0;
+        deque.add(root);
+        while (!deque.isEmpty()) {
+            ans++;
+            for (int i = deque.size(); i > 0; i--) {
+                Node node = deque.poll();
+                if (node != null) {
+                    List<Node> children = node.children;
+                    for (Node child : children) {
+                        if (child != null) {
+                            deque.add(child);
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    public boolean isCousins(TreeNode root, int x, int y) {
+        if (root == null) {
+            return false;
+        }
+        Deque<TreeNode[]> deque = new LinkedList<>();
+        deque.add(new TreeNode[]{null, root});
+        while (!deque.isEmpty()) {
+            int need = 0;
+            TreeNode parent = null;
+            for (int i = deque.size(); i > 0; i--) {
+                TreeNode[] nodes = deque.poll();
+                if (nodes[1].right != null) {
+                    deque.add(new TreeNode[]{nodes[1], nodes[1].right});
+                }
+                if (nodes[1].left != null) {
+                    deque.add(new TreeNode[]{nodes[1], nodes[1].left});
+                }
+                if (nodes[1].val == x && need == 0) {
+                    need = y;
+                    parent = nodes[0];
+                }
+                if (nodes[1].val == y && need == 0) {
+                    need = x;
+                    parent = nodes[0];
+                }
+                if (need != 0 && nodes[1].val == need && !nodes[0].equals(parent)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public int numRookCaptures(char[][] board) {
+        int ans = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] == 'R') {
+                    for (int k = i + 1; k < board.length; k++) {
+                        if (board[k][j] == 'p') {
+                            ans++;
+                            break;
+                        } else if (board[k][j] == 'B') {
+                            break;
+                        }
+                    }
+                    for (int k = j + 1; k < board[i].length; k++) {
+                        if (board[i][k] == 'p') {
+                            ans++;
+                            break;
+                        } else if (board[i][k] == 'B') {
+                            break;
+                        }
+                    }
+                    for (int k = i - 1; k >= 0; k--) {
+                        if (board[k][j] == 'p') {
+                            ans++;
+                            break;
+                        } else if (board[k][j] == 'B') {
+                            break;
+                        }
+                    }
+                    for (int k = j - 1; k >= 0; k--) {
+                        if (board[i][k] == 'p') {
+                            ans++;
+                            break;
+                        } else if (board[i][k] == 'B') {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    public boolean canThreePartsEqualSum(int[] A) {
+        int[] memo = new int[A.length];
+        int total = 0;
+        for (int i = 0; i < A.length; i++) {
+            total += A[i];
+            memo[i] = total;
+        }
+        if (total % 3 != 0) {
+            return false;
+        }
+        for (int i = 0; i < memo.length; i++) {
+            for (int j = i + 1; memo[i] == total / 3 && j < memo.length - 1; j++) {
+                if (total / 3 == memo[j] - memo[i] && total / 3 == memo[memo.length - 1] - memo[j]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public String gcdOfStrings(String str1, String str2) {
+        if ("".equals(str2)) {
+            return str1;
+        }
+        if ("".equals(str1)) {
+            return str2;
+        }
+        if (str1.length() >= str2.length()) {
+            String replace = str1.replace(str2, "");
+            if (replace.equals(str1)) {
+                return "";
+            }
+            return gcdOfStrings(str2, replace);
+        }
+        return gcdOfStrings(str2, str1);
+    }
+
+    public int[] distributeCandies(int candies, int num_people) {
+        int[] ints = new int[num_people];
+        int temp = 0;
+        while (candies > 0) {
+            for (int i = 0; i < ints.length && candies > 0; i++) {
+                temp++;
+                ints[i] += candies - temp >= 0 ? temp : candies;
+                candies -= temp;
+            }
+        }
+        return ints;
+    }
+
+    public int countCharacters(String[] words, String chars) {
+        int[] memo = new int[26];
+        for (char c : chars.toCharArray()) {
+            memo[c - 'a'] += 1;
+        }
+        int ans = 0;
+        for (String word : words) {
+            int[] temp = Arrays.copyOf(memo, memo.length);
+            for (int i = 0; i < word.length(); i++) {
+                if (temp[word.charAt(i) - 'a'] <= 0) {
+                    break;
+                } else {
+                    temp[word.charAt(i) - 'a']--;
+                    if (i == word.length() - 1) {
+                        ans += word.length();
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    public int maxDistance(int[][] grid) {
+        LinkedList<int[]> linkedList = new LinkedList<>();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                //陆地
+                if (grid[i][j] == 1) {
+                    linkedList.add(new int[]{i, j});
+                }
+            }
+        }
+        if (linkedList.isEmpty() || linkedList.size() == grid.length * grid[0].length) {
+            return -1;
+        }
+        int depth = 0;
+        while (!linkedList.isEmpty()) {
+            depth++;
+            for (int i = linkedList.size(); i > 0; i--) {
+                int[] poll = linkedList.poll();
+                int r = poll[0];
+                int c = poll[1];
+                grid[r][c] += 2;
+                if (c + 1 < grid[r].length && grid[r][c + 1] == 0) {
+                    linkedList.add(new int[]{r, c + 1});
+                    grid[r][c + 1] += 2;
+                }
+                if (c - 1 >= 0 && grid[r][c - 1] == 0) {
+                    linkedList.add(new int[]{r, c - 1});
+                    grid[r][c - 1] += 2;
+                }
+                if (r + 1 < grid.length && grid[r + 1][c] == 0) {
+                    linkedList.add(new int[]{r + 1, c});
+                    grid[r + 1][c] += 2;
+                }
+                if (r - 1 >= 0 && grid[r - 1][c] == 0) {
+                    linkedList.add(new int[]{r - 1, c});
+                    grid[r - 1][c] += 2;
+                }
+            }
+        }
+        return depth - 1;
+    }
+
+    public String compressString(String S) {
+        if (S.length() == 0) {
+            return S;
+        }
+        int slow = 0, fast = 1;
+        StringBuilder ans = new StringBuilder();
+        while (fast < S.length()) {
+            if (S.charAt(slow) != S.charAt(fast)) {
+                ans.append(S.charAt(slow)).append(fast - slow);
+                slow = fast;
+            }
+            fast++;
+        }
+        ans.append(S.charAt(slow)).append(fast - slow);
+        return ans.length() < S.length() ? ans.toString() : S;
+    }
+
+    public void merge3(int[] A, int m, int[] B, int n) {
+        int i = m - 1, j = n - 1, p = m + n - 1;
+        while (i >= 0 && j >= 0) {
+            if (A[i] > B[j]) {
+                A[p--] = A[i--];
+            } else {
+                A[p--] = B[j--];
+            }
+        }
+        while (i >= 0) {
+            A[p--] = A[i--];
+        }
+        while (j >= 0) {
+            A[p--] = B[j--];
+        }
+    }
+
+    public int massage(int[] nums) {
+        return massage2(new Integer[nums.length], nums, 0);
+    }
+
+    public int massage2(Integer[] memo, int[] nums, int start) {
+        if (start >= nums.length) {
+            return 0;
+        }
+        if (memo[start] != null) {
+            return memo[start];
+        }
+        memo[start] = Math.max(massage2(memo, nums, start + 1), massage2(memo, nums, start + 2) + nums[start]);
+        return memo[start];
+    }
+
+    public int[] getLeastNumbers(int[] arr, int k) {
+        quickSort3(arr, 0, arr.length - 1);
+        return Arrays.copyOf(arr, k);
+    }
+
+    private void quickSort3(int[] arr, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        int pivot = arr[left], i = left, j = right;
+        while (i < j) {
+            while (i < j && arr[j] >= pivot) {
+                j--;
+            }
+            if (i < j) {
+                arr[i++] = arr[j];
+            }
+            while (i < j && arr[i] <= pivot) {
+                i++;
+            }
+            if (i < j) {
+                arr[j--] = arr[i];
+            }
+        }
+        arr[i] = pivot;
+        quickSort3(arr, left, i - 1);
+        quickSort3(arr, i + 1, right);
+    }
+
+    // 确定有限状态自动机，状态枚举
+    enum DFA {
+        START,
+        SIGNED,
+        NUMBER,
+        END;
+    }
+
+    class Automaton {
+
+        // 自动机初始状态
+        private DFA state = DFA.START;
+
+        // 记录状态流转
+        private Map<DFA, DFA[]> map;
+
+        // 记录符号位
+        private char sign = '+';
+
+        // 记录结果
+        private int result = 0;
+
+        // 判断终止条件
+        private boolean flag = true;
+
+        public Automaton() {
+            map = new HashMap<>();
+            map.put(DFA.START, new DFA[]{DFA.START, DFA.SIGNED, DFA.NUMBER, DFA.END});
+            map.put(DFA.SIGNED, new DFA[]{DFA.END, DFA.END, DFA.NUMBER, DFA.END});
+            map.put(DFA.NUMBER, new DFA[]{DFA.END, DFA.END, DFA.NUMBER, DFA.END});
+            map.put(DFA.END, new DFA[]{DFA.END, DFA.END, DFA.END, DFA.END});
+        }
+
+        public int getResult() {
+            return result;
+        }
+
+        public boolean getFlag() {
+            return flag;
+        }
+
+        // 处理状态变化
+        public int getIndex(char c) {
+            if (c == ' ') return 0;
+            if (c == '+' || c == '-') return 1;
+            if (c >= '0' && c <= '9') return 2;
+            return 3;
+        }
+
+        // 计算当前结果
+        public void getInteger(char c) {
+
+            // 跟踪当前状态
+            state = map.get(state)[getIndex(c)];
+
+            switch (state) {
+
+                // 注意溢出判断
+                case NUMBER:
+                    if (sign == '+' && (result > Integer.MAX_VALUE / 10 || (result == Integer.MAX_VALUE / 10 && c - '0' > 7))) {
+                        result = Integer.MAX_VALUE;
+                        flag = false;
+                        break;
+                    } else if (sign == '-' && (result < Integer.MIN_VALUE / 10 || (result == Integer.MIN_VALUE / 10 && c - '0' > 8))) {
+                        result = Integer.MIN_VALUE;
+                        flag = false;
+                        break;
+                    }
+                    result = (sign == '+') ? (result * 10 + c - '0') : (result * 10 - (c - '0'));
+                    break;
+
+                case SIGNED:
+                    sign = c;
+                    break;
+
+                case END:
+                    flag = false;
+                    break;
+
+                default:
+                    break;
+            }
+
+        }
+    }
+
+    // 字符串转换整数
+    public int myAtoi(String str) {
+
+        // 特殊情况处理
+        if (str == null || str.length() == 0) {
+            return 0;
+        }
+
+        Automaton automaton = new Automaton();
+
+        for (int i = 0; i < str.length(); i++) {
+            if (automaton.getFlag()) {
+                automaton.getInteger(str.charAt(i));
+            } else {
+                break;
+            }
+        }
+
+        return automaton.getResult();
+    }
+
+    public int lastRemaining(int n, int m) {
+        int deleted = 0;
+        int cur = 0;
+        int pre = 0;
+        int[] memo = new int[n];
+        while (deleted != n - 1) {
+            int temp = m;
+            while (temp > 0) {
+                if (memo[cur] == 0) {
+                    pre = cur;
+                    cur++;
+                    temp--;
+                }
+            }
+            memo[pre] = 1;
+            deleted++;
+        }
+        return cur;
+    }
+
+    public String reformat(String s) {
+        StringBuilder sb = new StringBuilder();
+        Deque<Character> temp1 = new LinkedList<>();
+        Deque<Character> temp2 = new LinkedList<>();
+        for (char c : s.toCharArray()) {
+            if (c >= 'a' && c <= 'z') {
+                temp1.add(c);
+            } else {
+                temp2.add(c);
+            }
+        }
+        if (Math.abs(temp1.size() - temp2.size()) > 1) {
+            return "";
+        }
+        while (temp1.size() > 0 && temp2.size() > 0) {
+            if (temp1.size() > temp2.size()) {
+                sb.append(temp1.poll());
+                sb.append(temp2.poll());
+            } else {
+                sb.append(temp2.poll());
+                sb.append(temp1.poll());
+            }
+        }
+        if (!temp1.isEmpty()) {
+            sb.append(temp1.poll());
+        }
+        if (!temp2.isEmpty()) {
+            sb.append(temp2.poll());
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+     * <p>
+     * 岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+     * <p>
+     * 此外，你可以假设该网格的四条边均被水包围。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入:
+     * 11110
+     * 11010
+     * 11000
+     * 00000
+     * 输出: 1
+     * 示例 2:
+     * <p>
+     * 输入:
+     * 11000
+     * 11000
+     * 00100
+     * 00011
+     * 输出: 3
+     * 解释: 每座岛屿只能由水平和/或竖直方向上相邻的陆地连接而成。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/number-of-islands
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param grid
+     * @return
+     */
+    public int numIslands(char[][] grid) {
+        int ans = 0;
+        Deque<int[]> deque = new LinkedList<>();
+        for (int i = 0; i < grid.length; i++) {
+            for (char j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == '1') {
+                    deque.add(new int[]{i, j});
+                    ans++;
+                    while (!deque.isEmpty()) {
+                        int[] poll = deque.poll();
+                        int r = poll[0];
+                        int c = poll[1];
+                        grid[r][c] = '0';
+                        if (r + 1 < grid.length && grid[r + 1][c] == '1') {
+                            grid[r + 1][c] = '0';
+                            deque.add(new int[]{r + 1, c});
+                        }
+                        if (r - 1 >= 0 && grid[r - 1][c] == '1') {
+                            deque.add(new int[]{r - 1, c});
+                            grid[r - 1][c] = '0';
+                        }
+                        if (c + 1 < grid[i].length && grid[r][c + 1] == '1') {
+                            deque.add(new int[]{r, c + 1});
+                            grid[r][c + 1] = '0';
+                        }
+                        if (c - 1 >= 0 && grid[r][c - 1] == '1') {
+                            deque.add(new int[]{r, c - 1});
+                            grid[r][c - 1] = '0';
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    public int numIslands2(char[][] grid) {
+        int ans = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (grid[i][j] == '1') {
+                    ans++;
+                    numIslands2dfs(i, j, grid);
+                }
+            }
+        }
+        return ans;
+    }
+
+    private void numIslands2dfs(int i, int j, char[][] grid) {
+        if (i < 0 || j < 0 || i >= grid.length || j >= grid[i].length || grid[i][j] == '0') {
+            return;
+        }
+        grid[i][j] = '0';
+        numIslands2dfs(i - 1, j, grid);
+        numIslands2dfs(i + 1, j, grid);
+        numIslands2dfs(i, j + 1, grid);
+        numIslands2dfs(i, j - 1, grid);
+    }
+
+    /**
+     * 给你一个整数数组 nums 和一个整数 k。
+     * <p>
+     * 如果某个 连续 子数组中恰好有 k 个奇数数字，我们就认为这个子数组是「优美子数组」。
+     * <p>
+     * 请返回这个数组中「优美子数组」的数目。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,1,2,1,1], k = 3
+     * 输出：2
+     * 解释：包含 3 个奇数的子数组是 [1,1,2,1] 和 [1,2,1,1] 。
+     * 示例 2：
+     * <p>
+     * 输入：nums = [2,4,6], k = 1
+     * 输出：0
+     * 解释：数列中不包含任何奇数，所以不存在优美子数组。
+     * 示例 3：
+     * <p>
+     * 输入：nums = [2,2,2,1,2,2,1,2,2,2], k = 2
+     * 输出：16
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int numberOfSubarrays(int[] nums, int k) {
+        int temp = 0, ans = 0;
+        int[] memo = new int[nums.length];
+        int[] m2 = new int[50001];
+        for (int i = 0; i < nums.length; i++) {
+            if ((nums[i] & 1) == 1) {
+                temp++;
+            }
+            memo[i] = temp;
+            //第一次
+            if (m2[temp] == 0) {
+                m2[temp] = i;
+            }
+        }
+        for (int i = 0; i < nums.length; i++) {
+            int b = (nums[i] & 1) == 1 ? 1 : 0;
+            int c = memo[i] + k - b;
+            int r = m2[c];
+            if (r==0)
+                continue;
+            int r2 = m2[c + 1];
+            if (r2 ==0) {
+                ans += nums.length - r;
+            } else{
+                ans += r2 - r;
+            }
+        }
+//        int left = 0, right = nums.length - 1;
+//        while (left <= right) {
+//
+//        }
+        return ans;
+    }
 }
