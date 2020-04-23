@@ -1,11 +1,14 @@
 package com.example.leetcode;
 
 
-import com.sun.deploy.util.ArrayUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class LeetCode {
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
     public List<Integer> inorderTraversal(TreeNode root) {
         Stack<TreeNode> stack = new Stack<>();
         ArrayList<Integer> list = new ArrayList<>();
@@ -1778,34 +1781,289 @@ public class LeetCode {
     public int numberOfSubarrays(int[] nums, int k) {
         int temp = 0, ans = 0;
         int[] memo = new int[nums.length];
-        int[] m2 = new int[50001];
+        Integer[] m2 = new Integer[50001];
         for (int i = 0; i < nums.length; i++) {
             if ((nums[i] & 1) == 1) {
                 temp++;
             }
             memo[i] = temp;
             //第一次
-            if (m2[temp] == 0) {
+            if (m2[temp] == null) {
                 m2[temp] = i;
             }
         }
         for (int i = 0; i < nums.length; i++) {
             int b = (nums[i] & 1) == 1 ? 1 : 0;
             int c = memo[i] + k - b;
-            int r = m2[c];
-            if (r==0)
+            Integer r = m2[c];
+            if (r == null) {
                 continue;
-            int r2 = m2[c + 1];
-            if (r2 ==0) {
+            }
+            Integer r2 = m2[c + 1];
+            if (r2 == null) {
                 ans += nums.length - r;
-            } else{
+            } else {
                 ans += r2 - r;
             }
         }
-//        int left = 0, right = nums.length - 1;
-//        while (left <= right) {
-//
-//        }
+        return ans;
+    }
+
+    public int[][] imageSmoother(int[][] M) {
+        int[][] ans = new int[M.length][M[0].length];
+        for (int i = 0; i < M.length; i++) {
+            for (int j = 0; j < M[i].length; j++) {
+                int[] temp = new int[2];
+                for (int k = -1; k <= 1; k++) {
+                    for (int l = -1; l <= 1; l++) {
+                        imageSmootherHelper(temp, M, i + k, j + l);
+                    }
+                }
+                ans[i][j] = temp[1] / temp[0];
+            }
+        }
+        return ans;
+    }
+
+    private void imageSmootherHelper(int[] temp, int[][] m, int i, int j) {
+        if (i < 0 || j < 0 || i >= m.length || j >= m[i].length) {
+            return;
+        }
+        temp[0]++;
+        temp[1] += m[i][j];
+    }
+
+    /**
+     * 给定一个整数 n，求以 1 ... n 为节点组成的二叉搜索树有多少种？
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: 3
+     * 输出: 5
+     * 解释:
+     * 给定 n = 3, 一共有 5 种不同结构的二叉搜索树:
+     * <p>
+     * 1         3     3      2      1
+     * \       /     /      / \      \
+     * 3     2     1      1   3      2
+     * /     /       \                 \
+     * 2     1         2                 3
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/unique-binary-search-trees
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param n
+     * @return
+     */
+    public int numTrees(int n) {
+        return numTrees2(new Integer[n + 1], n);
+    }
+
+    public int numTrees2(Integer[] dp, int n) {
+        if (n == 0)
+            return 1;
+        if (dp[n] != null)
+            return dp[n];
+        int ans = 0;
+        for (int i = 1; i <= n; i++) {
+            ans += numTrees2(dp, i - 1) * numTrees2(dp, n - i);
+        }
+        dp[n] = ans;
+        return ans;
+    }
+
+    /**
+     * 给定一个非空字符串 s 和一个包含非空单词列表的字典 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
+     * <p>
+     * 说明：
+     * <p>
+     * 拆分时可以重复使用字典中的单词。
+     * 你可以假设字典中没有重复的单词。
+     * 示例 1：
+     * <p>
+     * 输入: s = "leetcode", wordDict = ["leet", "code"]
+     * 输出: true
+     * 解释: 返回 true 因为 "leetcode" 可以被拆分成 "leet code"。
+     * 示例 2：
+     * <p>
+     * 输入: s = "applepenapple", wordDict = ["apple", "pen"]
+     * 输出: true
+     * 解释: 返回 true 因为 "applepenapple" 可以被拆分成 "apple pen apple"。
+     *      注意你可以重复使用字典中的单词。
+     * 示例 3：
+     * <p>
+     * 输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+     * 输出: false
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/word-break
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @param wordDict
+     * @return
+     */
+    public boolean wordBreak(String s, List<String> wordDict) {
+        return wordBreak2(new Boolean[s.length()][s.length()], s, wordDict, 0, s.length() - 1);
+    }
+
+    private boolean wordBreak2(Boolean[][] dp, String s, List<String> wordDict, int start, int end) {
+        if (dp[start][end] != null) {
+            logger.info("start:{},end:{},ans:{}", start, end, dp[start][end]);
+            return dp[start][end];
+        }
+        if (wordDict.contains(s.substring(start, end + 1))) {
+            dp[start][end] = true;
+            logger.info("start:{},end:{},ans:{}", start, end, dp[start][end]);
+            return true;
+        }
+        for (int i = start; i < end; i++) {
+            if (wordBreak2(dp, s, wordDict, start, i) && wordBreak2(dp, s, wordDict, i + 1, end)) {
+                dp[start][end] = true;
+                logger.info("start:{},end:{},ans:{}", start, end, dp[start][end]);
+                return true;
+            }
+        }
+        dp[start][end] = false;
+        logger.info("start:{},end:{},ans:{}", start, end, dp[start][end]);
+        return false;
+    }
+
+    /**
+     * 给你一个整数数组 nums ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字）。
+     * <p>
+     *  
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: [2,3,-2,4]
+     * 输出: 6
+     * 解释: 子数组 [2,3] 有最大乘积 6。
+     * 示例 2:
+     * <p>
+     * 输入: [-2,0,-1]
+     * 输出: 0
+     * 解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/maximum-product-subarray
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+    public int maxProduct(int[] nums) {
+        int ans = nums[0];
+        int preMin = nums[0];
+        int preMax = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            int temp = preMin;
+            preMin = Math.min(preMax * nums[i], Math.min(preMin * nums[i], nums[i]));
+            preMax = Math.max(temp * nums[i], Math.max(preMax * nums[i], nums[i]));
+            ans = Math.max(ans, preMax);
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个非负整数数组，a1, a2, ..., an, 和一个目标数，S。现在你有两个符号 + 和 -。对于数组中的任意一个整数，你都可以从 + 或 -中选择一个符号添加在前面。
+     * <p>
+     * 返回可以使最终数组和为目标数 S 的所有添加符号的方法数。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: nums: [1, 1, 1, 1, 1], S: 3
+     * 输出: 5
+     * 解释:
+     * <p>
+     * -1+1+1+1+1 = 3
+     * +1-1+1+1+1 = 3
+     * +1+1-1+1+1 = 3
+     * +1+1+1-1+1 = 3
+     * +1+1+1+1-1 = 3
+     * <p>
+     * 一共有5种方法让最终目标和为3。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/target-sum
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @param S
+     * @return
+     */
+    public int findTargetSumWays(int[] nums, int S) {
+        return findTargetSumWays2(nums, S, nums.length - 1);
+    }
+
+    private int findTargetSumWays2(int[] nums, int S, int i) {
+        if (i == 0)
+            return Math.abs(S) != nums[0] ? 0 : S == 0 ? 2 : 1;
+        return findTargetSumWays2(nums, S - nums[i], i - 1) + findTargetSumWays2(nums, S + nums[i], i - 1);
+    }
+
+    /**
+     * 给定一个字符串，你的任务是计算这个字符串中有多少个回文子串。
+     * <p>
+     * 具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被计为是不同的子串。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: "abc"
+     * 输出: 3
+     * 解释: 三个回文子串: "a", "b", "c".
+     * 示例 2:
+     * <p>
+     * 输入: "aaa"
+     * 输出: 6
+     * 说明: 6个回文子串: "a", "a", "a", "aa", "aa", "aaa".
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/palindromic-substrings
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public int countSubstrings(String s) {
+        int ans = 0;
+        Boolean[][] dp = new Boolean[s.length()][s.length()];
+        for (int i = 0; i < s.length(); i++) {
+            for (int j = i; j < s.length(); j++) {
+                if (countSubstrings2(dp, s, i, j)) {
+                    ans++;
+                }
+            }
+        }
+        return ans;
+    }
+
+    private boolean countSubstrings2(Boolean[][] dp, String s, int i, int j) {
+        if (dp[i][j] != null) {
+            return dp[i][j];
+        }
+        while (i < j) {
+            if (s.charAt(i) != s.charAt(j)) {
+                dp[i][j] = false;
+                return false;
+            }
+            i++;
+            j--;
+        }
+        dp[i][j] = true;
+        return true;
+    }
+
+    /**
+     * @param num
+     * @return
+     */
+    public int[] countBits(int num) {
+        int[] ans = new int[num + 1];
+        for (int i = 1; i <= num; i++) {
+            ans[i] = ans[i >> 1] + i % 2;
+        }
         return ans;
     }
 }
