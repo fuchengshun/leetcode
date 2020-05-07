@@ -2504,4 +2504,106 @@ public class LeetCode {
         }
         return s.val == t.val && isSame(s.left, t.left) && isSame(s.right, t.right);
     }
+
+    /**
+     * 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，
+     * 使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。
+     * <p>
+     * 注意：答案中不可以包含重复的三元组。
+     * <p>
+     * 示例：
+     * <p>
+     * 给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+     * <p>
+     * 满足要求的三元组集合为：
+     * [
+     * [-1, 0, 1],
+     * [-1, -1, 2]
+     * ]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/3sum
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> ans = new ArrayList<>();
+        for (int i = 0; i < nums.length - 2 && nums[i] <= 0; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            int left = i + 1, right = nums.length - 1;
+            while (left < right) {
+                if (nums[left] + nums[i] > 0) {
+                    break;
+                }
+                int sum = nums[left] + nums[right] + nums[i];
+                if (sum == 0) {
+                    ans.add(Arrays.asList(nums[i], nums[left], nums[right]));
+                    while (left < right && nums[right] == nums[right - 1]) {
+                        right--;
+                    }
+                    while (left < right && nums[left] == nums[left + 1]) {
+                        left++;
+                    }
+                    right--;
+                    left++;
+                } else if (sum > 0) {
+                    right--;
+                } else {
+                    left++;
+                }
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * 在一个由 0 和 1 组成的二维矩阵内，找到只包含 1 的最大正方形，并返回其面积。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入:
+     * <p>
+     * 1 0 1 0 0
+     * 1 0 1 1 1
+     * 1 1 1 1 1
+     * 1 0 0 1 0
+     * <p>
+     * 输出: 4
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/maximal-square
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param matrix
+     * @return
+     */
+    public int maximalSquare(char[][] matrix) {
+        if (matrix==null||matrix.length==0){
+            return 0;
+        }
+        int[][] memo = new int[matrix.length][matrix[0].length];
+        int ans = 0;
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                memo[i][j] = matrix[i][j] == '0' ? 0 : i - 1 < 0 ? 1 : memo[i-1][j] + 1;
+                ans = Math.max(ans, maximalSquareHelper(memo, i, j));
+            }
+        }
+        return ans*ans;
+    }
+
+    private int maximalSquareHelper(int[][] memo, int i, int j) {
+        int ans = 0, minHeight = Integer.MAX_VALUE, temp = j;
+        while (temp >= 0 && memo[i][temp] != 0) {
+            minHeight = Math.min(minHeight, memo[i][temp]);
+            ans = Math.max(ans, Math.min(minHeight, j - temp + 1));
+            temp--;
+        }
+        return ans;
+    }
 }
