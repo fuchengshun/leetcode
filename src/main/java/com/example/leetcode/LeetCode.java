@@ -2583,25 +2583,28 @@ public class LeetCode {
      * @return
      */
     public int maximalSquare(char[][] matrix) {
-        if (matrix==null||matrix.length==0){
+        if (matrix == null || matrix.length == 0) {
             return 0;
         }
         int[][] memo = new int[matrix.length][matrix[0].length];
         int ans = 0;
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                memo[i][j] = matrix[i][j] == '0' ? 0 : i - 1 < 0 ? 1 : memo[i-1][j] + 1;
+                memo[i][j] = matrix[i][j] == '0' ? 0 : i - 1 < 0 ? 1 : memo[i - 1][j] + 1;
                 ans = Math.max(ans, maximalSquareHelper(memo, i, j));
             }
         }
-        return ans*ans;
+        return ans * ans;
     }
 
     private int maximalSquareHelper(int[][] memo, int i, int j) {
         int ans = 0, minHeight = Integer.MAX_VALUE, temp = j;
         while (temp >= 0 && memo[i][temp] != 0) {
             minHeight = Math.min(minHeight, memo[i][temp]);
-            ans = Math.max(ans, Math.min(minHeight, j - temp + 1));
+            if (Math.min(minHeight, j - temp + 1) <= ans) {
+                return ans;
+            }
+            ans = Math.min(minHeight, j - temp + 1);
             temp--;
         }
         return ans;
