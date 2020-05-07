@@ -4,6 +4,7 @@ package com.example.leetcode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Struct;
 import java.util.*;
 
 public class LeetCode {
@@ -2065,5 +2066,442 @@ public class LeetCode {
             ans[i] = ans[i >> 1] + i % 2;
         }
         return ans;
+    }
+
+    public int maxScore(String s) {
+        int temp0 = 0, temp1 = 0, ans = 0;
+        for (int i = 0; i < s.length() - 1; i++) {
+            temp0 = 0;
+            temp1 = 0;
+            for (int j = 0; j <= i; j++) {
+                if (s.charAt(j) == '0') {
+                    temp0++;
+                }
+            }
+            for (int j = i + 1; j < s.length(); j++) {
+                if (s.charAt(j) == '1') {
+                    temp1++;
+                }
+            }
+            ans = Math.max(ans, temp0 + temp1);
+        }
+        return ans;
+    }
+
+    public int maxScoreII(int[] cardPoints, int k) {
+        int[] memo = new int[cardPoints.length];
+        int temp = 0, min = Integer.MAX_VALUE;
+        for (int i = 0; i < cardPoints.length; i++) {
+            temp += cardPoints[i];
+            memo[i] = temp;
+        }
+        //i∈[0,i+L-k-1]
+        if (k == cardPoints.length) {
+            return temp;
+        }
+        for (int i = 0; i <= k; i++) {
+            min = Math.min(min, memo[i + cardPoints.length - k - 1] - memo[i] + cardPoints[i]);
+        }
+        return temp - min;
+    }
+
+    public int search(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (nums[mid] == target)
+                return mid;
+            if (nums[mid] >= nums[left]) {
+                if (target >= nums[left] && target < nums[mid])
+                    right = mid - 1;
+                else
+                    left = mid + 1;
+            } else {
+                if (target > nums[mid] && target <= nums[right])
+                    left = mid + 1;
+                else
+                    right = mid - 1;
+            }
+        }
+        return -1;
+    }
+
+    public int[] singleNumbers(int[] nums) {
+        int a = 0, b = 0, c = 0;
+        for (int num : nums) {
+            a ^= num;
+        }
+        int temp = 1;
+        while ((temp & a) == 0) {
+            temp <<= 1;
+        }
+        for (int num : nums) {
+            if ((num & temp) == temp)
+                b ^= num;
+            else
+                c ^= num;
+        }
+        return new int[]{b, c};
+    }
+
+    /**
+     * 给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
+     * <p>
+     * 设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
+     * <p>
+     * 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+     * 卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+     * 示例:
+     * <p>
+     * 输入: [1,2,3,0,2]
+     * 输出: 3
+     * 解释: 对应的交易状态为: [买入, 卖出, 冷冻期, 买入, 卖出]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param prices
+     * @return
+     */
+    public int maxProfitIV(int[] prices) {
+        return maxProfitIV(prices, 0, 0, 0b001 | 0b100);
+    }
+
+    /**
+     * 从第i天开始买卖能获得最大的利润
+     *
+     * @param prices 价格
+     * @param i      第i天
+     * @param k      能进行的操作，买入：0b001,卖出0b010，不操作，0b100
+     * @return 最大利润
+     */
+    private int maxProfitIV(int[] prices, int i, int hold, int k) {
+        int ans = 0;
+        //买入
+        if ((k & 0b001) == 0b001) {
+            k = 0b010 | 0b100;
+            ans = Math.max(ans, maxProfitIV(prices, i + 1, prices[i], k));
+        }
+        //卖出
+        if ((k & 0b010) == 0b010) {
+            k = 0b001 | 0b100;
+            ans = Math.max(ans, maxProfitIV(prices, i + 1, 0, k) + hold);
+        }
+        //不操作
+        if ((k & 0b100) == 0b100) {
+            ans = Math.max(ans, maxProfitIV(prices, i + 1, hold, k));
+        }
+        return ans;
+    }
+
+    public int findInMountainArray(int target, MountainArray mountainArr) {
+        int ans = -1;
+        int topIndex = findMountainTop(mountainArr, 0, mountainArr.length() - 1);
+        ans = findMountainFront(target, mountainArr, 0, topIndex);
+        if (ans != -1)
+            return ans;
+        return findMountainBack(target, mountainArr, topIndex, mountainArr.length() - 1);
+    }
+
+    private int findMountainBack(int target, MountainArray mountainArr, int left, int right) {
+        while (left <= right) {
+            int mid = (left + right) >>> 1;
+            if (mountainArr.get(mid) == target)
+                return mid;
+            else if (mountainArr.get(mid) > target)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+        return -1;
+    }
+
+    private int findMountainFront(int target, MountainArray mountainArr, int left, int right) {
+        while (left <= right) {
+            int mid = (left + right) >>> 1;
+            if (mountainArr.get(mid) == target)
+                return mid;
+            else if (mountainArr.get(mid) > target)
+                right = mid - 1;
+            else
+                left = mid + 1;
+        }
+        return -1;
+    }
+
+    private int findMountainTop(MountainArray mountainArr, int left, int right) {
+        while (left < right) {
+            int mid = (left + right) >>> 1;
+            if (mountainArr.get(mid + 1) > mountainArr.get(mid)) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return left == right ? left : -1;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {1, 5, 2};
+        int target = 0;
+        MountainArray mountainArray = new MountainArrayImpl(arr);
+
+        LeetCode solution = new LeetCode();
+        int res = solution.findInMountainArray(target, mountainArray);
+        System.out.println(res);
+    }
+
+    /**
+     * 编写一个算法来判断一个数 n 是不是快乐数。
+     * <p>
+     * 「快乐数」定义为：对于一个正整数，每一次将该数替换为它每个位置上的数字的平方和，
+     * 然后重复这个过程直到这个数变为 1，也可能是 无限循环 但始终变不到 1。如果 可以变为  1，那么这个数就是快乐数。
+     * <p>
+     * 如果 n 是快乐数就返回 True ；不是，则返回 False 。
+     * <p>
+     *  
+     * <p>
+     * 示例：
+     * <p>
+     * 输入：19
+     * 输出：true
+     * 解释：
+     * 12 + 92 = 82
+     * 82 + 22 = 68
+     * 62 + 82 = 100
+     * 12 + 02 + 02 = 1
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/happy-number
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param n
+     * @return
+     */
+    public boolean isHappy(int n) {
+        int fast = n, slow = n;
+        do {
+            fast = isHappy2(fast);
+            fast = isHappy2(fast);
+            slow = isHappy2(slow);
+        } while (fast != slow);
+        return fast == 1;
+    }
+
+    private int isHappy2(int n) {
+        int ans = 0;
+        while (n > 0) {
+            ans += (n % 10) * (n % 10);
+            n /= 10;
+        }
+        return ans;
+    }
+
+    /**
+     * @param nums
+     * @return
+     */
+    public int findDuplicate(int[] nums) {
+        int slow = 0, fast = 0;
+        do {
+            fast = nums[fast];
+            fast = nums[fast];
+            slow = nums[slow];
+        } while (fast != slow);
+        fast = 0;
+        do {
+            fast = nums[fast];
+            slow = nums[slow];
+        } while (fast != slow);
+        return fast;
+    }
+
+    /**
+     * 给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
+     * <p>
+     * 示例：
+     * <p>
+     * 给定一个链表: 1->2->3->4->5, 和 n = 2.
+     * <p>
+     * 当删除了倒数第二个节点后，链表变为 1->2->3->5.
+     * 说明：
+     * <p>
+     * 给定的 n 保证是有效的。
+     * <p>
+     * 进阶：
+     * <p>
+     * 你能尝试使用一趟扫描实现吗？
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param head
+     * @param n
+     * @return
+     */
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode sentinel = new ListNode(-1), slow = sentinel, fast = sentinel;
+        sentinel.next = head;
+        for (int i = 0; i < n; i++) {
+            fast = fast.next;
+        }
+        while (fast.next != null) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+        slow.next = slow.next.next;
+        return sentinel.next;
+    }
+
+    /**
+     * 在一个火车旅行很受欢迎的国度，你提前一年计划了一些火车旅行。在接下来的一年里，
+     * 你要旅行的日子将以一个名为 days 的数组给出。每一项是一个从 1 到 365 的整数。
+     * <p>
+     * 火车票有三种不同的销售方式：
+     * <p>
+     * 一张为期一天的通行证售价为 costs[0] 美元；
+     * 一张为期七天的通行证售价为 costs[1] 美元；
+     * 一张为期三十天的通行证售价为 costs[2] 美元。
+     * 通行证允许数天无限制的旅行。 例如，如果我们在第 2 天获得一张为期 7 天的通行证，
+     * 那么我们可以连着旅行 7 天：第 2 天、第 3 天、第 4 天、第 5 天、第 6 天、第 7 天和第 8 天。
+     * <p>
+     * 返回你想要完成在给定的列表 days 中列出的每一天的旅行所需要的最低消费。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：days = [1,4,6,7,8,20], costs = [2,7,15]
+     * 输出：11
+     * 解释：
+     * 例如，这里有一种购买通行证的方法，可以让你完成你的旅行计划：
+     * 在第 1 天，你花了 costs[0] = $2 买了一张为期 1 天的通行证，它将在第 1 天生效。
+     * 在第 3 天，你花了 costs[1] = $7 买了一张为期 7 天的通行证，它将在第 3, 4, ..., 9 天生效。
+     * 在第 20 天，你花了 costs[0] = $2 买了一张为期 1 天的通行证，它将在第 20 天生效。
+     * 你总共花了 $11，并完成了你计划的每一天旅行。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/minimum-cost-for-tickets
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param days
+     * @param costs
+     * @return
+     */
+    public int mincostTickets(int[] days, int[] costs) {
+        //dp[i] = min(dp[i-1]+cost[0],dp[i-7]+cost[1],dp[i-30]+cost[2])
+        boolean[] travel = new boolean[days[days.length - 1] + 1];
+        int[] dp = new int[days[days.length - 1] + 1];
+        for (int day : days) {
+            travel[day] = true;
+        }
+        for (int i = 1; i < dp.length; ++i) {
+            if (!travel[i]) {
+                dp[i] = dp[i - 1];
+            } else {
+                dp[i] = Math.min(getdp(i - 1, dp) + costs[0], Math.min(getdp(i - 7, dp) + costs[1], getdp(i - 30, dp) + costs[2]));
+            }
+        }
+        return dp[days[days.length - 1]];
+    }
+
+    public int mincostTicketsII(int[] days, int[] costs) {
+        boolean[] travel = new boolean[days[days.length - 1] + 1];
+        for (int day : days) {
+            travel[day] = true;
+        }
+        int[] dp = new int[days[days.length - 1] + 1];
+        return mincostTicketsRecursive(days, costs, days[days.length - 1], dp, travel);
+    }
+
+    public int mincostTicketsRecursive(int[] days, int[] costs, int day, int[] dp, boolean[] travel) {
+        if (day < 0) {
+            System.out.printf("day:%d,ans:%d\n", day, 0);
+            return 0;
+        }
+        if (dp[day] != 0) {
+            System.out.printf("day:%d,ans:%d\n", day, dp[day]);
+            return dp[day];
+        }
+        if (!travel[day]) {
+            dp[day] = mincostTicketsRecursive(days, costs, day - 1, dp, travel);
+        } else {
+            int i1 = mincostTicketsRecursive(days, costs, day - 1, dp, travel) + costs[0];
+            int i7 = mincostTicketsRecursive(days, costs, day - 7, dp, travel) + costs[1];
+            int i30 = mincostTicketsRecursive(days, costs, day - 30, dp, travel) + costs[2];
+            dp[day] = Math.min(i1, Math.min(i7, i30));
+        }
+        System.out.printf("day:%d,ans:%d\n", day, dp[day]);
+        return dp[day];
+    }
+
+    int getdp(int index, int[] dp) {
+        if (index < 0) {
+            return 0;
+        } else {
+            return dp[index];
+        }
+    }
+
+    /**
+     * 给定两个非空二叉树 s 和 t，检验 s 中是否包含和 t 具有相同结构和节点值的子树。
+     * s 的一个子树包括 s 的一个节点和这个节点的所有子孙。s 也可以看做它自身的一棵子树。
+     * <p>
+     * 示例 1:
+     * 给定的树 s:
+     * <p>
+     * 3
+     * / \
+     * 4   5
+     * / \
+     * 1   2
+     * 给定的树 t：
+     * <p>
+     * 4
+     * / \
+     * 1   2
+     * 返回 true，因为 t 与 s 的一个子树拥有相同的结构和节点值。
+     * <p>
+     * 示例 2:
+     * 给定的树 s：
+     * <p>
+     * 3
+     * / \
+     * 4   5
+     * / \
+     * 1   2
+     * /
+     * 0
+     * 给定的树 t：
+     * <p>
+     * 4
+     * / \
+     * 1   2
+     * 返回 false。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/subtree-of-another-tree
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @param t
+     * @return
+     */
+    public boolean isSubtree(TreeNode s, TreeNode t) {
+        if (s == null) {
+            return t == null;
+        }
+        return isSame(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
+    }
+
+    private boolean isSame(TreeNode s, TreeNode t) {
+        if (s == null) {
+            return t == null;
+        } else if (t == null) {
+            return false;
+        }
+        return s.val == t.val && isSame(s.left, t.left) && isSame(s.right, t.right);
     }
 }
