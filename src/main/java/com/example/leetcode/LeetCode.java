@@ -2744,7 +2744,8 @@ public class LeetCode {
     /**
      * 给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
      * <p>
-     * 百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+     * 百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，
+     * 满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
      * <p>
      * 例如，给定如下二叉树:  root = [3,5,1,6,2,0,8,null,null,7,4]
      * <p>
@@ -2758,15 +2759,29 @@ public class LeetCode {
      * @return
      */
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        if (root == null) {
-            return null;
-        }
-        if (p == root || q == root) {
+        if (root == null || p == root || q == root) {
             return root;
         }
         TreeNode left = lowestCommonAncestor(root.left, p, q);
         TreeNode right = lowestCommonAncestor(root.right, p, q);
+        if (left != null && right != null) {
+            return root;
+        }
         return null;
+    }
+
+    private void lowestCommonAncestorDfs(TreeNode root, TreeNode p, TreeNode q) {
+//        commonAncestor(root.left);
+    }
+
+    private Boolean commonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return p == null && q == null;
+        }
+        if (q == root || p == root) {
+            return true;
+        }
+        return commonAncestor(root.left, p, q) || commonAncestor(root.right, p, q);
     }
 
     /**
@@ -2850,7 +2865,7 @@ public class LeetCode {
         }
         int sum = Math.max(maxPathSum2(root.left), 0) + Math.max(maxPathSum2(root.right), 0) + root.val;
         maxPathSumAns = Math.max(maxPathSumAns, sum);
-        System.out.printf("root:%d,left:%s,right:%s,val:%d\n",root.val,root.left==null?"null":root.left.val,root.right==null?"null":root.right.val,sum);
+        System.out.printf("root:%d,left:%s,right:%s,val:%d\n", root.val, root.left == null ? "null" : root.left.val, root.right == null ? "null" : root.right.val, sum);
         maxPathSumDfs(root.left);
         maxPathSumDfs(root.right);
     }
@@ -2867,5 +2882,342 @@ public class LeetCode {
         }
 //        System.out.printf("root:%d,left:%s,right:%s,val:%d\n", root.val, root.left == null ? "null" : root.left.val, root.right == null ? "null" : root.right.val, Math.max(Math.max(0, maxPathSum2(root.left)), maxPathSum2(root.right)) + root.val);
         return Math.max(Math.max(0, maxPathSum2(root.left)), maxPathSum2(root.right)) + root.val;
+    }
+
+    /**
+     * 给定一个整数数组，判断是否存在重复元素。
+     * <p>
+     * 如果任意一值在数组中出现至少两次，函数返回 true 。如果数组中每个元素都不相同，则返回 false 。
+     * <p>
+     *  
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: [1,2,3,1]
+     * 输出: true
+     * 示例 2:
+     * <p>
+     * 输入: [1,2,3,4]
+     * 输出: false
+     * 示例 3:
+     * <p>
+     * 输入: [1,1,1,3,3,4,3,2,4,2]
+     * 输出: true
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/contains-duplicate
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+    public boolean containsDuplicate(int[] nums) {
+        HashMap<Integer, Boolean> map = new HashMap<>();
+        for (int num : nums) {
+            if (map.get(num) != null) {
+                return true;
+            }
+            map.put(num, true);
+        }
+        return false;
+    }
+
+    /**
+     * 给定一个二叉搜索树，编写一个函数 kthSmallest 来查找其中第 k 个最小的元素。
+     * <p>
+     * 说明：
+     * 你可以假设 k 总是有效的，1 ≤ k ≤ 二叉搜索树元素个数。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: root = [3,1,4,null,2], k = 1
+     * 3
+     * / \
+     * 1   4
+     * \
+     *    2
+     * 输出: 1
+     * 示例 2:
+     * <p>
+     * 输入: root = [5,3,6,2,4,null,null,1], k = 3
+     * 5
+     * / \
+     * 3   6
+     * / \
+     * 2   4
+     * /
+     * 1
+     * 输出: 3
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param root
+     * @param k
+     * @return
+     */
+    public int kthSmallest(TreeNode root, int k) {
+        ArrayList<TreeNode> ans = new ArrayList<>();
+        kthSmallestDfs(root, k, ans);
+        return ans.get(k - 1).val;
+    }
+
+    private void kthSmallestDfs(TreeNode root, int k, List<TreeNode> ans) {
+        if (root == null || ans.size() == k) {
+            return;
+        }
+        kthSmallestDfs(root.left, k, ans);
+        ans.add(root);
+        kthSmallestDfs(root.right, k, ans);
+    }
+
+    /**
+     * 在未排序的数组中找到第 k 个最大的元素。请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: [3,2,1,5,6,4] 和 k = 2
+     * 输出: 5
+     * 示例 2:
+     * <p>
+     * 输入: [3,2,3,1,2,4,5,5,6] 和 k = 4
+     * 输出: 4
+     * 说明:
+     * <p>
+     * 你可以假设 k 总是有效的，且 1 ≤ k ≤ 数组的长度。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/kth-largest-element-in-an-array
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int findKthLargest(int[] nums, int k) {
+        Arrays.sort(nums);
+        return nums[nums.length - k];
+    }
+
+    /**
+     * 给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
+     * <p>
+     * 为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。
+     * 如果 pos 是 -1，则在该链表中没有环。
+     * <p>
+     * 说明：不允许修改给定的链表。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：head = [3,2,0,-4], pos = 1
+     * 输出：tail connects to node index 1
+     * 解释：链表中有一个环，其尾部连接到第二个节点。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/linked-list-cycle-ii
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param head
+     * @return
+     */
+    public ListNode detectCycle(ListNode head) {
+        ListNode slow = head, fast = head;
+        do {
+            if (fast == null || fast.next == null) {
+                return null;
+            }
+            slow = slow.next;
+            fast = fast.next.next;
+        } while (slow != fast);
+        fast = head;
+        while (fast != slow) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        return fast;
+    }
+
+    /**
+     * 请编写一个函数，使其可以删除某个链表中给定的（非末尾）节点，你将只被给定要求被删除的节点。
+     *
+     * @param node
+     */
+    public void deleteNode(ListNode node) {
+        node.val = node.next.val;
+        node.next = node.next.next;
+    }
+
+    /**
+     * 编写一个程序，找到两个单链表相交的起始节点。
+     * <p>
+     * 注意：
+     * <p>
+     * 如果两个链表没有交点，返回 null.
+     * 在返回结果后，两个链表仍须保持原有的结构。
+     * 可假定整个链表结构中没有循环。
+     * 程序尽量满足 O(n) 时间复杂度，且仅用 O(1) 内存。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/intersection-of-two-linked-lists
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param headA
+     * @param headB
+     * @return
+     */
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if (headA == null || headB == null) {
+            return null;
+        }
+        ListNode cur = headA;
+        while (cur != null && cur.next != null) {
+            cur = cur.next;
+        }
+        cur.next = headB;
+        ListNode slow = headA, fast = headA;
+        do {
+            if (fast == null || fast.next == null) {
+                cur.next = null;
+                return null;
+            }
+            slow = slow.next;
+            fast = fast.next.next;
+        } while (slow != fast);
+        fast = headA;
+        while (slow != fast) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        cur.next = null;
+        return fast;
+    }
+
+    /**
+     * 你和你的朋友，两个人一起玩 Nim 游戏：桌子上有一堆石头，每次你们轮流拿掉 1 - 3 块石头。
+     * 拿掉最后一块石头的人就是获胜者。你作为先手。
+     * 你们是聪明人，每一步都是最优解。 编写一个函数，来判断你是否可以在给定石头数量的情况下赢得游戏。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: 4
+     * 输出: false
+     * 解释: 如果堆中有 4 块石头，那么你永远不会赢得比赛；
+     *      因为无论你拿走 1 块、2 块 还是 3 块石头，最后一块石头总是会被你的朋友拿走。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/nim-game
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param n
+     * @return
+     */
+    public boolean canWinNim(int n) {
+        return n % 4 != 0;
+    }
+
+    /**
+     * 给定一个整数，编写一个函数来判断它是否是 2 的幂次方。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: 1
+     * 输出: true
+     * 解释: 20 = 1
+     * 示例 2:
+     * <p>
+     * 输入: 16
+     * 输出: true
+     * 解释: 24 = 16
+     * 示例 3:
+     * <p>
+     * 输入: 218
+     * 输出: false
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/power-of-two
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param n
+     * @return
+     */
+    public boolean isPowerOfTwo(int n) {
+        return n > 0 && (n & (n - 1)) == 0;
+    }
+
+    /**
+     * 给你一个长度为 n 的整数数组 nums，其中 n > 1，返回输出数组 output ，
+     * 其中 output[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: [1,2,3,4]
+     * 输出: [24,12,8,6]
+     * <p>
+     * 提示：题目数据保证数组之中任意元素的全部前缀元素和后缀（甚至是整个数组）的乘积都在 32 位整数范围内。
+     * <p>
+     * 说明: 请不要使用除法，且在 O(n) 时间复杂度内完成此题。
+     * <p>
+     * 进阶：
+     * 你可以在常数空间复杂度内完成这个题目吗？（ 出于对空间复杂度分析的目的，输出数组不被视为额外空间。）
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/product-of-array-except-self
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+    public int[] productExceptSelf(int[] nums) {
+        long temp = 1;
+        for (int num : nums) {
+            temp *= num;
+        }
+        int[] ans = new int[nums.length];
+        for (int i = 0; i < ans.length; i++) {
+            ans[i] = (int) (temp / nums[i]);
+        }
+        return ans;
+    }
+
+    /**
+     * 在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: 4->2->1->3
+     * 输出: 1->2->3->4
+     * 示例 2:
+     * <p>
+     * 输入: -1->5->3->4->0
+     * 输出: -1->0->3->4->5
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/sort-list
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param head
+     * @return
+     */
+    public ListNode sortList(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode node = sortList(head.next);
+        ListNode start = new ListNode(Integer.MIN_VALUE);
+        start.next = node;
+        ListNode pre = start, cur = node;
+        while (cur != null) {
+            if (head.val <= cur.val) {
+                head.next = cur;
+                pre.next = head;
+            }
+            pre = cur;
+            cur = cur.next;
+        }
+        pre.next = head;
+        return start.next;
     }
 }

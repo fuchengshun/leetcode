@@ -13,7 +13,8 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        TreeNode treeNode = TreeNode.create(new Integer[]{5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1});
-        new LeetCode().maxPathSum(treeNode);
+//        TreeNode treeNode = TreeNode.create(new Integer[]{5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1});
+        ListNode listNode = ListNode.create(new int[]{4,2,1,3});
+        new LeetCode().sortList(listNode);
     }
 }
