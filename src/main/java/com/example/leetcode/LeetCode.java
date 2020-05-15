@@ -4,7 +4,6 @@ package com.example.leetcode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Struct;
 import java.util.*;
 
 public class LeetCode {
@@ -2493,16 +2492,76 @@ public class LeetCode {
         if (s == null) {
             return t == null;
         }
-        return isSame(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
+        return isSameTree(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
     }
 
-    private boolean isSame(TreeNode s, TreeNode t) {
+    public boolean isSameTree(TreeNode s, TreeNode t) {
         if (s == null) {
             return t == null;
         } else if (t == null) {
             return false;
         }
-        return s.val == t.val && isSame(s.left, t.left) && isSame(s.right, t.right);
+        return s.val == t.val && isSameTree(s.left, t.left) && isSameTree(s.right, t.right);
+    }
+
+    /**
+     * 给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+     * <p>
+     * 假设一个二叉搜索树具有如下特征：
+     * <p>
+     * 节点的左子树只包含小于当前节点的数。
+     * 节点的右子树只包含大于当前节点的数。
+     * 所有左子树和右子树自身必须也是二叉搜索树。
+     * 示例 1:
+     * <p>
+     * 输入:
+     * 2
+     * / \
+     * 1   3
+     * 输出: true
+     * 示例 2:
+     * <p>
+     * 输入:
+     * 5
+     * / \
+     * 1   4
+     *      / \
+     *     3   6
+     * 输出: false
+     * 解释: 输入为: [5,1,4,null,null,3,6]。
+     *      根节点的值为 5 ，但是其右子节点值为 4 。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/validate-binary-search-tree
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param root
+     * @return
+     */
+    Boolean isValidBSTAns = true;
+    Integer isValidBSTPre = Integer.MIN_VALUE;
+
+    public boolean isValidBST(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        if (!isValidBST(root.left) || root.val <= isValidBSTPre) {
+            return false;
+        }
+        isValidBSTPre = root.val;
+        return isValidBST(root.right);
+    }
+
+    private void inOrderTraversal(TreeNode root) {
+        if (root != null) {
+            inOrderTraversal(root.left);
+            if (root.val <= isValidBSTPre) {
+                isValidBSTAns = false;
+                return;
+            }
+            isValidBSTPre = root.val;
+            inOrderTraversal(root.right);
+        }
     }
 
     /**
@@ -2608,5 +2667,205 @@ public class LeetCode {
             temp--;
         }
         return ans;
+    }
+
+    /**
+     * 给定一个非负整数数组，你最初位于数组的第一个位置。
+     * <p>
+     * 数组中的每个元素代表你在该位置可以跳跃的最大长度。
+     * <p>
+     * 你的目标是使用最少的跳跃次数到达数组的最后一个位置。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: [2,3,1,1,4]
+     * 输出: 2
+     * 解释: 跳到最后一个位置的最小跳跃数是 2。
+     *      从下标为 0 跳到下标为 1 的位置，跳 1 步，然后跳 3 步到达数组的最后一个位置。
+     * 说明:
+     * <p>
+     * 假设你总是可以到达数组的最后一个位置。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/jump-game-ii
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+//    public int jump(int[] nums) {
+//        return jumpDp(nums, nums.length - 1, new Integer[nums.length]);
+//    }
+//
+//    private int jumpDp(int[] nums, int index, Integer[] dp) {
+//        if (index == 0) {
+//            return 0;
+//        }
+//        if (dp[index] != null) {
+//            return dp[index];
+//        }
+//        int ans = Integer.MAX_VALUE;
+//        for (int i = 0; i < index; i++) {
+//            if (i + nums[i] >= index) {
+//                ans = Math.min(ans, jumpDp(nums, i, dp) + 1);
+//            }
+//        }
+//        dp[index] = ans;
+//        return ans;
+//    }
+    public int jump(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        Deque<Integer> deque = new LinkedList<>();
+        deque.add(0);
+        int[] visit = new int[nums.length];
+        int ans = 0;
+        while (!deque.isEmpty()) {
+            int size = deque.size();
+            for (int i = 0; i < size; i++) {
+                Integer index = deque.poll();
+                if (index >= nums.length - 1) {
+                    return ans;
+                }
+                for (int j = 0; j < nums[index] && index + j < nums.length; j++) {
+                    if (visit[index + j] == 1) {
+                        continue;
+                    }
+                    visit[index + j] = 1;
+                    deque.add(index + j);
+                }
+            }
+            ans++;
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+     * <p>
+     * 百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+     * <p>
+     * 例如，给定如下二叉树:  root = [3,5,1,6,2,0,8,null,null,7,4]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param root
+     * @param p
+     * @param q
+     * @return
+     */
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return null;
+        }
+        if (p == root || q == root) {
+            return root;
+        }
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        return null;
+    }
+
+    /**
+     * 给定一个包括 n 个整数的数组 nums 和 一个目标值 target。
+     * 找出 nums 中的三个整数，使得它们的和与 target 最接近。
+     * 返回这三个数的和。假定每组输入只存在唯一答案。
+     * <p>
+     * 例如，给定数组 nums = [-1，2，1，-4], 和 target = 1.
+     * <p>
+     * 与 target 最接近的三个数的和为 2. (-1 + 2 + 1 = 2).
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int threeSumClosest(int[] nums, int target) {
+        Arrays.sort(nums);
+        int ans = nums[0] + nums[1] + nums[2];
+        for (int i = 0; i < nums.length; i++) {
+            int left = i + 1, right = nums.length - 1;
+            while (left < right) {
+                int temp = nums[left] + nums[right] + nums[i];
+                if (temp == target) {
+                    return target;
+                } else if (temp > target) {
+                    right--;
+                } else {
+                    left++;
+                }
+                if (Math.abs(temp - target) < Math.abs(ans - target)) {
+                    ans = temp;
+                }
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个非空二叉树，返回其最大路径和。
+     * <p>
+     * 本题中，路径被定义为一条从树中任意节点出发，达到任意节点的序列。该路径至少包含一个节点，且不一定经过根节点。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: [1,2,3]
+     * <p>
+     * 1
+     * / \
+     * 2   3
+     * <p>
+     * 输出: 6
+     * 示例 2:
+     * <p>
+     * 输入: [-10,9,20,null,null,15,7]
+     * <p>
+     *    -10
+     *    / \
+     *   9  20
+     *     /  \
+     *    15   7
+     * <p>
+     * 输出: 42
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/binary-tree-maximum-path-sum
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param root
+     * @return
+     */
+    int maxPathSumAns = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        maxPathSumDfs(root);
+        return maxPathSumAns;
+    }
+
+    private void maxPathSumDfs(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        int sum = Math.max(maxPathSum2(root.left), 0) + Math.max(maxPathSum2(root.right), 0) + root.val;
+        maxPathSumAns = Math.max(maxPathSumAns, sum);
+        System.out.printf("root:%d,left:%s,right:%s,val:%d\n",root.val,root.left==null?"null":root.left.val,root.right==null?"null":root.right.val,sum);
+        maxPathSumDfs(root.left);
+        maxPathSumDfs(root.right);
+    }
+
+    /**
+     * 包含root节点，只包含root的左子树或右子树，路径和的最大值,
+     *
+     * @param root
+     * @return
+     */
+    private int maxPathSum2(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+//        System.out.printf("root:%d,left:%s,right:%s,val:%d\n", root.val, root.left == null ? "null" : root.left.val, root.right == null ? "null" : root.right.val, Math.max(Math.max(0, maxPathSum2(root.left)), maxPathSum2(root.right)) + root.val);
+        return Math.max(Math.max(0, maxPathSum2(root.left)), maxPathSum2(root.right)) + root.val;
     }
 }
