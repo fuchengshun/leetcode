@@ -3213,9 +3213,10 @@ public class LeetCode {
             if (head.val <= cur.val) {
                 head.next = cur;
                 pre.next = head;
+            } else {
+                pre = pre.next;
+                cur = cur.next;
             }
-            pre = cur;
-            cur = cur.next;
         }
         pre.next = head;
         return start.next;
