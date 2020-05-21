@@ -14,7 +14,7 @@ class LeetcodeApplicationTests {
     @Test
     void contextLoads() {
 //        TreeNode treeNode = TreeNode.create(new Integer[]{5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1});
-        ListNode listNode = ListNode.create(new int[]{4,2,1,3});
-        new LeetCode().sortList(listNode);
+        TreeNode treeNode = TreeNode.create(new Integer[]{3,5,1,6,2,0,8,null,null,7,4});
+        TreeNode node = new LeetCode().lowestCommonAncestor(treeNode.left, treeNode.left, treeNode.right.right);
     }
 }

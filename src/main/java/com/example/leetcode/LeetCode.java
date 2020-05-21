@@ -1,6 +1,9 @@
 package com.example.leetcode;
 
 
+import com.sun.media.sound.JDK13Services;
+import com.sun.org.apache.xalan.internal.res.XSLTErrorResources;
+import com.sun.scenario.effect.impl.sw.java.JSWPhongLighting_DISTANTPeer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -2759,29 +2762,18 @@ public class LeetCode {
      * @return
      */
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        if (root == null || p == root || q == root) {
+        if (root == null || q == root || p == root) {
             return root;
         }
         TreeNode left = lowestCommonAncestor(root.left, p, q);
         TreeNode right = lowestCommonAncestor(root.right, p, q);
-        if (left != null && right != null) {
-            return root;
+        if (left == null) {
+            return right;
         }
-        return null;
-    }
-
-    private void lowestCommonAncestorDfs(TreeNode root, TreeNode p, TreeNode q) {
-//        commonAncestor(root.left);
-    }
-
-    private Boolean commonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        if (root == null) {
-            return p == null && q == null;
+        if (right == null) {
+            return left;
         }
-        if (q == root || p == root) {
-            return true;
-        }
-        return commonAncestor(root.left, p, q) || commonAncestor(root.right, p, q);
+        return root;
     }
 
     /**
@@ -3171,13 +3163,21 @@ public class LeetCode {
      * @return
      */
     public int[] productExceptSelf(int[] nums) {
-        long temp = 1;
-        for (int num : nums) {
-            temp *= num;
+        int temp = 1;
+        int[] front = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            temp *= nums[i];
+            front[i] = temp;
+        }
+        temp = 1;
+        int[] back = new int[nums.length];
+        for (int i = nums.length - 1; i >= 0; i--) {
+            temp *= nums[i];
+            back[i] = temp;
         }
         int[] ans = new int[nums.length];
-        for (int i = 0; i < ans.length; i++) {
-            ans[i] = (int) (temp / nums[i]);
+        for (int i = 0; i < nums.length; i++) {
+            ans[i] = (i - 1 < 0 ? 1 : front[i - 1]) * (i + 1 == nums.length ? 1 : back[i + 1]);
         }
         return ans;
     }
@@ -3220,5 +3220,139 @@ public class LeetCode {
         }
         pre.next = head;
         return start.next;
+    }
+
+    /**
+     * 给定一个非空字符串 s，最多删除一个字符。判断是否能成为回文字符串。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: "aba"
+     * 输出: True
+     * 示例 2:
+     * <p>
+     * 输入: "abca"
+     * 输出: True
+     * 解释: 你可以删除c字符。
+     * 注意:
+     * <p>
+     * 字符串只包含从 a-z 的小写字母。字符串的最大长度是50000。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/valid-palindrome-ii
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public boolean validPalindrome(String s) {
+        int left = 0, right = s.length() - 1;
+        while (left < right) {
+            if (s.charAt(left) != s.charAt(right)) {
+                return validPalindromeSub(s, left, right - 1) || validPalindromeSub(s, left + 1, right);
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    public boolean validPalindromeSub(String s, int left, int right) {
+        while (left < right) {
+            if (s.charAt(left) != s.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    /**
+     * 给你一个字符串 s ，请你返回满足以下条件的最长子字符串的长度：每个元音字母，
+     * 即 'a'，'e'，'i'，'o'，'u' ，在子字符串中都恰好出现了偶数次。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "eleetminicoworoep"
+     * 输出：13
+     * 解释：最长子字符串是 "leetminicowor" ，它包含 e，i，o 各 2 个，以及 0 个 a，u 。
+     * 示例 2：
+     * <p>
+     * 输入：s = "leetcodeisgreat"
+     * 输出：5
+     * 解释：最长子字符串是 "leetc" ，其中包含 2 个 e 。
+     * 示例 3：
+     * <p>
+     * 输入：s = "bcbcbc"
+     * 输出：6
+     * 解释：这个示例中，字符串 "bcbcbc" 本身就是最长的，因为所有的元音 a，e，i，o，u 都出现了 0 次。
+     *  
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= s.length <= 5 x 10^5
+     * s 只包含小写英文字母。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/find-the-longest-substring-containing-vowels-in-even-counts
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public int findTheLongestSubstring(String s) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        String vowel = "aeiou";
+        int ans = 0, status = 0;
+        map.put(0, -1);
+        for (int j = 0; j < s.length(); j++) {
+            int index = vowel.indexOf(s.charAt(j));
+            status ^= (index == -1 ? 0 : 1 << index);
+            if (map.get(status) != null) {
+                ans = Math.max(ans, j - map.get(status));
+            } else {
+                map.put(status, j);
+            }
+        }
+        return ans;
+    }
+
+    public void reverseString(char[] s) {
+        int left = 0, right = s.length - 1;
+        char temp;
+        while (left < right) {
+            temp = s[left];
+            s[left++] = s[right];
+            s[right--] = temp;
+        }
+    }
+
+    /**
+     * 给定一个字符串，你需要反转字符串中每个单词的字符顺序，同时仍保留空格和单词的初始顺序。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: "Let's take LeetCode contest"
+     * 输出: "s'teL ekat edoCteeL tsetnoc" 
+     * 注意：在字符串中，每个单词由单个空格分隔，并且字符串中不会有任何额外的空格。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/reverse-words-in-a-string-iii
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public String reverseWordsII(String s) {
+        String[] words = s.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (String word : words) {
+            sb.append(new StringBuffer(word).reverse().toString());
+            sb.append(" ");
+        }
+        return sb.toString().trim();
     }
 }
