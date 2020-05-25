@@ -3355,4 +3355,80 @@ public class LeetCode {
         }
         return sb.toString().trim();
     }
+
+    /**
+     * 根据一棵树的前序遍历与中序遍历构造二叉树。
+     * <p>
+     * 注意:
+     * 你可以假设树中没有重复的元素。
+     * <p>
+     * 例如，给出
+     * <p>
+     * 前序遍历 preorder = [3,9,20,15,7]
+     * 中序遍历 inorder = [9,3,15,20,7]
+     * 返回如下的二叉树：
+     * <p>
+     * 3
+     * / \
+     * 9  20
+     * /  \
+     * 15   7
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param preorder
+     * @param inorder
+     * @return
+     */
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        HashMap<Integer, Integer> memo = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++) {
+            memo.put(inorder[i], i);
+        }
+        return buildTree(preorder, inorder, 0, preorder.length - 1, 0, inorder.length - 1, memo);
+    }
+
+    private TreeNode buildTree(int[] preorder, int[] inorder, int startPreOrder, int endPreOrder, int startInOrder, int endInOrder, HashMap<Integer, Integer> memo) {
+        if (startPreOrder > endPreOrder) {
+            return null;
+        }
+        TreeNode root = new TreeNode(preorder[startPreOrder]);
+        int inOrderRoot = memo.get(preorder[startPreOrder]);
+        System.out.printf("startPreOrder:%d,endPreOrder:%d,startInOrder:%d,endInOrder:%d,inOrderRoot:%d,root:%d\n", startPreOrder, endPreOrder, startInOrder, endInOrder, inOrderRoot, root.val);
+        root.left = buildTree(preorder, inorder, startPreOrder + 1, startPreOrder + inOrderRoot - startInOrder, startInOrder, inOrderRoot - 1, memo);
+        root.right = buildTree(preorder, inorder, startPreOrder + inOrderRoot - startInOrder + 1, endPreOrder, inOrderRoot + 1, endInOrder, memo);
+        return root;
+    }
+
+    /**
+     * 给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。
+     * <p>
+     * 百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，
+     * 最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param root
+     * @param p
+     * @param q
+     * @return
+     */
+    public TreeNode lowestCommonAncestorII(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || root == q || root == p) {
+            return root;
+        }
+        TreeNode left = lowestCommonAncestorII(root.left, p, q);
+        TreeNode right = lowestCommonAncestorII(root.right, p, q);
+        if (left == null) {
+            return right;
+        }
+        if (right == null) {
+            return left;
+        }
+        return root;
+    }
 }

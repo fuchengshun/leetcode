@@ -14,7 +14,10 @@ class LeetcodeApplicationTests {
     @Test
     void contextLoads() {
 //        TreeNode treeNode = TreeNode.create(new Integer[]{5, 4, 8, 11, null, 13, 4, 7, 2, null, null, null, 1});
-        TreeNode treeNode = TreeNode.create(new Integer[]{3,5,1,6,2,0,8,null,null,7,4});
-        TreeNode node = new LeetCode().lowestCommonAncestor(treeNode.left, treeNode.left, treeNode.right.right);
+        LRUCache cache = new LRUCache( 1 /* 缓存容量 */ );
+
+        cache.put(2, 1);
+        cache.get(2);
+//        TreeNode node = new LeetCode().buildTree(new int[]{1,3,2,4},new int[]{1,2,3,4});
     }
 }
