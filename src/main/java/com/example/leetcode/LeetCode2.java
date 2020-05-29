@@ -859,4 +859,122 @@ public class LeetCode2 {
         }
         return p.val == q.val && isSymmetricHelper(q.left, p.right) && isSymmetricHelper(q.right, p.left);
     }
+
+    /**
+     * 给定一个二叉树，原地将它展开为一个单链表。
+     * <p>
+     *  
+     * <p>
+     * 例如，给定二叉树
+     * <p>
+     * 1
+     * / \
+     * 2   5
+     * / \   \
+     * 3   4   6
+     * 将其展开为：
+     * <p>
+     * 1
+     * \
+     * 2
+     * \
+     * 3
+     * \
+     * 4
+     * \
+     * 5
+     * \
+     * 6
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param root
+     */
+    public void flatten(TreeNode root) {
+        List<TreeNode> list = new ArrayList<>();
+        preorderTraversal(list, root);
+        for (int i = 0; i + 1 < list.size(); i++) {
+            list.get(i).left = null;
+            list.get(i).right = list.get(i + 1);
+        }
+    }
+
+    private void preorderTraversal(List<TreeNode> list, TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        list.add(root);
+        preorderTraversal(list, root.left);
+        preorderTraversal(list, root.right);
+    }
+
+    /**
+     * 给定一个二维网格和一个单词，找出该单词是否存在于网格中。
+     * <p>
+     * 单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。
+     * 同一个单元格内的字母不允许被重复使用。
+     * <p>
+     *  
+     * <p>
+     * 示例:
+     * <p>
+     * board =
+     * [
+     * ['A','B','C','E'],
+     * ['S','F','C','S'],
+     * ['A','D','E','E']
+     * ]
+     * <p>
+     * 给定 word = "ABCCED", 返回 true
+     * 给定 word = "SEE", 返回 true
+     * 给定 word = "ABCB", 返回 false
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/word-search
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param board
+     * @param word
+     * @return
+     */
+    public boolean exist(char[][] board, String word) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] == word.charAt(0)) {
+                    List<Position> path = new ArrayList<>();
+                    path.add(new Position(i, j));
+                    if (existHelper(board, word, path)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean existHelper(char[][] board, String word, List<Position> path) {
+        if (path.size() == word.length()) {
+            return true;
+        }
+        Position position = path.get(path.size() - 1);
+        int[][] direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for (int[] dir : direction) {
+            if (inArea(position.x + dir[0], position.y + dir[1], board.length, board[0].length) && board[position.x + dir[0]][position.y + dir[1]] == word.charAt(path.size()) && !path.contains(new Position(position.x + dir[0], position.y + dir[1]))) {
+                path.add(new Position(position.x + dir[0], position.y + dir[1]));
+                if (existHelper(board, word, path)) {
+                    return true;
+                }
+                path.remove(path.size() - 1);
+            }
+        }
+        return false;
+    }
+
+    private boolean inArea(int x, int y, int row, int col) {
+        return x >= 0 && y >= 0 && x < row && y < col;
+    }
+
 }
+
