@@ -13,6 +13,7 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        List<List<Integer>> subsets = new LeetCode2().subsets(new int[]{1, 2, 3});
+
+        boolean b = new LeetCode2().canMeasureWater(2, 6, 5);
     }
 }

@@ -1,12 +1,7 @@
 package com.example.leetcode;
 
 
-import org.omg.CORBA.ARG_IN;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class LeetCode2 {
     /**
@@ -393,5 +388,475 @@ public class LeetCode2 {
             ans.add(ans.get(i) + (1 << n - 1));
         }
         return ans;
+    }
+
+    /**
+     * 给定一个经过编码的字符串，返回它解码后的字符串。
+     * <p>
+     * 编码规则为: k[encoded_string]，表示其中方括号内部的 encoded_string 正好重复 k 次。注意 k 保证为正整数。
+     * <p>
+     * 你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+     * <p>
+     * 此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 k ，例如不会出现像 3a 或 2[4] 的输入。
+     * <p>
+     * 示例:
+     * <p>
+     * s = "3[a]2[bc]", 返回 "aaabcbc".
+     * s = "3[a2[c]]", 返回 "accaccacc".
+     * s = "2[abc]3[cd]ef", 返回 "abcabccdcdcdef".
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/decode-string
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public String decodeString(String s) {
+        while (s.indexOf(']') != -1) {
+            int k = s.indexOf(']'), i = k - 1;
+            while (s.charAt(i) != '[') {
+                i--;
+            }
+            //举例 e100[ab] ,k是]的下标，i是[的下标，m是e的下标
+            int m = i - 1, counts = 0, n = 1;
+            while (m >= 0 && s.charAt(m) >= '0' && s.charAt(m) <= '9') {
+                counts += (s.charAt(m) - '0') * n;
+                n *= 10;
+                m--;
+            }
+            StringBuilder temp = new StringBuilder();
+            for (int j = 0; j < counts; j++) {
+                temp.append(s, i + 1, k);
+            }
+            s = s.replace(s.substring(m + 1, k + 1), temp.toString());
+        }
+        return s;
+    }
+
+    /**
+     * 请你来实现一个 atoi 函数，使其能将字符串转换成整数。
+     * <p>
+     * 首先，该函数会根据需要丢弃无用的开头空格字符，直到寻找到第一个非空格的字符为止。接下来的转化规则如下：
+     * <p>
+     * 如果第一个非空字符为正或者负号时，则将该符号与之后面尽可能多的连续数字字符组合起来，形成一个有符号整数。
+     * 假如第一个非空字符是数字，则直接将其与之后连续的数字字符组合起来，形成一个整数。
+     * 该字符串在有效的整数部分之后也可能会存在多余的字符，那么这些字符可以被忽略，它们对函数不应该造成影响。
+     * 注意：假如该字符串中的第一个非空格字符不是一个有效整数字符、字符串为空或字符串仅包含空白字符时，
+     * 则你的函数不需要进行转换，即无法进行有效转换。
+     * <p>
+     * 在任何情况下，若函数不能进行有效的转换时，请返回 0 。
+     * <p>
+     * 提示：
+     * <p>
+     * 本题中的空白字符只包括空格字符 ' ' 。
+     * 假设我们的环境只能存储 32 位大小的有符号整数，那么其数值范围为 [−231,  231 − 1]。如果数值超过这个范围，
+     * 请返回  INT_MAX (231 − 1) 或 INT_MIN (−231) 。
+     *  
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: "42"
+     * 输出: 42
+     * 示例 2:
+     * <p>
+     * 输入: "   -42"
+     * 输出: -42
+     * 解释: 第一个非空白字符为 '-', 它是一个负号。
+     *      我们尽可能将负号与后面所有连续出现的数字组合起来，最后得到 -42 。
+     * 示例 3:
+     * <p>
+     * 输入: "4193 with words"
+     * 输出: 4193
+     * 解释: 转换截止于数字 '3' ，因为它的下一个字符不为数字。
+     * 示例 4:
+     * <p>
+     * 输入: "words and 987"
+     * 输出: 0
+     * 解释: 第一个非空字符是 'w', 但它不是数字或正、负号。
+     * 因此无法执行有效的转换。
+     * 示例 5:
+     * <p>
+     * 输入: "-91283472332"
+     * 输出: -2147483648
+     * 解释: 数字 "-91283472332" 超过 32 位有符号整数范围。
+     *      因此返回 INT_MIN (−231) 。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/string-to-integer-atoi
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param str
+     * @return
+     */
+    public int myAtoi(String str) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : str.toCharArray()) {
+            if (myAtoiOver(sb, c)) {
+                break;
+            }
+            if (c != ' ') {
+                sb.append(c);
+            }
+        }
+        return myAtoiCreate(sb);
+    }
+
+    //"±1000000000000005555555555"
+    private int myAtoiCreate(StringBuilder sb) {
+        long ans = 0, multi = 1;
+        long symbol = sb.length() > 0 && sb.charAt(0) == '-' ? -1 : 1;
+        for (int i = sb.length() - 1; i >= 0; i--) {
+            if (sb.charAt(i) == '-' || sb.charAt(i) == '+') {
+                break;
+            }
+            ans += (sb.charAt(i) - '0') * multi;
+            if (ans * symbol > Integer.MAX_VALUE) {
+                return Integer.MAX_VALUE;
+            }
+            if (ans * symbol < Integer.MIN_VALUE) {
+                return Integer.MIN_VALUE;
+            }
+            multi = multi > Integer.MAX_VALUE ? Integer.MAX_VALUE : multi * 10;
+        }
+        return (int) (ans * symbol);
+    }
+
+    private boolean myAtoiOver(StringBuilder sb, char c) {
+        if (!(c >= '0' && c <= '9' || c == '-' || c == '+')) {
+            return sb.length() != 0 || c != ' ';
+        }
+        if (c == '-' || c == '+') {
+            return sb.length() != 0;
+        }
+        return false;
+    }
+
+    /**
+     * 为了给刷题的同学一些奖励，力扣团队引入了一个弹簧游戏机。游戏机由 N 个特殊弹簧排成一排，编号为 0 到 N-1。
+     * 初始有一个小球在编号 0 的弹簧处。若小球在编号为 i 的弹簧处，通过按动弹簧，可以选择把小球向右弹射 jump[i] 的距离，
+     * 或者向左弹射到任意左侧弹簧的位置。也就是说，在编号为 i 弹簧处按动弹簧，
+     * 小球可以弹向 0 到 i-1 中任意弹簧或者 i+jump[i] 的弹簧（若 i+jump[i]>=N ，则表示小球弹出了机器）。
+     * 小球位于编号 0 处的弹簧时不能再向左弹。
+     * <p>
+     * 为了获得奖励，你需要将小球弹出机器。请求出最少需要按动多少次弹簧，可以将小球从编号 0 弹簧弹出整个机器，
+     * 即向右越过编号 N-1 的弹簧。
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：jump = [2, 5, 1, 1, 1, 1]
+     * <p>
+     * 输出：3
+     * <p>
+     * 解释：小 Z 最少需要按动 3 次弹簧，小球依次到达的顺序为 0 -> 2 -> 1 -> 6，最终小球弹出了机器。
+     * <p>
+     * 限制：
+     * <p>
+     * 1 <= jump.length <= 10^6
+     * 1 <= jump[i] <= 10000
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/zui-xiao-tiao-yue-ci-shu
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param jump
+     * @return
+     */
+    public int minJump(int[] jump) {
+        if (jump == null || jump.length == 0) {
+            return 0;
+        }
+        Deque<Integer> deque = new LinkedList<>();
+        deque.add(0);
+        jump[0] = -1;
+        int ans = 0;
+        while (!deque.isEmpty()) {
+            ans++;
+            for (int i = deque.size(); i > 0; i--) {
+                Integer poll = deque.poll();
+                if (poll == null) {
+                    continue;
+                }
+                if (poll + jump[poll] >= jump.length) {
+                    return ans;
+                }
+                for (int j = 0; j < poll; j++) {
+                    if (jump[j] != -1) {
+                        deque.add(j);
+                        jump[j] = -1;
+                    }
+                }
+                if (jump[poll + jump[poll]] != -1) {
+                    deque.add(poll + jump[poll]);
+                    jump[poll + jump[poll]] = -1;
+                }
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * 你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，
+     * 影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+     * <p>
+     * 给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: [1,2,3,1]
+     * 输出: 4
+     * 解释: 偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
+     *      偷窃到的最高金额 = 1 + 3 = 4 。
+     * 示例 2:
+     * <p>
+     * 输入: [2,7,9,3,1]
+     * 输出: 12
+     * 解释: 偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
+     *      偷窃到的最高金额 = 2 + 9 + 1 = 12 。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/house-robber
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+    public int rob(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        int i1 = 0, i2 = 0, ans = 0;
+        for (int num : nums) {
+            ans = Math.max(i1, i2 + num);
+            i2 = i1;
+            i1 = ans;
+        }
+        return ans;
+    }
+
+    /**
+     * 输入一个正整数 target ，输出所有和为 target 的连续正整数序列（至少含有两个数）。
+     * <p>
+     * 序列内的数字由小到大排列，不同序列按照首个数字从小到大排列。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：target = 9
+     * 输出：[[2,3,4],[4,5]]
+     * 示例 2：
+     * <p>
+     * 输入：target = 15
+     * 输出：[[1,2,3,4,5],[4,5,6],[7,8]]
+     *  
+     * <p>
+     * 限制：
+     * <p>
+     * 1 <= target <= 10^5
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param target
+     * @return
+     */
+    public int[][] findContinuousSequence(int target) {
+        int k = (target - 1) / 2, left = 0, right = 0, sum = 1;
+        List<int[]> list = new ArrayList<>();
+        while (right < k + 1) {
+            if (sum == target) {
+                int[] temp = new int[right - left + 1];
+                for (int i = 0, v = left + 1; i < temp.length; i++) {
+                    temp[i] = v++;
+                }
+                list.add(temp);
+                right++;
+                sum += right + 1;
+            }
+            if (sum > target) {
+                sum -= left + 1;
+                left++;
+            }
+            if (sum < target) {
+                right++;
+                sum += right + 1;
+            }
+        }
+        return list.toArray(new int[list.size()][]);
+    }
+
+    /**
+     * 给定一个整数 n，返回 n! 结果尾数中零的数量。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: 3
+     * 输出: 0
+     * 解释: 3! = 6, 尾数中没有零。
+     * 示例 2:
+     * <p>
+     * 输入: 5
+     * 输出: 1
+     * 解释: 5! = 120, 尾数中有 1 个零.
+     * 说明: 你算法的时间复杂度应为 O(log n) 。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/factorial-trailing-zeroes
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param n
+     * @return
+     */
+    public int trailingZeroes(int n) {
+        if (n < 5) {
+            return 0;
+        }
+        return trailingZeroes(n / 5) + n / 5;
+    }
+
+    /**
+     * 有两个容量分别为 x升 和 y升 的水壶以及无限多的水。请判断能否通过使用这两个水壶，从而可以得到恰好 z升 的水？
+     * <p>
+     * 如果可以，最后请用以上水壶中的一或两个来盛放取得的 z升 水。
+     * <p>
+     * 你允许：
+     * <p>
+     * 装满任意一个水壶
+     * 清空任意一个水壶
+     * 从一个水壶向另外一个水壶倒水，直到装满或者倒空
+     * 示例 1: (From the famous "Die Hard" example)
+     * <p>
+     * 输入: x = 3, y = 5, z = 4
+     * 输出: True
+     * 示例 2:
+     * <p>
+     * 输入: x = 2, y = 6, z = 5
+     * 输出: False
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/water-and-jug-problem
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
+    public boolean canMeasureWater(int x, int y, int z) {
+        LinkedList<int[]> linkedList = new LinkedList<>();
+        HashMap<String, Boolean> visited = new HashMap<>();
+        linkedList.add(new int[]{0, 0});
+        while (!linkedList.isEmpty()) {
+            int[] pop = linkedList.pop();
+            if (pop[0] == z || pop[1] == z || pop[0] + pop[1] == z) {
+                return true;
+            }
+            canMeasureWaterHelper(0, pop[1], linkedList, visited);
+            canMeasureWaterHelper(x, pop[1], linkedList, visited);
+            canMeasureWaterHelper(pop[0], 0, linkedList, visited);
+            canMeasureWaterHelper(pop[0], y, linkedList, visited);
+            canMeasureWaterHelper(Math.min(pop[0] + pop[1], x), pop[0] + pop[1] < x ? 0 : pop[0] + pop[1] - x, linkedList, visited);
+            canMeasureWaterHelper(pop[0] + pop[1] < y ? 0 : pop[0] + pop[1] - y, Math.min(pop[0] + pop[1], y), linkedList, visited);
+        }
+        return false;
+    }
+
+    private void canMeasureWaterHelper(int curX, int curY, LinkedList<int[]> linkedList, HashMap<String, Boolean> visited) {
+        String key = curX + " " + curY;
+        if (visited.get(key) == null) {
+            linkedList.add(new int[]{curX, curY});
+            visited.put(key, true);
+        }
+    }
+
+    /**
+     * 0,1,,n-1这n个数字排成一个圆圈，从数字0开始，每次从这个圆圈里删除第m个数字。求出这个圆圈里剩下的最后一个数字。
+     * <p>
+     * 例如，0、1、2、3、4这5个数字组成一个圆圈，从数字0开始每次删除第3个数字，
+     * 则删除的前4个数字依次是2、0、4、1，因此最后剩下的数字是3。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入: n = 5, m = 3
+     * 输出: 3
+     * 示例 2：
+     * <p>
+     * 输入: n = 10, m = 17
+     * 输出: 2
+     *  
+     * <p>
+     * 限制：
+     * <p>
+     * 1 <= n <= 10^5
+     * 1 <= m <= 10^6
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param n
+     * @param m
+     * @return
+     */
+    public int lastRemaining(int n, int m) {
+        if (n == 1) {
+            return 0;
+        }
+        return (m + lastRemaining(n - 1, m)) % n;
+    }
+
+    /**
+     * 给定一个二叉树，检查它是否是镜像对称的。
+     * <p>
+     *  
+     * <p>
+     * 例如，二叉树 [1,2,2,3,4,4,3] 是对称的。
+     * <p>
+     * 1
+     * / \
+     * 2   2
+     * / \ / \
+     * 3  4 4  3
+     *  
+     * <p>
+     * 但是下面这个 [1,2,2,null,3,null,3] 则不是镜像对称的:
+     * <p>
+     * 1
+     * / \
+     * 2   2
+     * \   \
+     * 3    3
+     *  
+     * <p>
+     * 进阶：
+     * <p>
+     * 你可以运用递归和迭代两种方法解决这个问题吗？
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/symmetric-tree
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param root
+     * @return
+     */
+    public boolean isSymmetric(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        return isSymmetricHelper(root.left, root.right);
+    }
+
+    private boolean isSymmetricHelper(TreeNode q, TreeNode p) {
+        if (q == null) {
+            return p == null;
+        }
+        if (p == null) {
+            return false;
+        }
+        return p.val == q.val && isSymmetricHelper(q.left, p.right) && isSymmetricHelper(q.right, p.left);
     }
 }
