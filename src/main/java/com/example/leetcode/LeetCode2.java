@@ -976,5 +976,117 @@ public class LeetCode2 {
         return x >= 0 && y >= 0 && x < row && y < col;
     }
 
+    public List<Boolean> kidsWithCandies(int[] candies, int extraCandies) {
+        int max = Integer.MIN_VALUE;
+        for (int candy : candies) {
+            max = Math.max(max, candy);
+        }
+        ArrayList<Boolean> ans = new ArrayList<>();
+        for (int candy : candies) {
+            ans.add(candy + extraCandies >= max);
+        }
+        return ans;
+    }
+
+    /**
+     * 请判断一个链表是否为回文链表。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: 1->2
+     * 输出: false
+     * 示例 2:
+     * <p>
+     * 输入: 1->2->2->1
+     * 输出: true
+     * 进阶：
+     * 你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/palindrome-linked-list
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param head
+     * @return
+     */
+    public boolean isPalindrome(ListNode head) {
+        Deque<ListNode> deque = new ArrayDeque<>();
+        ListNode cur = head;
+        while (cur != null) {
+            deque.push(cur);
+            cur = cur.next;
+        }
+        while (!deque.isEmpty()) {
+            if (deque.pop().val != head.val) {
+                return false;
+            }
+            head = head.next;
+        }
+        return true;
+    }
+
+    public boolean isPalindrome2(ListNode head) {
+        if (head == null || head.next == null) {
+            return true;
+        }
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+        }
+        ListNode cur = slow, pre = null;
+        while (cur != null) {
+            ListNode next = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = next;
+        }
+        while (pre != null) {
+            if (pre.val != head.val) {
+                return false;
+            }
+            pre = pre.next;
+            head = head.next;
+        }
+        return true;
+    }
+
+    /**
+     * 反转一个单链表。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: 1->2->3->4->5->NULL
+     * 输出: 5->4->3->2->1->NULL
+     * 进阶:
+     * 你可以迭代或递归地反转链表。你能否用两种方法解决这道题？
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/reverse-linked-list
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param head
+     * @return
+     */
+    public ListNode reverseList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode newHead = reverseList(head.next);
+        head.next.next = head;
+        head.next = null;
+        return newHead;
+    }
+
+    public ListNode reverseList2(ListNode head) {
+        ListNode pre = null, cur = head;
+        while (cur != null) {
+            ListNode next = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = next;
+        }
+        return pre;
+    }
 }
 

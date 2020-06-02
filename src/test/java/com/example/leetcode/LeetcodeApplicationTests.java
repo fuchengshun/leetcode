@@ -13,12 +13,9 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        Position p1 = new Position(3, 5);
-        Position p2 = new Position(3, 5);
-        System.out.println(p1.equals(p2));
-        HashMap<Position, String> map = new HashMap<>();
-        map.put(p1,"ssss");
-        System.out.println(map.get(p2));
+        List<Integer> list = new ArrayList<>(2);
+        list.add(1);
+        list.add(2);
 //        boolean b = new LeetCode2().canMeasureWater(2, 6, 5);
     }
 }
