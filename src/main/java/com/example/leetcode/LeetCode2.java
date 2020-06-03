@@ -1308,5 +1308,105 @@ public class LeetCode2 {
         }
         return m >= s.length();
     }
+
+    /**
+     * 爱丽丝参与一个大致基于纸牌游戏 “21点” 规则的游戏，描述如下：
+     * <p>
+     * 爱丽丝以 0 分开始，并在她的得分少于 K 分时抽取数字。 抽取时，她从 [1, W] 的范围中随机获得一个整数作为分数进行累计，
+     * 其中 W 是整数。 每次抽取都是独立的，其结果具有相同的概率。
+     * <p>
+     * 当爱丽丝获得不少于 K 分时，她就停止抽取数字。 爱丽丝的分数不超过 N 的概率是多少？
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：N = 10, K = 1, W = 10
+     * 输出：1.00000
+     * 说明：爱丽丝得到一张卡，然后停止。
+     * 示例 2：
+     * <p>
+     * 输入：N = 6, K = 1, W = 10
+     * 输出：0.60000
+     * 说明：爱丽丝得到一张卡，然后停止。
+     * 在 W = 10 的 6 种可能下，她的得分不超过 N = 6 分。
+     * 示例 3：
+     * <p>
+     * 输入：N = 21, K = 17, W = 10
+     * 输出：0.73278
+     * 提示：
+     * <p>
+     * 0 <= K <= N <= 10000
+     * 1 <= W <= 10000
+     * 如果答案与正确答案的误差不超过 10^-5，则该答案将被视为正确答案通过。
+     * 此问题的判断限制时间已经减少。
+     *
+     * @param N
+     * @param K
+     * @param W
+     * @return
+     */
+    public double new21Game(int N, int K, int W) {
+        if (K == 0) {
+            return 0.0;
+        }
+        double[] dp = new double[K + W];
+        for (int i = K; i <= N; i++) {
+            dp[i] = 1.0;
+        }
+        for (int i = 1; i <= W; i++) {
+            dp[K - 1] += dp[K - 1 + i] / W;
+        }
+        for (int i = K - 2; i >= 0; i--) {
+            dp[i] = dp[i + 1] - (dp[i + W + 1] - dp[i + 1]) / W;
+        }
+        return dp[0];
+    }
+
+    /**
+     * 爱丽丝和鲍勃一起玩游戏，他们轮流行动。爱丽丝先手开局。
+     * <p>
+     * 最初，黑板上有一个数字 N 。在每个玩家的回合，玩家需要执行以下操作：
+     * <p>
+     * 选出任一 x，满足 0 < x < N 且 N % x == 0 。
+     * 用 N - x 替换黑板上的数字 N 。
+     * 如果玩家无法执行这些操作，就会输掉游戏。
+     * <p>
+     * 只有在爱丽丝在游戏中取得胜利时才返回 True，否则返回 false。假设两个玩家都以最佳状态参与游戏。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：2
+     * 输出：true
+     * 解释：爱丽丝选择 1，鲍勃无法进行操作。
+     * 示例 2：
+     * <p>
+     * 输入：3
+     * 输出：false
+     * 解释：爱丽丝选择 1，鲍勃也选择 1，然后爱丽丝无法进行操作。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/divisor-game
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param N
+     * @return
+     */
+    public boolean divisorGame(int N) {
+        for (int i = 1; i < N; i++) {
+            if (N % i == 0 && divisorGame(N - i)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean divisorGame(int m,int n) {
+        for (int i = 1; i < N; i++) {
+            if (N % i == 0 && divisorGame(N - i)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 

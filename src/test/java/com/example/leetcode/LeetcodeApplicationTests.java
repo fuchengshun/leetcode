@@ -13,10 +13,7 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        List<Integer> list = new ArrayList<>(2);
-        list.add(1);
-        list.add(2);
-        list.indexOf(2);
-//        boolean b = new LeetCode2().canMeasureWater(2, 6, 5);
+        double v = new LeetCode2().new21Game(10, 1, 10);
+        System.out.println(v);
     }
 }
