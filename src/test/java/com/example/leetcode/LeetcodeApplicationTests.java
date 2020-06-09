@@ -13,6 +13,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        new LeetCode2().findCircleNum(new int[][]{{1,1,0},{1,1,0},{0,0,1}});
+        int i = new LeetCode2().numIslands(new char[][]{{1, 1, 1, 1, 0}, {1, 1, 0, 1, 0}, {1, 1, 0, 0, 0}, {0, 0, 0, 0, 0}});
     }
 }
