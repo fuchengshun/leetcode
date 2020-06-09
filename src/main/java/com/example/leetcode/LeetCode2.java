@@ -1393,20 +1393,347 @@ public class LeetCode2 {
      * @return
      */
     public boolean divisorGame(int N) {
+        return divisorGameHelper(N, new Boolean[N + 1]);
+    }
+
+    private boolean divisorGameHelper(int N, Boolean[] dp) {
+        if (dp[N] != null) {
+            return dp[N];
+        }
         for (int i = 1; i < N; i++) {
-            if (N % i == 0 && divisorGame(N - i)) {
+            if (N % i == 0 && !divisorGameHelper(N - i, dp)) {
+                dp[N] = true;
                 return true;
             }
         }
+        dp[N] = false;
         return false;
     }
-    public boolean divisorGame(int m,int n) {
-        for (int i = 1; i < N; i++) {
-            if (N % i == 0 && divisorGame(N - i)) {
-                return true;
+
+    /**
+     * 数组的每个索引作为一个阶梯，第 i个阶梯对应着一个非负数的体力花费值 cost[i](索引从0开始)。
+     * <p>
+     * 每当你爬上一个阶梯你都要花费对应的体力花费值，然后你可以选择继续爬一个阶梯或者爬两个阶梯。
+     * <p>
+     * 您需要找到达到楼层顶部的最低花费。在开始时，你可以选择从索引为 0 或 1 的元素作为初始阶梯。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: cost = [10, 15, 20]
+     * 输出: 15
+     * 解释: 最低花费是从cost[1]开始，然后走两步即可到阶梯顶，一共花费15。
+     *  示例 2:
+     * <p>
+     * 输入: cost = [1, 100, 1, 1, 1, 100, 1, 1, 100, 1]
+     * 输出: 6
+     * 解释: 最低花费方式是从cost[0]开始，逐个经过那些1，跳过cost[3]，一共花费6。
+     * 注意：
+     * <p>
+     * cost 的长度将会在 [2, 1000]。
+     * 每一个 cost[i] 将会是一个Integer类型，范围为 [0, 999]。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/min-cost-climbing-stairs
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param cost
+     * @return
+     */
+    public int minCostClimbingStairs(int[] cost) {
+        Integer[] dp = new Integer[cost.length];
+        return Math.min(minCostClimbingStairsHelper(cost, cost.length - 1, dp), minCostClimbingStairsHelper(cost, cost.length - 2, dp));
+    }
+
+    /**
+     * 到达index，最少体力数
+     */
+    private int minCostClimbingStairsHelper(int[] cost, int index, Integer[] dp) {
+        if (index == 0 || index == 1) {
+            return cost[index];
+        }
+        if (dp[index] != null) {
+            return dp[index];
+        }
+        dp[index] = Math.min(minCostClimbingStairsHelper(cost, index - 1, dp), minCostClimbingStairsHelper(cost, index - 2, dp)) + cost[index];
+        return dp[index];
+    }
+
+    /**
+     * 三步问题。有个小孩正在上楼梯，楼梯有n阶台阶，小孩一次可以上1阶、2阶或3阶。实现一种方法，
+     * 计算小孩有多少种上楼梯的方式。结果可能很大，你需要对结果模1000000007。
+     * <p>
+     * 示例1:
+     * <p>
+     * 输入：n = 3
+     * 输出：4
+     * 说明: 有四种走法
+     * 示例2:
+     * <p>
+     * 输入：n = 5
+     * 输出：13
+     * 提示:
+     * <p>
+     * n范围在[1, 1000000]之间
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/three-steps-problem-lcci
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param n
+     * @return
+     */
+    public int waysToStep(int n) {
+        if (n < 4) {
+            return n == 3 ? 4 : n;
+        }
+        long p1 = 1L, p2 = 2L, p3 = 4L, ans = 0;
+        for (int i = 4; i <= n; i++) {
+            ans = (p3 % 1000000007 + p2 % 1000000007 + p1 % 1000000007) % 1000000007;
+            p1 = p2;
+            p2 = p3;
+            p3 = ans;
+        }
+        return (int) ans;
+    }
+
+    /**
+     * 给定一个整数数组，找出总和最大的连续数列，并返回总和。
+     * <p>
+     * 示例：
+     * <p>
+     * 输入： [-2,1,-3,4,-1,2,1,-5,4]
+     * 输出： 6
+     * 解释： 连续子数组 [4,-1,2,1] 的和最大，为 6。
+     * 进阶：
+     * <p>
+     * 如果你已经实现复杂度为 O(n) 的解法，尝试使用更为精妙的分治法求解
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/contiguous-sequence-lcci
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+    public int maxSubArray3(int[] nums) {
+        int pre = nums[0];
+        int ans = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            int temp = Math.max(pre, 0) + nums[i];
+            ans = Math.max(ans, temp);
+            pre = temp;
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个只包含 '(' 和 ')' 的字符串，找出最长的包含有效括号的子串的长度。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: "(()"
+     * 输出: 2
+     * 解释: 最长有效括号子串为 "()"
+     * 示例 2:
+     * <p>
+     * 输入: ")()())"
+     * 输出: 4
+     * 解释: 最长有效括号子串为 "()()"
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/longest-valid-parentheses
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public int longestValidParentheses(String s) {
+        Deque<Character> deque = new ArrayDeque<>();
+        int start = 0, ans = 0, temp = 0;
+        deque.push(s.charAt(start++));
+        while (start < s.length()) {
+            if (s.charAt(start) == ')' && !deque.isEmpty() && deque.peek() == '(') {
+                deque.pop();
+                temp += 2;
+                ans = Math.max(ans, temp);
+            } else {
+                deque.push(s.charAt(start));
+                temp = 0;
+            }
+            start++;
+        }
+        return ans;
+    }
+
+    /**
+     * 输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+     * 输出：[1,2,3,6,9,8,7,4,5]
+     * 示例 2：
+     * <p>
+     * 输入：matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
+     * 输出：[1,2,3,4,8,12,11,10,9,5,6,7]
+     *  
+     * <p>
+     * 限制：
+     * <p>
+     * 0 <= matrix.length <= 100
+     * 0 <= matrix[i].length <= 100
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/shun-shi-zhen-da-yin-ju-zhen-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param matrix
+     * @return
+     */
+    public int[] spiralOrder(int[][] matrix) {
+        if (matrix == null || matrix.length == 0) {
+            return new int[0];
+        }
+        int[] ans = new int[matrix.length * matrix[0].length];
+        int left = 0, right = matrix[0].length - 1, up = 0, down = matrix.length - 1, index = 0;
+        while (left <= right && up <= down) {
+            for (int i = left; i <= right && up <= down; i++) {
+                ans[index++] = (matrix[up][i]);
+            }
+            up++;
+            for (int i = up; i <= down && left <= right; i++) {
+                ans[index++] = (matrix[i][right]);
+            }
+            right--;
+            for (int i = right; i >= left && up <= down; i--) {
+                ans[index++] = (matrix[down][i]);
+            }
+            down--;
+            for (int i = down; i >= up && left <= right; i--) {
+                ans[index++] = (matrix[i][left]);
+            }
+            left++;
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个由表示变量之间关系的字符串方程组成的数组，每个字符串方程 equations[i] 的长度为 4，
+     * 并采用两种不同的形式之一："a==b" 或 "a!=b"。在这里，a 和 b 是小写字母（不一定不同），表示单字母变量名。
+     * <p>
+     * 只有当可以将整数分配给变量名，以便满足所有给定的方程时才返回 true，否则返回 false。 
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：["a==b","b!=a"]
+     * 输出：false
+     * 解释：如果我们指定，a = 1 且 b = 1，那么可以满足第一个方程，但无法满足第二个方程。没有办法分配变量同时满足这两个方程。
+     * 示例 2：
+     * <p>
+     * 输出：["b==a","a==b"]
+     * 输入：true
+     * 解释：我们可以指定 a = 1 且 b = 1 以满足满足这两个方程。
+     * 示例 3：
+     * <p>
+     * 输入：["a==b","b==c","a==c"]
+     * 输出：true
+     * 示例 4：
+     * <p>
+     * 输入：["a==b","b!=c","c==a"]
+     * 输出：false
+     * 示例 5：
+     * <p>
+     * 输入：["c==c","b==d","x!=z"]
+     * 输出：true
+     *  
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= equations.length <= 500
+     * equations[i].length == 4
+     * equations[i][0] 和 equations[i][3] 是小写字母
+     * equations[i][1] 要么是 '='，要么是 '!'
+     * equ
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/satisfiability-of-equality-equations
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param equations
+     * @return
+     */
+    public boolean equationsPossible(String[] equations) {
+        UnionFind unionFind = new UnionFind(128);
+        for (String equation : equations) {
+            if (equation.charAt(1) == '=') {
+                unionFind.union(equation.charAt(0), equation.charAt(3));
             }
         }
-        return false;
+        for (String equation : equations) {
+            if (equation.charAt(1) == '!' && unionFind.findRoot(equation.charAt(0)) == unionFind.findRoot(equation.charAt(3))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 班上有 N 名学生。其中有些人是朋友，有些则不是。他们的友谊具有是传递性。如果已知 A 是 B 的朋友，
+     * B 是 C 的朋友，那么我们可以认为 A 也是 C 的朋友。所谓的朋友圈，是指所有朋友的集合。
+     * <p>
+     * 给定一个 N * N 的矩阵 M，表示班级中学生之间的朋友关系。如果M[i][j] = 1，表示已知第 i 个和 j 个学生互为朋友关系，
+     * 否则为不知道。你必须输出所有学生中的已知的朋友圈总数。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入:
+     * [[1,1,0],
+     * [1,1,0],
+     * [0,0,1]]
+     * 输出: 2
+     * 说明：已知学生0和学生1互为朋友，他们在一个朋友圈。
+     * 第2个学生自己在一个朋友圈。所以返回2。
+     * 示例 2:
+     * <p>
+     * 输入:
+     * [[1,1,0],
+     * [1,1,1],
+     * [0,1,1]]
+     * 输出: 1
+     * 说明：已知学生0和学生1互为朋友，学生1和学生2互为朋友，所以学生0和学生2也是朋友，所以他们三个在一个朋友圈，返回1。
+     * 注意：
+     * <p>
+     * N 在[1,200]的范围内。
+     * 对于所有学生，有M[i][i] = 1。
+     * 如果有M[i][j] = 1，则有M[j][i] = 1。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/friend-circles
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param M
+     * @return
+     */
+    public int findCircleNum(int[][] M) {
+        UnionFind unionFind = new UnionFind(M.length);
+        for (int i = 0; i < M.length; i++) {
+            for (int j = 0; j < M[i].length; j++) {
+                if (M[i][j] == 1) {
+                    unionFind.union(i, j);
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < unionFind.roots.length; i++) {
+            if (i == unionFind.roots[i]) {
+                ans++;
+            }
+        }
+        return ans;
     }
 }
 

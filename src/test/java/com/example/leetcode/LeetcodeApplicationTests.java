@@ -13,7 +13,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        double v = new LeetCode2().new21Game(10, 1, 10);
-        System.out.println(v);
+        new LeetCode2().findCircleNum(new int[][]{{1,1,0},{1,1,0},{0,0,1}});
     }
 }
