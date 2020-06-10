@@ -35,4 +35,8 @@ class UnionFind {
         int yRoot = findRoot(y);
         roots[xRoot] = yRoot;
     }
+
+    public boolean isConnected(int x, int y) {
+        return findRoot(x) == findRoot(y);
+    }
 }

@@ -13,6 +13,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        int i = new LeetCode2().numIslands(new char[][]{{1, 1, 1, 1, 0}, {1, 1, 0, 1, 0}, {1, 1, 0, 0, 0}, {0, 0, 0, 0, 0}});
+        int i = new LeetCode2().longestConsecutive(new int[]{100,4,200,1,3,2});
     }
 }

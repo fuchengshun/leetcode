@@ -1767,7 +1767,7 @@ public class LeetCode2 {
      * @return
      */
     public int numIslands(char[][] grid) {
-        if (grid==null||grid.length==0){
+        if (grid == null || grid.length == 0) {
             return 0;
         }
         UnionFind unionFind = new UnionFind(grid.length * grid[0].length);
@@ -1792,6 +1792,133 @@ public class LeetCode2 {
 
     private boolean numIslandsValidate(char[][] grid, int i, int j) {
         return i >= 0 && i < grid.length && j >= 0 && j < grid[i].length;
+    }
+
+    /**
+     * 在本问题中, 树指的是一个连通且无环的无向图。
+     * <p>
+     * 输入一个图，该图由一个有着N个节点 (节点值不重复1, 2, ..., N) 的树及一条附加的边构成。
+     * 附加的边的两个顶点包含在1到N中间，这条附加的边不属于树中已存在的边。
+     * <p>
+     * 结果图是一个以边组成的二维数组。每一个边的元素是一对[u, v] ，满足 u < v，表示连接顶点u 和v的无向图的边。
+     * <p>
+     * 返回一条可以删去的边，使得结果图是一个有着N个节点的树。如果有多个答案，则返回二维数组中最后出现的边。
+     * 答案边 [u, v] 应满足相同的格式 u < v。
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入: [[1,2], [1,3], [2,3]]
+     * 输出: [2,3]
+     * 解释: 给定的无向图为:
+     * 1
+     * / \
+     * 2 - 3
+     * 示例 2：
+     * <p>
+     * 输入: [[1,2], [2,3], [3,4], [1,4], [1,5]]
+     * 输出: [1,4]
+     * 解释: 给定的无向图为:
+     * 5 - 1 - 2
+     * |   |
+     * 4 - 3
+     * 注意:
+     * <p>
+     * 输入的二维数组大小在 3 到 1000。
+     * 二维数组中的整数在1到N之间，其中N是输入数组的大小。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/redundant-connection
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param edges
+     * @return
+     */
+    public int[] findRedundantConnection(int[][] edges) {
+        UnionFind unionFind = new UnionFind(edges.length + 1);
+        for (int[] edge : edges) {
+            if (unionFind.isConnected(edge[0], edge[1])) {
+                if (edge[1] < edge[0]) {
+                    return new int[]{edge[1], edge[0]};
+                }
+                return new int[]{edge[0], edge[1]};
+            }
+            unionFind.union(edge[0], edge[1]);
+        }
+        return null;
+    }
+
+    /**
+     * 用以太网线缆将 n 台计算机连接成一个网络，计算机的编号从 0 到 n-1。线缆用 connections 表示，
+     * 其中 connections[i] = [a, b] 连接了计算机 a 和 b。
+     * <p>
+     * 网络中的任何一台计算机都可以通过网络直接或者间接访问同一个网络中其他任意一台计算机。
+     * <p>
+     * 给你这个计算机网络的初始布线 connections，你可以拔开任意两台直连计算机之间的线缆，
+     * 并用它连接一对未直连的计算机。请你计算并返回使所有计算机都连通所需的最少操作次数。如果不可能，则返回 -1 。
+     * <p>
+     * 输入：n = 4, connections = [[0,1],[0,2],[1,2]]
+     * 输出：1
+     * 解释：拔下计算机 1 和 2 之间的线缆，并将它插到计算机 1 和 3 上。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/number-of-operations-to-make-network-connected
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param n
+     * @param connections
+     * @return
+     */
+    public int makeConnected(int n, int[][] connections) {
+        UnionFind unionFind = new UnionFind(n);
+        int removable = 0;
+        for (int[] con : connections) {
+            if (unionFind.isConnected(con[0], con[1])) {
+                removable++;
+            } else {
+                unionFind.union(con[0], con[1]);
+            }
+        }
+        int group = 0;
+        for (int i = 0; i < unionFind.roots.length; i++) {
+            if (unionFind.roots[i] == i) {
+                group++;
+            }
+        }
+        return group - 1 > removable ? -1 : group - 1;
+    }
+
+    /**
+     * 给定一个未排序的整数数组，找出最长连续序列的长度。
+     * <p>
+     * 要求算法的时间复杂度为 O(n)。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: [100, 4, 200, 1, 3, 2]
+     * 输出: 4
+     * 解释: 最长连续序列是 [1, 2, 3, 4]。它的长度为 4。
+     *
+     * @param nums
+     * @return
+     */
+    public int longestConsecutive(int[] nums) {
+        HashSet<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            set.add(num);
+        }
+        int ans = 0;
+        for (Integer next : set) {
+            if (set.contains(next - 1)) {
+                continue;
+            }
+            int temp = 0;
+            while (set.contains(next)) {
+                temp++;
+                next++;
+            }
+            ans = Math.max(ans, temp);
+        }
+        return ans;
     }
 }
 
