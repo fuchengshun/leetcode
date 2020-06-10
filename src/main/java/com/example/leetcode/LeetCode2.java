@@ -1955,7 +1955,7 @@ public class LeetCode2 {
      * @return
      */
     public int longestIncreasingPath(int[][] matrix) {
-        if (matrix==null||matrix.length==0){
+        if (matrix == null || matrix.length == 0) {
             return 0;
         }
         int[][] count = new int[matrix.length][matrix[0].length];
@@ -1996,6 +1996,122 @@ public class LeetCode2 {
 
     private boolean longestIncreasingPathVerify(int[][] matrix, int i, int j) {
         return i >= 0 && j >= 0 && i < matrix.length && j < matrix[i].length;
+    }
+
+    public void quickSort(int[] nums, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        int datum = nums[left], i = left, j = right;
+        while (i < j) {
+            while (nums[j] >= datum && i < j) {
+                j--;
+            }
+            while (nums[i] <= datum && i < j) {
+                i++;
+            }
+            if (i < j) {
+                int temp = nums[i];
+                nums[i] = nums[j];
+                nums[j] = temp;
+            }
+        }
+        nums[left] = nums[i];
+        nums[i] = datum;
+        quickSort(nums, left, i - 1);
+        quickSort(nums, i + 1, right);
+    }
+
+    /**
+     * 在由 1 x 1 方格组成的 N x N 网格 grid 中，每个 1 x 1 方块由 /、\ 或空格构成。这些字符会将方块划分为一些共边的区域。
+     * <p>
+     * （请注意，反斜杠字符是转义的，因此 \ 用 "\\" 表示。）。
+     * <p>
+     * 返回区域的数目。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/regions-cut-by-slashes
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param grid
+     * @return
+     */
+    public int regionsBySlashes(String[] grid) {
+        int width = grid.length + 1;
+        UnionFind unionFind = new UnionFind(width * width);
+        for (int i = 1; i < width; i++) {
+            unionFind.union(i - 1, i);
+            unionFind.union(width * (width - 1) + i - 1, width * (width - 1) + i);
+            unionFind.union((i - 1) * width, i * width);
+            unionFind.union((i - 1) * width + width - 1, i * width + width - 1);
+        }
+        int ans = 1;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length(); j++) {
+                if (grid[i].charAt(j) == '/') {
+                    if (unionFind.isConnected(i * width + j + 1, (i + 1) * width + j)) {
+                        ans++;
+                    }
+                    unionFind.union(i * width + j + 1, (i + 1) * width + j);
+                }
+                if (grid[i].charAt(j) == '\\') {
+                    if (unionFind.isConnected(i * width + j, (i + 1) * width + j + 1)) {
+                        ans++;
+                    }
+                    unionFind.union(i * width + j, (i + 1) * width + j + 1);
+                }
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个非空的整数数组，返回其中出现频率前 k 高的元素。
+     * <p>
+     *  
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: nums = [1,1,1,2,2,3], k = 2
+     * 输出: [1,2]
+     * 示例 2:
+     * <p>
+     * 输入: nums = [1], k = 1
+     * 输出: [1]
+     *  
+     * <p>
+     * 提示：
+     * <p>
+     * 你可以假设给定的 k 总是合理的，且 1 ≤ k ≤ 数组中不相同的元素的个数。
+     * 你的算法的时间复杂度必须优于 O(n log n) , n 是数组的大小。
+     * 题目数据保证答案唯一，换句话说，数组中前 k 个高频元素的集合是唯一的。
+     * 你可以按任意顺序返回答案
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/top-k-frequent-elements
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int[] topKFrequent(int[] nums, int k) {
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int num : nums) {
+            map.put(num, map.getOrDefault(num, 0) + 1);
+        }
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                return map.get(b) - map.get(a);
+            }
+        });
+        priorityQueue.addAll(map.keySet());
+        int[] ans = new int[k];
+        for (int i = 0; i < k && !priorityQueue.isEmpty(); i++) {
+            ans[i] = priorityQueue.poll();
+        }
+        return ans;
     }
 }
 
