@@ -1,8 +1,9 @@
 package com.example.leetcode;
 
 
-import java.awt.event.ItemEvent;
 import java.util.*;
+
+import static java.util.Comparator.*;
 
 public class LeetCode2 {
     /**
@@ -2100,18 +2101,265 @@ public class LeetCode2 {
         for (int num : nums) {
             map.put(num, map.getOrDefault(num, 0) + 1);
         }
-        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer a, Integer b) {
-                return map.get(b) - map.get(a);
-            }
-        });
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>((a, b) -> map.get(b) - map.get(a));
         priorityQueue.addAll(map.keySet());
         int[] ans = new int[k];
         for (int i = 0; i < k && !priorityQueue.isEmpty(); i++) {
             ans[i] = priorityQueue.poll();
         }
         return ans;
+    }
+
+    /**
+     * 给定一个 n x n 矩阵，其中每行和每列元素均按升序排序，找到矩阵中第k小的元素。
+     * 请注意，它是排序后的第 k 小元素，而不是第 k 个不同的元素。
+     * <p>
+     *  
+     * <p>
+     * 示例:
+     * <p>
+     * matrix = [
+     * [ 1,  5,  9],
+     * [10, 11, 13],
+     * [12, 13, 15]
+     * ],
+     * k = 8,
+     * <p>
+     * 返回 13。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/kth-smallest-element-in-a-sorted-matrix
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param matrix
+     * @param k
+     * @return
+     */
+    public int kthSmallest(int[][] matrix, int k) {
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>();
+        for (int[] ints : matrix) {
+            for (int anInt : ints) {
+                priorityQueue.add(anInt);
+            }
+        }
+        for (int i = 0; i < k - 1; i++) {
+            priorityQueue.poll();
+        }
+        return priorityQueue.poll();
+    }
+
+    /**
+     * 我们有一个由平面上的点组成的列表 points。需要从中找出 K 个距离原点 (0, 0) 最近的点。
+     * <p>
+     * （这里，平面上两点之间的距离是欧几里德距离。）
+     * <p>
+     * 你可以按任何顺序返回答案。除了点坐标的顺序之外，答案确保是唯一的。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：points = [[1,3],[-2,2]], K = 1
+     * 输出：[[-2,2]]
+     * 解释：
+     * (1, 3) 和原点之间的距离为 sqrt(10)，
+     * (-2, 2) 和原点之间的距离为 sqrt(8)，
+     * 由于 sqrt(8) < sqrt(10)，(-2, 2) 离原点更近。
+     * 我们只需要距离原点最近的 K = 1 个点，所以答案就是 [[-2,2]]。
+     * 示例 2：
+     * <p>
+     * 输入：points = [[3,3],[5,-1],[-2,4]], K = 2
+     * 输出：[[3,3],[-2,4]]
+     * （答案 [[-2,4],[3,3]] 也会被接受。）
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/k-closest-points-to-origin
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param points
+     * @param K
+     * @return
+     */
+    public int[][] kClosest(int[][] points, int K) {
+        PriorityQueue<int[]> queue = new PriorityQueue<>((b, a) -> a[0] * a[0] + a[1] * a[1] - b[0] * b[0] - b[1] * b[1]);
+        for (int[] point : points) {
+            if (queue.size() < K) {
+                queue.add(new int[]{point[0], point[1]});
+            } else if (point[0] * point[0] + point[1] * point[1] < queue.peek()[0] * queue.peek()[0] + queue.peek()[1] * queue.peek()[1]) {
+                queue.poll();
+                queue.add(new int[]{point[0], point[1]});
+            }
+        }
+        int[][] ans = new int[queue.size()][2];
+        for (int i = 0; !queue.isEmpty(); i++) {
+            ans[i] = queue.poll();
+        }
+        return ans;
+    }
+
+    /**
+     * 有些数的素因子只有 3，5，7，请设计一个算法找出第 k 个数。注意，不是必须有这些素因子，
+     * 而是必须不包含其他的素因子。例如，前几个数按顺序应该是 1，3，5，7，9，15，21。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: k = 5
+     * <p>
+     * 输出: 9
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/get-kth-magic-number-lcci
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param k
+     * @return
+     */
+    public int getKthMagicNumber(int k) {
+        PriorityQueue<Long> queue = new PriorityQueue<>();
+        HashSet<Long> set = new HashSet<>();
+        queue.add(1L);
+        set.add(1L);
+        for (int i = 0; i < k - 1; i++) {
+            Long poll = queue.poll();
+            if (!set.contains(poll * 3)) {
+                set.add(poll * 3);
+                queue.add(poll * 3);
+            }
+            if (!set.contains(poll * 5)) {
+                set.add(poll * 5);
+                queue.add(poll * 5);
+            }
+            if (!set.contains(poll * 7)) {
+                set.add(poll * 7);
+                queue.add(poll * 7);
+            }
+        }
+        return queue.peek().intValue();
+    }
+
+    /**
+     * 设计一个算法，找出数组中最小的k个数。以任意顺序返回这k个数均可。
+     * <p>
+     * 示例：
+     * <p>
+     * 输入： arr = [1,3,5,7,2,4,6,8], k = 4
+     * 输出： [1,2,3,4]
+     * 提示：
+     * <p>
+     * 0 <= len(arr) <= 100000
+     * 0 <= k <= min(100000, len(arr))
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/smallest-k-lcci
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param arr
+     * @param k
+     * @return
+     */
+    public int[] smallestK(int[] arr, int k) {
+        if (k == 0) {
+            return new int[0];
+        }
+        PriorityQueue<Integer> queue = new PriorityQueue<>((a, b) -> b - a);
+        for (int i : arr) {
+            if (queue.size() < k) {
+                queue.add(i);
+            } else if (i < queue.peek()) {
+                queue.poll();
+                queue.add(i);
+            }
+        }
+        int[] ans = new int[queue.size()];
+        for (int i = 0; !queue.isEmpty(); i++) {
+            ans[i] = queue.poll();
+        }
+        return ans;
+    }
+
+    /**
+     * 有一堆石头，每块石头的重量都是正整数。
+     * <p>
+     * 每一回合，从中选出两块 最重的 石头，然后将它们一起粉碎。假设石头的重量分别为 x 和 y，且 x <= y。
+     * 那么粉碎的可能结果如下：
+     * <p>
+     * 如果 x == y，那么两块石头都会被完全粉碎；
+     * 如果 x != y，那么重量为 x 的石头将会完全粉碎，而重量为 y 的石头新重量为 y-x。
+     * 最后，最多只会剩下一块石头。返回此石头的重量。如果没有石头剩下，就返回 0。
+     * <p>
+     *  
+     * <p>
+     * 示例：
+     * <p>
+     * 输入：[2,7,4,1,8,1]
+     * 输出：1
+     * 解释：
+     * 先选出 7 和 8，得到 1，所以数组转换为 [2,4,1,1,1]，
+     * 再选出 2 和 4，得到 2，所以数组转换为 [2,1,1,1]，
+     * 接着是 2 和 1，得到 1，所以数组转换为 [1,1,1]，
+     * 最后选出 1 和 1，得到 0，最终数组转换为 [1]，这就是最后剩下那块石头的重量。
+     *  
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= stones.length <= 30
+     * 1 <= stones[i] <= 1000
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/last-stone-weight
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param stones
+     * @return
+     */
+    public int lastStoneWeight(int[] stones) {
+        PriorityQueue<Integer> queue = new PriorityQueue<>((a, b) -> b - a);
+        for (int stone : stones) {
+            queue.add(stone);
+        }
+        while (queue.size() >= 2) {
+            queue.add(Math.abs(queue.poll() - queue.poll()));
+        }
+        return queue.poll();
+    }
+
+    /**
+     * 给定一个字符串，请将字符串里的字符按照出现的频率降序排列。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入:
+     * "tree"
+     * <p>
+     * 输出:
+     * "eert"
+     * <p>
+     * 解释:
+     * 'e'出现两次，'r'和't'都只出现一次。
+     * 因此'e'必须出现在'r'和't'之前。此外，"eetr"也是一个有效的答案。
+     *
+     * @param s
+     * @return
+     */
+    public String frequencySort(String s) {
+        int[] words = new int[128];
+        for (char c : s.toCharArray()) {
+            words[c]++;
+        }
+        PriorityQueue<Character> queue = new PriorityQueue<>((a, b) -> words[b] - words[a]);
+        for (char i = 0; i < words.length; i++) {
+            if (words[i] > 0) {
+                queue.add(i);
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        while (!queue.isEmpty()) {
+            Character poll = queue.poll();
+            for (int i = 0; i < words[poll]; i++) {
+                sb.append(poll);
+            }
+        }
+        return sb.toString();
     }
 }
 

@@ -13,6 +13,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        int i = new LeetCode2().longestConsecutive(new int[]{100,4,200,1,3,2});
+        int[] ints = new LeetCode3().dailyTemperatures(new int[]{73, 74, 75, 71, 69, 72, 76, 73});
     }
 }
