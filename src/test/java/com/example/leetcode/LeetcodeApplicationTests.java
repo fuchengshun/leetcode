@@ -13,6 +13,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        int[] ints = new LeetCode3().dailyTemperatures(new int[]{73, 74, 75, 71, 69, 72, 76, 73});
+        String bcabc = new LeetCode3().removeDuplicateLetters("abacb");
     }
 }
