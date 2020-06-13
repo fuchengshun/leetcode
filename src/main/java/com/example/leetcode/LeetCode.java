@@ -3202,24 +3202,123 @@ public class LeetCode {
      * @return
      */
     public ListNode sortList(ListNode head) {
-        if (head == null) {
-            return null;
+        System.out.println("排序：" + head.toString());
+        ListNode slow = head, fast = head, pre = head;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            pre = slow;
+            slow = slow.next;
         }
-        ListNode node = sortList(head.next);
-        ListNode start = new ListNode(Integer.MIN_VALUE);
-        start.next = node;
-        ListNode pre = start, cur = node;
-        while (cur != null) {
-            if (head.val <= cur.val) {
-                head.next = cur;
-                pre.next = head;
+        if (slow == fast) {
+            return slow;
+        }
+        ListNode mid = pre.next;
+        pre.next = null;
+        return sortListMerge(sortList(mid), sortList(head));
+    }
+
+    public ListNode sortList2(ListNode head) {
+        System.out.println("排序：" + head.toString());
+        ListNode slow = head, fast = head, pre = head;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            pre = slow;
+            slow = slow.next;
+        }
+        if (slow == fast) {
+            return slow;
+        }
+        ListNode mid = pre.next;
+        pre.next = null;
+        return sortListMerge(sortList(mid), sortList(head));
+    }
+
+    public ListNode sortListMerge(ListNode front, ListNode back) {
+        ListNode pre = new ListNode(0), cur = pre;
+        while (front != null && back != null) {
+            if (front.val < back.val) {
+                cur.next = front;
+                front = front.next;
             } else {
-                pre = pre.next;
-                cur = cur.next;
+                cur.next = back;
+                back = back.next;
+            }
+            cur = cur.next;
+        }
+        if (front != null) {
+            cur.next = front;
+        }
+        if (back != null) {
+            cur.next = back;
+        }
+        System.out.println("合并：" + pre.next.toString());
+        return pre.next;
+    }
+
+    /**
+     * 给你一个字符串 S、一个字符串 T，请在字符串 S 里面找出：包含 T 所有字符的最小子串。
+     * <p>
+     * 示例：
+     * <p>
+     * 输入: S = "ADOBECODEBANC", T = "ABC"
+     * 输出: "BANC"
+     * 说明：
+     * <p>
+     * 如果 S 中不存这样的子串，则返回空字符串 ""。
+     * 如果 S 中存在这样的子串，我们保证它是唯一的答案。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/minimum-window-substring
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @param t
+     * @return
+     */
+    public String minWindow(String s, String t) {
+        HashMap<Character, Integer> need = new HashMap<>(), window = new HashMap<>();
+        for (char c : t.toCharArray()) {
+            need.put(c, need.getOrDefault(c, 0) + 1);
+        }
+        int left = 0, right = 0;
+        int valid = 0;
+        // 记录最小覆盖子串的起始索引及长度
+        int start = 0, len = Integer.MAX_VALUE;
+        while (right < s.length()) {
+            // c 是将移入窗口的字符
+            char c = s.charAt(right);
+            // 右移窗口
+            right++;
+            // 进行窗口内数据的一系列更新
+            if (need.containsKey(c)) {
+                window.put(c, window.getOrDefault(c, 0) + 1);
+                if (window.get(c).equals(need.get(c))) {
+                    valid++;
+                }
+            }
+
+            // 判断左侧窗口是否要收缩
+            while (valid == need.size()) {
+                // 在这里更新最小覆盖子串
+                if (right - left < len) {
+                    start = left;
+                    len = right - left;
+                }
+                // d 是将移出窗口的字符
+                char d = s.charAt(left);
+                // 左移窗口
+                left++;
+                // 进行窗口内数据的一系列更新
+                if (need.containsKey(d)) {
+                    if (window.get(d).equals(need.get(d))) {
+                        valid--;
+                    }
+                    window.put(d, window.get(d) - 1);
+                }
             }
         }
-        pre.next = head;
-        return start.next;
+        // 返回最小覆盖子串
+        return len == Integer.MAX_VALUE ? "" : s.substring(start, start + len);
     }
 
     /**
@@ -3430,5 +3529,130 @@ public class LeetCode {
             return left;
         }
         return root;
+    }
+
+    /**
+     * 给定一个包含 m x n 个元素的矩阵（m 行, n 列），请按照顺时针螺旋顺序，返回矩阵中的所有元素。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入:
+     * [
+     * [ 1, 2, 3 ],
+     * [ 4, 5, 6 ],
+     * [ 7, 8, 9 ]
+     * ]
+     * 输出: [1,2,3,6,9,8,7,4,5]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/spiral-matrix
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param matrix
+     * @return
+     */
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> ans = new ArrayList<>();
+        if (matrix == null || matrix.length == 0) {
+            return ans;
+        }
+        int left = 0, right = matrix[0].length - 1, up = 0, down = matrix.length - 1;
+        while (left <= right && up <= down) {
+            for (int i = left; i <= right && up <= down; i++) {
+                ans.add(matrix[up][i]);
+            }
+            up++;
+            for (int i = up; i <= down && left <= right; i++) {
+                ans.add(matrix[i][right]);
+            }
+            right--;
+            for (int i = right; i >= left && up <= down; i--) {
+                ans.add(matrix[down][i]);
+            }
+            down--;
+            for (int i = down; i >= up && left <= right; i--) {
+                ans.add(matrix[i][left]);
+            }
+            left++;
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个正整数 n，生成一个包含 1 到 n2 所有元素，且元素按顺时针顺序螺旋排列的正方形矩阵。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: 3
+     * 输出:
+     * [
+     * [ 1, 2, 3 ],
+     * [ 8, 9, 4 ],
+     * [ 7, 6, 5 ]
+     * ]
+     *
+     * @param n
+     * @return
+     */
+    public int[][] generateMatrix(int n) {
+        int[][] ans = new int[n][n];
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int i = 1; i <= n * n; i++) {
+            list.add(i);
+        }
+        int left = 0, right = n - 1, up = 0, down = n - 1, index = 0;
+        while (left <= right && up <= down) {
+            for (int i = left; i <= right && up <= down; i++) {
+                ans[up][i] = list.get(index++);
+            }
+            up++;
+            for (int i = up; i <= down && left <= right; i++) {
+                ans[i][right] = list.get(index++);
+            }
+            right--;
+            for (int i = right; i >= left && up <= down; i--) {
+                ans[down][i] = list.get(index++);
+            }
+            down--;
+            for (int i = down; i >= up && left <= right; i--) {
+                ans[i][left] = list.get(index++);
+            }
+            left++;
+        }
+        return ans;
+    }
+
+    /**
+     * 给定两个字符串形式的非负整数 num1 和num2 ，计算它们的和。
+     * <p>
+     * 注意：
+     * <p>
+     * num1 和num2 的长度都小于 5100.
+     * num1 和num2 都只包含数字 0-9.
+     * num1 和num2 都不包含任何前导零。
+     * 你不能使用任何內建 BigInteger 库， 也不能直接将输入的字符串转换为整数形式。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/add-strings
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param num1
+     * @param num2
+     * @return
+     */
+    public String addStrings(String num1, String num2) {
+        StringBuilder sb = new StringBuilder();
+        int i = num1.length() - 1, j = num2.length() - 1, carry = 0;
+        while (i >= 0 || j >= 0) {
+            int m = i >= 0 ? num1.charAt(i--) - '0' : 0;
+            int n = j >= 0 ? num2.charAt(j--) - '0' : 0;
+            int temp = m + n + carry;
+            carry = temp / 10;
+            sb.append(temp % 10);
+        }
+        if (carry != 0) {
+            sb.append(1);
+        }
+        return sb.reverse().toString();
     }
 }
