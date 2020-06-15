@@ -396,14 +396,59 @@ public class LeetCode3 {
         Deque<String> deque = new LinkedList<>();
         HashSet<String> set = new HashSet<>();
         deque.add(beginWord);
+        set.add(beginWord);
         List<List<String>> ans = new ArrayList<>();
-        while (!deque.isEmpty()) {
-            for (int size = deque.size(); size > 0; size--) {
+        List<String> start = new ArrayList<>();
+        start.add(beginWord);
+        ans.add(start);
+        boolean find = false;
+        while (!deque.isEmpty() && !find) {
+            int index = 0;
+            int size = deque.size();
+            for (int j=0; j<size; j++) {
                 String poll = deque.poll();
-                if (endWord.equals(poll)) {
-                    return ans;
+                for (int i = 0; i < wordList.size(); i++) {
+                    if (!set.contains(wordList.get(i)) && findLaddersDistance1(wordList.get(i), poll)) {
+                        if (!endWord.equals(wordList.get(i))) {
+                            set.add(wordList.get(i));
+                        } else {
+                            find = true;
+                        }
+                        if (index == ans.size()) {
+                            ArrayList<String> temp = new ArrayList<>(ans.get(index - 1));
+                            temp.remove(temp.size() - 1);
+                            ans.add(temp);
+                        }
+                        ans.get(j+index++).add(wordList.get(i));
+                        deque.add(wordList.get(i));
+                    }
                 }
             }
         }
+        for (int i = 0; find && i < ans.size(); i++) {
+            if (!ans.get(i).get(ans.get(i).size() - 1).equals(endWord)) {
+               ans.remove(i--);
+            }
+        }
+        return find ? ans : new ArrayList<>();
+    }
+
+    private boolean findLaddersDistance1(String s, String poll) {
+        int l1 = s.length();
+        int l2 = poll.length();
+        if (l1 != l2) {
+            return false;
+        }
+        int i = 0, k = 1;
+        while (i < l1) {
+            if (s.charAt(i) != poll.charAt(i)) {
+                if (k == 0) {
+                    return false;
+                }
+                k--;
+            }
+            i++;
+        }
+        return true;
     }
 }
