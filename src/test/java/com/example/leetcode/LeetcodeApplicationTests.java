@@ -10,10 +10,10 @@ import java.util.*;
 @SpringBootTest
 class LeetcodeApplicationTests {
     @Value("${user-data}")
-    private int[] data;
+    private String[] data;
 
     @Test
     void contextLoads() {
-        List<List<String>> ladders = new LeetCode3().findLadders("hot", "dog", Arrays.asList("hot","cog","dog","tot","hog","hop","pot","dot"));
+        List<List<String>> ladders = new LeetCode3().findLadders("nanny", "aloud", Arrays.asList(data));
     }
 }

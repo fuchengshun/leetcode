@@ -395,60 +395,55 @@ public class LeetCode3 {
     public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
         Deque<String> deque = new LinkedList<>();
         HashSet<String> set = new HashSet<>();
+        HashMap<String, Set<String>> map = new HashMap<>();
+        HashSet<String> wordSet = new HashSet<>(wordList);
         deque.add(beginWord);
         set.add(beginWord);
-        List<List<String>> ans = new ArrayList<>();
-        List<String> start = new ArrayList<>();
-        start.add(beginWord);
-        ans.add(start);
         boolean find = false;
         while (!deque.isEmpty() && !find) {
-            int index = 0;
-            int size = deque.size();
-            for (int j=0; j<size; j++) {
+            HashSet<String> setTemp = new HashSet<>();
+            for (int i = deque.size(); i > 0; i--) {
                 String poll = deque.poll();
-                for (int i = 0; i < wordList.size(); i++) {
-                    if (!set.contains(wordList.get(i)) && findLaddersDistance1(wordList.get(i), poll)) {
-                        if (!endWord.equals(wordList.get(i))) {
-                            set.add(wordList.get(i));
-                        } else {
-                            find = true;
+                for (int j = 0; j < poll.length(); j++) {
+                    for (char k = 'a'; k <= 'z'; k++) {
+                        char[] chars = poll.toCharArray();
+                        chars[j] = k;
+                        String word = new String(chars);
+                        if (wordSet.contains(word) && !set.contains(word)) {
+                            if (!endWord.equals(word)) {
+                                setTemp.add(word);
+                            } else {
+                                find = true;
+                            }
+                            Set<String> stringSet = map.getOrDefault(poll, new HashSet<>());
+                            stringSet.add(word);
+                            map.put(poll, stringSet);
+                            deque.add(word);
                         }
-                        if (index == ans.size()) {
-                            ArrayList<String> temp = new ArrayList<>(ans.get(index - 1));
-                            temp.remove(temp.size() - 1);
-                            ans.add(temp);
-                        }
-                        ans.get(j+index++).add(wordList.get(i));
-                        deque.add(wordList.get(i));
                     }
                 }
             }
+            set.addAll(setTemp);
         }
-        for (int i = 0; find && i < ans.size(); i++) {
-            if (!ans.get(i).get(ans.get(i).size() - 1).equals(endWord)) {
-               ans.remove(i--);
-            }
-        }
-        return find ? ans : new ArrayList<>();
+        List<List<String>> ans = new ArrayList<>();
+        findLaddersDfs(ans, new ArrayList<>(), map, beginWord, endWord);
+        return ans;
     }
 
-    private boolean findLaddersDistance1(String s, String poll) {
-        int l1 = s.length();
-        int l2 = poll.length();
-        if (l1 != l2) {
-            return false;
+    private void findLaddersDfs(List<List<String>> ans, List<String> path, HashMap<String, Set<String>> map, String key, String target) {
+        if (key == null) {
+            return;
         }
-        int i = 0, k = 1;
-        while (i < l1) {
-            if (s.charAt(i) != poll.charAt(i)) {
-                if (k == 0) {
-                    return false;
-                }
-                k--;
-            }
-            i++;
+        path.add(key);
+        if (key.equals(target)) {
+            ans.add(new ArrayList<>(path));
+            return;
         }
-        return true;
+        if (map.get(key) == null) {
+            return;
+        }
+        for (String s : map.get(key)) {
+            findLaddersDfs(ans, new ArrayList<>(path), map, s, target);
+        }
     }
 }
