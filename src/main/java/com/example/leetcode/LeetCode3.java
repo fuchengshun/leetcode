@@ -483,4 +483,76 @@ public class LeetCode3 {
         }
         return ans;
     }
+
+    public int calPoints(String[] ops) {
+        LinkedList<String> stack = new LinkedList<>();
+        stack.add("0");
+        int ans = 0;
+        for (String s : ops) {
+            if (!s.equals("C") && !s.equals("D") && !s.equals("+")) {
+                ans += Integer.parseInt(s);
+                stack.push(s);
+            } else if (s.equals("C")) {
+                ans -= Integer.parseInt(stack.pop());
+            } else if (s.equals("+")) {
+                String s1 = stack.pop();
+                String s2 = stack.pop();
+                int sum = Integer.parseInt(s1) + Integer.parseInt(s2);
+                ans += sum;
+                stack.push(s2);
+                stack.push(s1);
+                stack.push(String.valueOf(sum));
+            } else {
+                int i = Integer.parseInt(stack.peek()) * 2;
+                ans += i;
+                stack.push(String.valueOf(i));
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * 给你一个未排序的整数数组，请你找出其中没有出现的最小的正整数。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: [1,2,0]
+     * 输出: 3
+     * 示例 2:
+     * <p>
+     * 输入: [3,4,-1,1]
+     * 输出: 2
+     * 示例 3:
+     * <p>
+     * 输入: [7,8,9,11,12]
+     * 输出: 1
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 你的算法的时间复杂度应为O(n)，并且只能使用常数级别的额外空间。
+     *
+     * @param nums
+     * @return
+     */
+    public int firstMissingPositive(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            while (nums[i] > 0 && nums[i] <= nums.length && nums[i] != i + 1 && nums[i] != nums[nums[i] - 1]) {
+                firstMissingPositiveSwap(nums, i, nums[i] - 1);
+            }
+        }
+        int index = 0;
+        while (index < nums.length && nums[index] == index + 1) {
+            index++;
+        }
+        return index + 1;
+    }
+
+    private void firstMissingPositiveSwap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
 }

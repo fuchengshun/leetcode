@@ -14,6 +14,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        int i = new LeetCode3().maxScoreSightseeingPair(new int[]{2,2,2});
+       boolean i = new LeetCode3().patternMatching("bbbbbbbbabbbbbbbbbbbabbbbbbba","zezezezezezezezezkxzezezezezezezezezezezezkxzezezezezezezezkx");
     }
 }
