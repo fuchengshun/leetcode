@@ -14,6 +14,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-       boolean i = new LeetCode3().patternMatching("bbbbbbbbabbbbbbbbbbbabbbbbbba","zezezezezezezezezkxzezezezezezezezezezezezkxzezezezezezezezkx");
+        ListNode node = new LeetCode3().removeDuplicateNodes(ListNode.create(new int[]{1, 1, 1, 1, 2}));
     }
 }
