@@ -14,6 +14,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        ListNode node = new LeetCode3().removeDuplicateNodes(ListNode.create(new int[]{1, 1, 1, 1, 2}));
+        int i = new LeetCode3().longestValidParentheses("()(())");
     }
 }

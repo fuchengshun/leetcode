@@ -558,26 +558,27 @@ public class LeetCode3 {
 
     /**
      * 编写代码，移除未排序链表中的重复节点。保留最开始出现的节点。
-     *
+     * <p>
      * 示例1:
-     *
-     *  输入：[1, 2, 3, 3, 2, 1]
-     *  输出：[1, 2, 3]
+     * <p>
+     * 输入：[1, 2, 3, 3, 2, 1]
+     * 输出：[1, 2, 3]
      * 示例2:
-     *
-     *  输入：[1, 1, 1, 1, 2]
-     *  输出：[1, 2]
+     * <p>
+     * 输入：[1, 1, 1, 1, 2]
+     * 输出：[1, 2]
      * 提示：
-     *
+     * <p>
      * 链表长度在[0, 20000]范围内。
      * 链表元素在[0, 20000]范围内。
      * 进阶：
-     *
+     * <p>
      * 如果不得使用临时缓冲区，该怎么解决？
-     *
+     * <p>
      * 来源：力扣（LeetCode）
      * 链接：https://leetcode-cn.com/problems/remove-duplicate-node-lcci
      * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
      * @param head
      * @return
      */
@@ -596,5 +597,45 @@ public class LeetCode3 {
             target = target.next;
         }
         return head;
+    }
+
+    /**
+     * 给定一个只包含 '(' 和 ')' 的字符串，找出最长的包含有效括号的子串的长度。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: "(()"
+     * 输出: 2
+     * 解释: 最长有效括号子串为 "()"
+     * 示例 2:
+     * <p>
+     * 输入: ")()())"
+     * 输出: 4
+     * 解释: 最长有效括号子串为 "()()"
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/longest-valid-parentheses
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public int longestValidParentheses(String s) {
+        if (s == null || s.length() ==0) {
+            return 0;
+        }
+        int[] dp = new int[s.length()];
+        int ans = 0;
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                dp[i] = 0;
+            } else if (s.charAt(i - 1) == '(') {
+                dp[i] = (i - 2 < 0 ? 0 : dp[i - 2] )+ 2;
+            } else if (i - dp[i - 1] - 1 >= 0 && s.charAt(i - dp[i - 1] - 1) == '(') {
+                dp[i] = dp[i - 1] + 2 + (i - dp[i - 1] - 2 >= 0 ? dp[i - dp[i - 1] - 2] : 0);
+            }
+            ans = Math.max(ans, dp[i]);
+        }
+        return ans;
     }
 }
