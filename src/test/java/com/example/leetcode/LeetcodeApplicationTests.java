@@ -14,6 +14,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        int i = new LeetCode3().longestValidParentheses("()(())");
+        String s = new LeetCode3().addBinary("1010", "1011");
     }
 }
