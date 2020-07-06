@@ -1,8 +1,13 @@
 package com.example.leetcode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
 public class LeetCode3 {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     /**
      * 请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。
      * 如果气温在这之后都不会升高，请在该位置用 0 来代替。
@@ -818,26 +823,27 @@ public class LeetCode3 {
 
     /**
      * 给定一个只包含数字的字符串，复原它并返回所有可能的 IP 地址格式。
-     *
+     * <p>
      * 有效的 IP 地址正好由四个整数（每个整数位于 0 到 255 之间组成），整数之间用 '.' 分隔。
-     *
+     * <p>
      *  
-     *
+     * <p>
      * 示例:
-     *
+     * <p>
      * 输入: "25525511135"
      * 输出: ["255.255.11.135", "255.255.111.35"]
      * 通过次数49,606提交次数105,608
-     *
+     * <p>
      * 来源：力扣（LeetCode）
      * 链接：https://leetcode-cn.com/problems/restore-ip-addresses
      * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
      * @param s
      * @return
      */
     public List<String> restoreIpAddresses(String s) {
         ArrayList<String> ans = new ArrayList<>();
-        restoreIpAddressesDfs(s,-1,new ArrayList<>(),ans);
+        restoreIpAddressesDfs(s, -1, new ArrayList<>(), ans);
         return ans;
     }
 
@@ -857,6 +863,154 @@ public class LeetCode3 {
                 restoreIpAddressesDfs(s, index + j, path, ans);
                 path.remove(path.size() - 1);
             }
+        }
+    }
+
+    /**
+     * 给定一个字符串S，通过将字符串S中的每个字母转变大小写，我们可以获得一个新的字符串。
+     * 返回所有可能得到的字符串集合。
+     * <p>
+     * 示例:
+     * 输入: S = "a1b2"
+     * 输出: ["a1b2", "a1B2", "A1b2", "A1B2"]
+     * <p>
+     * 输入: S = "3z4"
+     * 输出: ["3z4", "3Z4"]
+     * <p>
+     * 输入: S = "12345"
+     * 输出: ["12345"]
+     * 注意：
+     * <p>
+     * S 的长度不超过12。
+     * S 仅由数字和字母组成。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/letter-case-permutation
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param S
+     * @return
+     */
+    public List<String> letterCasePermutation(String S) {
+        ArrayList<String> ans = new ArrayList<>();
+        letterCasePermutationDfs(S, new StringBuilder(), ans);
+        return ans;
+    }
+
+    private void letterCasePermutationDfs(String s, StringBuilder path, List<String> ans) {
+        logger.info("s:{},path:{},ans:{}", s, path, ans);
+        if (path.length() == s.length()) {
+            ans.add(path.toString());
+            return;
+        }
+        char c = s.charAt(path.length());
+        if (Character.isDigit(c)) {
+            path.append(c);
+            letterCasePermutationDfs(s, path, ans);
+            path.deleteCharAt(path.length() - 1);
+        } else {
+            path.append(Character.toLowerCase(c));
+            letterCasePermutationDfs(s, path, ans);
+            path.deleteCharAt(path.length() - 1);
+            path.append(Character.toUpperCase(c));
+            letterCasePermutationDfs(s, path, ans);
+            path.deleteCharAt(path.length() - 1);
+        }
+    }
+
+    /**
+     * 给定一个 没有重复 数字的序列，返回其所有可能的全排列。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: [1,2,3]
+     * 输出:
+     * [
+     * [1,2,3],
+     * [1,3,2],
+     * [2,1,3],
+     * [2,3,1],
+     * [3,1,2],
+     * [3,2,1]
+     * ]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/permutations
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        permuteDfs(nums, new ArrayList<>(), ans);
+        return ans;
+    }
+
+    private void permuteDfs(int[] nums, List<Integer> path, List<List<Integer>> ans) {
+        if (path.size() == nums.length) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        for (int num : nums) {
+            if (!path.contains(num)) {
+                path.add(num);
+                permuteDfs(nums, path, ans);
+                path.remove(path.size() - 1);
+            }
+        }
+    }
+
+    /**
+     * 给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+     * <p>
+     * candidates 中的数字可以无限制重复被选取。
+     * <p>
+     * 说明：
+     * <p>
+     * 所有数字（包括 target）都是正整数。
+     * 解集不能包含重复的组合。 
+     * 示例 1:
+     * <p>
+     * 输入: candidates = [2,3,6,7], target = 7,
+     * 所求解集为:
+     * [
+     * [7],
+     * [2,2,3]
+     * ]
+     * 示例 2:
+     * <p>
+     * 输入: candidates = [2,3,5], target = 8,
+     * 所求解集为:
+     * [
+     *   [2,2,2,2],
+     *   [2,3,3],
+     *   [3,5]
+     * ]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/combination-sum
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param candidates
+     * @param target
+     * @return
+     */
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> ans = new ArrayList<>();
+        combinationSumDfs(candidates, target, new ArrayList<>(), ans);
+        return ans;
+    }
+
+    private void combinationSumDfs(int[] candidates, int target, ArrayList<Integer> path, List<List<Integer>> ans) {
+        if (target == 0 && path.size() > 0) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = 0; i < candidates.length && candidates[i] <= target; i++) {
+            path.add(candidates[i]);
+            combinationSumDfs(candidates, target - candidates[i], path, ans);
+            path.remove(path.size() - 1);
         }
     }
 }
