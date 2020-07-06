@@ -21,4 +21,10 @@ class LeetCode3Test {
     void subsetsWithDup() {
         List<List<Integer>> lists = t.subsetsWithDup(new int[]{1, 2, 2});
     }
+
+    @Test
+    void hasPathSum() {
+        TreeNode root = TreeNode.create(new Integer[0]);
+        boolean b = t.hasPathSum(root, 0);
+    }
 }
