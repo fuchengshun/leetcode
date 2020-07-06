@@ -16,4 +16,9 @@ class LeetCode3Test {
     void letterCasePermutation() {
         List<String> a1b2 = t.letterCasePermutation("a1b2");
     }
+
+    @Test
+    void subsetsWithDup() {
+        List<List<Integer>> lists = t.subsetsWithDup(new int[]{1, 2, 2});
+    }
 }

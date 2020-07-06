@@ -998,19 +998,114 @@ public class LeetCode3 {
      */
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
         List<List<Integer>> ans = new ArrayList<>();
-        combinationSumDfs(candidates, target, new ArrayList<>(), ans);
+        Arrays.sort(candidates);
+        combinationSumDfs(candidates, 0, target, new ArrayList<>(), ans);
         return ans;
     }
 
-    private void combinationSumDfs(int[] candidates, int target, ArrayList<Integer> path, List<List<Integer>> ans) {
+    private void combinationSumDfs(int[] candidates, int start, int target, ArrayList<Integer> path, List<List<Integer>> ans) {
         if (target == 0 && path.size() > 0) {
             ans.add(new ArrayList<>(path));
             return;
         }
         for (int i = 0; i < candidates.length && candidates[i] <= target; i++) {
             path.add(candidates[i]);
-            combinationSumDfs(candidates, target - candidates[i], path, ans);
+            combinationSumDfs(candidates, i, target - candidates[i], path, ans);
             path.remove(path.size() - 1);
+        }
+    }
+
+    /**
+     * 给定一个可包含重复数字的序列，返回所有不重复的全排列。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: [1,1,2]
+     * 输出:
+     * [
+     * [1,1,2],
+     * [1,2,1],
+     * [2,1,1]
+     * ]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/permutations-ii
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        permuteUniqueDfs(nums, new ArrayList<>(), ans);
+        return ans;
+    }
+
+    private void permuteUniqueDfs(int[] nums, ArrayList<Integer> path, List<List<Integer>> ans) {
+        if (path.size() == nums.length) {
+            ArrayList<Integer> temp = new ArrayList<>();
+            for (Integer integer : path) {
+                temp.add(nums[integer]);
+            }
+            ans.add(temp);
+        }
+        ArrayList<Integer> used = new ArrayList<>();
+        //同一个位置不能换相同的数使用，也就是同一个循环中不能使用相同的数
+        for (int i = 0; i < nums.length; i++) {
+            if (!path.contains(i) && !used.contains(nums[i])) {
+                path.add(i);
+                permuteUniqueDfs(nums, path, ans);
+                path.remove(path.size() - 1);
+                used.add(nums[i]);
+            }
+        }
+    }
+
+    /**
+     * 给定一个可能包含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+     * <p>
+     * 说明：解集不能包含重复的子集。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: [1,2,2]
+     * 输出:
+     * [
+     * [2],
+     * [1],
+     * [1,2,2],
+     * [2,2],
+     * [1,2],
+     * []
+     * ]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/subsets-ii
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        subsetsWithDupDfs(nums, 0, new ArrayList<>(), ans);
+        return ans;
+    }
+
+    private void subsetsWithDupDfs(int[] nums, int index, ArrayList<Integer> path, List<List<Integer>> ans) {
+        if (index == nums.length) {
+            ans.add(new ArrayList<>(path));
+            return;
+        }
+        ArrayList<Integer> used = new ArrayList<>();
+        for (int i = index; i < nums.length; i++) {
+            if (!used.contains(nums[i])){
+                path.add(nums[i]);
+                subsetsWithDupDfs(nums, index + 1, path, ans);
+                path.remove(path.size() - 1);
+                used.add(nums[i]);
+            }
+            subsetsWithDupDfs(nums, index + 1, path, ans);
         }
     }
 }
