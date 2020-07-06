@@ -14,6 +14,6 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        String s = new LeetCode3().addBinary("1010", "1011");
+        int i = new LeetCode3().uniquePathsWithObstacles(new int[][]{{0, 0, 0}, {0, 1, 0}, {0, 0, 0}});
     }
 }
