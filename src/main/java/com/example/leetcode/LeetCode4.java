@@ -3,6 +3,10 @@ package com.example.leetcode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 public class LeetCode4 {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -90,5 +94,99 @@ public class LeetCode4 {
             }
         }
         return j == needle.length() ? i - j : -1;
+    }
+
+    /**
+     * 给定一个罗马数字，将其转换成整数。输入确保在 1 到 3999 的范围内。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: "III"
+     * 输出: 3
+     * 示例 2:
+     * <p>
+     * 输入: "IV"
+     * 输出: 4
+     * 示例 3:
+     * <p>
+     * 输入: "IX"
+     * 输出: 9
+     * 示例 4:
+     * <p>
+     * 输入: "LVIII"
+     * 输出: 58
+     * 解释: L = 50, V= 5, III = 3.
+     * 示例 5:
+     * <p>
+     * 输入: "MCMXCIV"
+     * 输出: 1994
+     * 解释: M = 1000, CM = 900, XC = 90, IV = 4.
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/roman-to-integer
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public int romanToInt(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        map.put('I', 1);
+        map.put('V', 5);
+        map.put('X', 10);
+        map.put('L', 50);
+        map.put('C', 100);
+        map.put('D', 500);
+        map.put('M', 1000);
+        int ans = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (i + 1 < s.length() && map.get(s.charAt(i)) < map.get(s.charAt(i + 1))) {
+                ans += map.get(s.charAt(i + 1)) - map.get(s.charAt(i));
+                i++;
+            } else {
+                ans += map.get(s.charAt(i));
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个由整数组成的非空数组所表示的非负整数，在该数的基础上加一。
+     * <p>
+     * 最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。
+     * <p>
+     * 你可以假设除了整数 0 之外，这个整数不会以零开头。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: [1,2,3]
+     * 输出: [1,2,4]
+     * 解释: 输入数组表示数字 123。
+     * 示例 2:
+     * <p>
+     * 输入: [4,3,2,1]
+     * 输出: [4,3,2,2]
+     * 解释: 输入数组表示数字 4321。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/plus-one
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param digits
+     * @return
+     */
+    public int[] plusOne(int[] digits) {
+        int carry = 1;
+        for (int i = digits.length - 1; i >= 0; i--) {
+            int sum = digits[i] + carry;
+            digits[i] = sum < 10 ? sum : sum - 10;
+            carry = sum < 10 ? 0 : 1;
+        }
+        if (carry == 0) {
+            return digits;
+        }
+        int[] ans = new int[digits.length + 1];
+        ans[0] = 1;
+        return ans;
     }
 }
