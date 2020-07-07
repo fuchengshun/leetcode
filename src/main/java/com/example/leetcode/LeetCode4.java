@@ -3,9 +3,7 @@ package com.example.leetcode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class LeetCode4 {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -188,5 +186,117 @@ public class LeetCode4 {
         int[] ans = new int[digits.length + 1];
         ans[0] = 1;
         return ans;
+    }
+
+    /**
+     * 12. 整数转罗马数字
+     *
+     * @param num
+     * @return
+     */
+    public String intToRoman(int num) {
+        int[] nums = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] romans = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        while (num > 0) {
+            if (nums[i] <= num) {
+                num -= nums[i];
+                sb.append(romans[i]);
+            } else {
+                i++;
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 给定一个包含 n 个整数的数组 nums 和一个目标值 target，判断 nums 中是否存在四个元素 a，b，c 和 d ，
+     * 使得 a + b + c + d 的值与 target 相等？找出所有满足条件且不重复的四元组。
+     * <p>
+     * 注意：
+     * <p>
+     * 答案中不可以包含重复的四元组。
+     * <p>
+     * 示例：
+     * <p>
+     * 给定数组 nums = [1, 0, -1, 0, -2, 2]，和 target = 0。
+     * <p>
+     * 满足要求的四元组集合为：
+     * [
+     * [-1,  0, 0, 1],
+     * [-2, -1, 1, 2],
+     * [-2,  0, 0, 2]
+     * ]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/4sum
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        Arrays.sort(nums);
+        List<List<Integer>> ans = new ArrayList<>();
+        for (int a = 0; a <= nums.length - 4; a++) {
+            if (a > 0 && nums[a] == nums[a - 1]) {
+                continue;
+            }
+            for (int b = a + 1; b <= nums.length - 3; b++) {
+                if (b > a + 1 && nums[b] == nums[b - 1]) {
+                    continue;
+                }
+                int c = b + 1, d = nums.length - 1;
+                while (c < d) {
+                    int sum = nums[a] + nums[b] + nums[c] + nums[d];
+                    if (sum < target) {
+                        c++;
+                    } else if (sum > target) {
+                        d--;
+                    } else {
+                        ans.add(Arrays.asList(nums[a], nums[b], nums[c], nums[d]));
+                        while (c < d && nums[c] == nums[c + 1]) {
+                            c++;
+                        }
+                        while (c < d && nums[d] == nums[d - 1]) {
+                            d--;
+                        }
+                        d--;
+                        c++;
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+     * <p>
+     * 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+     * <p>
+     *  
+     * <p>
+     * 示例:
+     * <p>
+     * 给定 1->2->3->4, 你应该返回 2->1->4->3.
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/swap-nodes-in-pairs
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param head
+     * @return
+     */
+    public ListNode swapPairs(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode next = head.next;
+        head.next = swapPairs(next.next);
+        next.next = head;
+        return next;
     }
 }
