@@ -1097,50 +1097,94 @@ public class LeetCode3 {
     }
 
     /**
-     * 给定一个可能包含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+     * 给定一组不含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
      * <p>
      * 说明：解集不能包含重复的子集。
      * <p>
      * 示例:
      * <p>
-     * 输入: [1,2,2]
+     * 输入: nums = [1,2,3]
      * 输出:
      * [
-     * [2],
-     * [1],
-     * [1,2,2],
-     * [2,2],
-     * [1,2],
-     * []
+     * [3],
+     *   [1],
+     *   [2],
+     *   [1,2,3],
+     *   [1,3],
+     *   [2,3],
+     *   [1,2],
+     *   []
      * ]
      * <p>
      * 来源：力扣（LeetCode）
-     * 链接：https://leetcode-cn.com/problems/subsets-ii
+     * 链接：https://leetcode-cn.com/problems/subsets
      * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
      *
      * @param nums
      * @return
      */
-    public List<List<Integer>> subsetsWithDup(int[] nums) {
+    public List<List<Integer>> subsets(int[] nums) {
         List<List<Integer>> ans = new ArrayList<>();
-        subsetsWithDupDfs(nums, 0, new ArrayList<>(), ans);
+        if (nums.length == 0) {
+            ans.add(new ArrayList<>());
+            return ans;
+        }
+        List<List<Integer>> list = subsets(Arrays.copyOf(nums, nums.length - 1));
+        for (List<Integer> li : list) {
+            ans.add(new ArrayList<>(li));
+            li.add(nums[nums.length - 1]);
+            ans.add(li);
+        }
         return ans;
     }
 
-    private void subsetsWithDupDfs(int[] nums, int index, ArrayList<Integer> path, List<List<Integer>> ans) {
-        if (index == nums.length) {
-            ans.add(new ArrayList<>(path));
-            return;
+    /**
+     * 字符串 S 由小写字母组成。我们要把这个字符串划分为尽可能多的片段，同一个字母只会出现在其中的一个片段。
+     * 返回一个表示每个字符串片段的长度的列表。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：S = "ababcbacadefegdehijhklij"
+     * 输出：[9,7,8]
+     * 解释：
+     * 划分结果为 "ababcbaca", "defegde", "hijhklij"。
+     * 每个字母最多出现在一个片段中。
+     * 像 "ababcbacadefegde", "hijhklij" 的划分是错误的，因为划分的片段数较少。
+     *  
+     * <p>
+     * 提示：
+     * <p>
+     * S的长度在[1, 500]之间。
+     * S只包含小写字母 'a' 到 'z' 。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/partition-labels
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param S
+     * @return
+     */
+    public List<Integer> partitionLabels(String S) {
+        int[] letters = new int[26];
+        Arrays.fill(letters, -1);
+        //记录字母最右能到的位置
+        for (int i = 0; i < S.length(); i++) {
+            letters[S.charAt(i)-'a'] = i;
         }
-        ArrayList<Integer> used = new ArrayList<>();
-        for (int i = index; i < nums.length; i++) {
-            if (!used.contains(nums[i])) {
-                path.add(nums[i]);
-                subsetsWithDupDfs(nums, index + 1, path, ans);
-                path.remove(path.size() - 1);
-                used.add(nums[i]);
-            }
-            subsetsWithDupDfs(nums, index + 1, path, ans);
+        int left = 0, right = 0;
+        List<Integer> ans = new ArrayList<>();
+        while (right < S.length()) {
+            int start = left;
+            while (left <= right) {
+                //更新右边界
+                right = Math.max(right, letters[S.charAt(left)-'a']);
+                left++;
+            };
+            ans.add(left - start);
+            right++;
         }
+        return ans;
     }
 }

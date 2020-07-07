@@ -2,6 +2,9 @@ package com.example.leetcode;
 
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class LeetCode3Test {
@@ -19,12 +22,23 @@ class LeetCode3Test {
 
     @Test
     void subsetsWithDup() {
-        List<List<Integer>> lists = t.subsetsWithDup(new int[]{1, 2, 2});
+//        List<List<Integer>> lists = t.subsetsWithDup(new int[]{1, 2, 3});
     }
 
     @Test
     void hasPathSum() {
         TreeNode root = TreeNode.create(new Integer[0]);
         boolean b = t.hasPathSum(root, 0);
+    }
+
+    @Test
+    void subsets() {
+        List<List<Integer>> subsets = t.subsets(new int[]{1, 2, 3});
+    }
+
+    @Test
+    void partitionLabels() {
+        List<Integer> list = t.partitionLabels("caedbdedda");
+//        List<Integer> list = t.partitionLabels("ababcbacadefegdehijhklij");
     }
 }
