@@ -299,4 +299,501 @@ public class LeetCode4 {
         next.next = head;
         return next;
     }
+
+    /**
+     * 你正在使用一堆木板建造跳水板。有两种类型的木板，其中长度较短的木板长度为shorter，
+     * 长度较长的木板长度为longer。你必须正好使用k块木板。编写一个方法，生成跳水板所有可能的长度。
+     * <p>
+     * 返回的长度需要从小到大排列。
+     * <p>
+     * 示例：
+     * <p>
+     * 输入：
+     * shorter = 1
+     * longer = 2
+     * k = 3
+     * 输出： {3,4,5,6}
+     * 提示：
+     * <p>
+     * 0 < shorter <= longer
+     * 0 <= k <= 100000
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/diving-board-lcci
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param shorter
+     * @param longer
+     * @param k
+     * @return
+     */
+    public int[] divingBoard(int shorter, int longer, int k) {
+        if (k == 0) {
+            return new int[]{};
+        } else if (shorter == longer) {
+            return new int[]{shorter * k};
+        }
+        int[] ans = new int[k + 1];
+        for (int i = 0; i <= k; i++) {
+            ans[i] = longer * i + shorter * (k - i);
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个正整数 n（1 ≤ n ≤ 30），输出外观数列的第 n 项。
+     * <p>
+     * 注意：整数序列中的每一项将表示为一个字符串。
+     * <p>
+     * 「外观数列」是一个整数序列，从数字 1 开始，序列中的每一项都是对前一项的描述。前五项如下：
+     * <p>
+     * 1.     1
+     * 2.     11
+     * 3.     21
+     * 4.     1211
+     * 5.     111221
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/count-and-say
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param n
+     * @return
+     */
+    public String countAndSay(int n) {
+        if (n == 1) {
+            return "1";
+        }
+        String s = countAndSay(n - 1);
+        StringBuilder sb = new StringBuilder();
+        int i = s.length() - 1;
+        while (i >= 0) {
+            int j = i;
+            sb.append(s.charAt(j));
+            while (i >= 0 && s.charAt(i) == s.charAt(j)) {
+                i--;
+            }
+            sb.append(j - i);
+        }
+        return sb.reverse().toString();
+    }
+
+    /**
+     * 给定一个仅包含大小写字母和空格 ' ' 的字符串 s，返回其最后一个单词的长度。
+     * 如果字符串从左向右滚动显示，那么最后一个单词就是最后出现的单词。
+     * <p>
+     * 如果不存在最后一个单词，请返回 0 。
+     * <p>
+     * 说明：一个单词是指仅由字母组成、不包含任何空格字符的 最大子字符串。
+     * <p>
+     *  
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: "Hello World"
+     * 输出: 5
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/length-of-last-word
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public int lengthOfLastWord(String s) {
+        StringBuilder sb = new StringBuilder();
+        s = s.trim();
+        for (int i = s.toCharArray().length - 1; i >= 0 && s.charAt(i) != ' '; i--) {
+            sb.append(s.charAt(i));
+        }
+        return sb.length();
+    }
+
+    /**
+     * 找出数组中重复的数字。
+     * <p>
+     * <p>
+     * 在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。数组中某些数字是重复的，
+     * 但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：
+     * [2, 3, 1, 0, 2, 5, 3]
+     * 输出：2 或 3
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+    public int findRepeatNumber(int[] nums) {
+        HashSet<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            if (set.contains(num)) {
+                return num;
+            }
+            set.add(num);
+        }
+        return -1;
+    }
+
+    /**
+     * 实现 int sqrt(int x) 函数。
+     * <p>
+     * 计算并返回 x 的平方根，其中 x 是非负整数。
+     * <p>
+     * 由于返回类型是整数，结果只保留整数的部分，小数部分将被舍去。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: 4
+     * 输出: 2
+     * 示例 2:
+     * <p>
+     * 输入: 8
+     * 输出: 2
+     * 说明: 8 的平方根是 2.82842...,
+     *      由于返回类型是整数，小数部分将被舍去。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/sqrtx
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param x
+     * @return
+     */
+    public int mySqrt(int x) {
+        long left = 1, right = x;
+        while (left < right) {
+            long mid = (right + left) / 2;
+            if (mid * mid > x) {
+                right = mid - 1;
+            } else if (mid * mid < x) {
+                left = mid + 1;
+            } else {
+                return (int) mid;
+            }
+        }
+        return left * left > x ? (int) left - 1 : (int) left;
+    }
+
+    /**
+     * 地上有一个m行n列的方格，从坐标 [0,0] 到坐标 [m-1,n-1] 。一个机器人从坐标 [0, 0] 的格子开始移动，
+     * 它每次可以向左、右、上、下移动一格（不能移动到方格外），也不能进入行坐标和列坐标的数位之和大于k的格子。
+     * 例如，当k为18时，机器人能够进入方格 [35, 37] ，因为3+5+3+7=18。但它不能进入方格 [35, 38]，因为3+5+3+8=19。
+     * 请问该机器人能够到达多少个格子？
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：m = 2, n = 3, k = 1
+     * 输出：3
+     * 示例 2：
+     * <p>
+     * 输入：m = 3, n = 1, k = 0
+     * 输出：1
+     * 提示：
+     * <p>
+     * 1 <= n,m <= 100
+     * 0 <= k <= 20
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param m
+     * @param n
+     * @param k
+     * @return
+     */
+    public int movingCount(int m, int n, int k) {
+        int ans = 0;
+        int[][] visited = new int[m][n];
+        LinkedList<int[]> deque = new LinkedList<>();
+        deque.add(new int[]{0, 0});
+        visited[0][0] = 1;
+        while (!deque.isEmpty()) {
+            ans++;
+            int[] p = deque.pop();
+            for (int[] d : new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}}) {
+                int i = p[0] + d[0];
+                int j = p[1] + d[1];
+                if (movingCountChecked(i, j, m, n, k) && visited[i][j] == 0) {
+                    deque.add(new int[]{i, j});
+                    visited[i][j] = 1;
+                }
+            }
+        }
+        return ans;
+    }
+
+    private boolean movingCountChecked(int i, int j, int m, int n, int k) {
+        if (i < 0 || i >= m || j < 0 || j >= n) {
+            return false;
+        }
+        int sum = 0;
+        while (i > 0) {
+            sum += i % 10;
+            i /= 10;
+        }
+        while (j > 0) {
+            sum += j % 10;
+            j /= 10;
+        }
+        return sum <= k;
+    }
+
+    /**
+     * 输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，
+     * 即链表的尾节点是倒数第1个节点。例如，一个链表有6个节点，从头节点开始，它们的值依次是1、2、3、4、5、6。
+     * 这个链表的倒数第3个节点是值为4的节点。
+     * <p>
+     *  
+     * <p>
+     * 示例：
+     * <p>
+     * 给定一个链表: 1->2->3->4->5, 和 k = 2.
+     * <p>
+     * 返回链表 4->5.
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param head
+     * @param k
+     * @return
+     */
+    public ListNode getKthFromEnd(ListNode head, int k) {
+        ListNode fast = head, slow = head;
+        while (k > 0) {
+            fast = fast.next;
+            k--;
+        }
+        while (fast != null) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return slow;
+    }
+
+    /**
+     * 实现一个算法，确定一个字符串 s 的所有字符是否全都不同。
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入: s = "leetcode"
+     * 输出: false
+     * 示例 2：
+     * <p>
+     * 输入: s = "abc"
+     * 输出: true
+     * 限制：
+     * <p>
+     * 0 <= len(s) <= 100
+     * 如果你不使用额外的数据结构，会很加分。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/is-unique-lcci
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param astr
+     * @return
+     */
+    public boolean isUnique(String astr) {
+        char[] chars = astr.toCharArray();
+        Arrays.sort(chars);
+        for (int i = 1; i < chars.length; i++) {
+            if (chars[i] == chars[i - 1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 请实现一个函数，把字符串 s 中的每个空格替换成"%20"。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "We are happy."
+     * 输出："We%20are%20happy."
+     *  
+     * <p>
+     * 限制：
+     * <p>
+     * 0 <= s 的长度 <= 10000
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @return
+     */
+    public String replaceSpace(String s) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            if (c == ' ') {
+                sb.append("%20");
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 给定一个非负整数 numRows，生成杨辉三角的前 numRows 行。
+     * <p>
+     * <p>
+     * <p>
+     * 在杨辉三角中，每个数是它左上方和右上方的数的和。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: 5
+     * 输出:
+     * [
+     * [1],
+     * [1,1],
+     * [1,2,1],
+     * [1,3,3,1],
+     * [1,4,6,4,1]
+     * ]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/pascals-triangle
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param numRows
+     * @return
+     */
+    public List<List<Integer>> generate(int numRows) {
+        List<List<Integer>> ans = new ArrayList<>();
+        if (numRows == 0) {
+            return ans;
+        }
+        if (numRows == 1) {
+            ans.add(Arrays.asList(1));
+            return ans;
+        }
+        List<List<Integer>> list = generate(numRows - 1);
+        ArrayList<Integer> temp = new ArrayList<>();
+        List<Integer> last = list.get(list.size() - 1);
+        for (int i = 0; i < last.size(); i++) {
+            temp.add(i == 0 ? 1 : last.get(i) + last.get(i - 1));
+        }
+        temp.add(1);
+        list.add(temp);
+        return list;
+    }
+
+    /**
+     * 给你一幅由 N × N 矩阵表示的图像，其中每个像素的大小为 4 字节。请你设计一种算法，将图像旋转 90 度。
+     * <p>
+     * 不占用额外内存空间能否做到？
+     * <p>
+     *  
+     * <p>
+     * 示例 1:
+     * <p>
+     * 给定 matrix =
+     * [
+     * [1,2,3],
+     * [4,5,6],
+     * [7,8,9]
+     * ],
+     * <p>
+     * 原地旋转输入矩阵，使其变为:
+     * [
+     * [7,4,1],
+     * [8,5,2],
+     * [9,6,3]
+     * ]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/rotate-matrix-lcci
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param matrix
+     */
+    public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n / 2; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[i][n - j - 1];
+                matrix[i][n - j - 1] = temp;
+            }
+        }
+    }
+
+    /**
+     * 在一个 n * m 的二维数组中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。
+     * 请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
+     * <p>
+     *  
+     * <p>
+     * 示例:
+     * <p>
+     * 现有矩阵 matrix 如下：
+     * <p>
+     * [
+     * [1,   4,  7, 11, 15],
+     * [2,   5,  8, 12, 19],
+     * [3,   6,  9, 16, 22],
+     * [10, 13, 14, 17, 24],
+     * [18, 21, 23, 26, 30]
+     * ]
+     * 给定 target = 5，返回 true。
+     * <p>
+     * 给定 target = 20，返回 false。
+     * <p>
+     *  
+     * <p>
+     * 限制：
+     * <p>
+     * 0 <= n <= 1000
+     * <p>
+     * 0 <= m <= 1000
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param matrix
+     * @param target
+     * @return
+     */
+    public boolean findNumberIn2DArray(int[][] matrix, int target) {
+        if (matrix.length == 0 || matrix[0].length == 0) {
+            return false;
+        }
+        for (int i = matrix.length - 1; i >= 0; i--) {
+            if (matrix[i][0] == target) {
+                return true;
+            } else if (matrix[i][0] < target) {
+                for (int j = 0; j < matrix[i].length; j++) {
+                    if (matrix[i][j] == target) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
