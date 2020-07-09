@@ -18,4 +18,9 @@ class LeetCode4Test {
     void movingCount() {
         int i = t.movingCount(3, 1, 0);
     }
+
+    @Test
+    void respace() {
+        int i = t.respace(new String[]{"looked", "just", "like", "her", "brother"}, "jesslookedjustliketimherbrother");
+    }
 }
