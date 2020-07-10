@@ -940,4 +940,73 @@ public class LeetCode4 {
     private boolean gameOfLifeCheck(int i, int j, int[][] board) {
         return i >= 0 && j >= 0 && i < board.length && j < board[i].length;
     }
+
+    public void sortColors(int[] nums) {
+        int i = 0, j = 0, k = nums.length - 1;
+        while (i <= k) {
+            if (nums[i] == 2) {
+                sortColorsSwap(nums, i, k--);
+            } else if (nums[i] == 0) {
+                sortColorsSwap(nums, i++, j++);
+            } else {
+                i++;
+            }
+        }
+    }
+
+    private void sortColorsSwap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    public void nextPermutation(int[] nums) {
+        int i = nums.length - 1;
+        while (i > 0 && nums[i] <= nums[i - 1]) {
+            i--;
+        }
+        int j = i;
+        while (j < nums.length && i - 1 >= 0 && nums[j] > nums[i - 1]) {
+            j++;
+        }
+        if (i - 1 >= 0 && j - 1 >= 0) {
+            int temp = nums[i - 1];
+            nums[i - 1] = nums[j - 1];
+            nums[j - 1] = temp;
+        }
+        Arrays.sort(nums, i, nums.length);
+    }
+
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        LinkedList<Integer> deque = new LinkedList<>();
+        while (l1 != null) {
+            deque.push(l1.val);
+            l1 = l1.next;
+        }
+        LinkedList<Integer> deque2 = new LinkedList<>();
+        while (l2 != null) {
+            deque2.push(l2.val);
+            l2 = l2.next;
+        }
+        ListNode ans = null;
+        int carry = 0;
+        while (!deque.isEmpty() || !deque2.isEmpty() || carry != 0) {
+            int sum = (deque.isEmpty() ? 0 : deque.pop()) + (deque2.isEmpty() ? 0 : deque2.pop()) + carry;
+            carry = sum / 10;
+            ListNode node = new ListNode(sum % 10);
+            node.next = ans;
+            ans = node;
+        }
+        return ans;
+    }
+
+    public int fib(int n) {
+        int i = 0, j = 1, sum = 0;
+        for (int k = 2; k <= n; k++) {
+            sum = (i + j) % 1000000007;
+            i = j;
+            j = sum;
+        }
+        return n < 2 ? n : sum;
+    }
 }

@@ -28,4 +28,19 @@ class LeetCode4Test {
     void gameOfLife() {
         t.gameOfLife(new int[][]{{0,1,0},{0,0,1},{1,1,1},{0,0,0}});
     }
+
+    @Test
+    void sortColors() {
+        t.sortColors(new int[]{2,0,2,1,1,0});
+    }
+
+    @Test
+    void nextPermutation() {
+        t.nextPermutation(new int[]{1,3,2});
+    }
+
+    @Test
+    void fib() {
+        int fib = t.fib(3);
+    }
 }
