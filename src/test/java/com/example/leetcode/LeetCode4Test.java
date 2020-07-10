@@ -23,4 +23,9 @@ class LeetCode4Test {
     void respace() {
         int i = t.respace(new String[]{"looked", "just", "like", "her", "brother"}, "jesslookedjustliketimherbrother");
     }
+
+    @Test
+    void gameOfLife() {
+        t.gameOfLife(new int[][]{{0,1,0},{0,0,1},{1,1,1},{0,0,0}});
+    }
 }
