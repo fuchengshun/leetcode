@@ -1217,4 +1217,173 @@ public class LeetCode4 {
             indexes[left++] = temp[k++];
         }
     }
+
+    /**
+     * 给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
+     * <p>
+     * 设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
+     * <p>
+     * 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+     * 卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+     * 示例:
+     * <p>
+     * 输入: [1,2,3,0,2]
+     * 输出: 3
+     * 解释: 对应的交易状态为: [买入, 卖出, 冷冻期, 买入, 卖出]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param prices
+     * @return
+     */
+    public int maxProfit(int[] prices) {
+        if (prices.length == 0) {
+            return 0;
+        }
+        int[][] dp = new int[prices.length][3];
+        dp[0][0] = -prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            //0-持有，1-不持有且冷冻，2-不持有且没有冷冻
+            dp[i][0] = Math.max(dp[i - 1][0], dp[i - 1][2] - prices[i]);
+            dp[i][1] = dp[i - 1][0] + prices[i];
+            dp[i][2] = Math.max(dp[i - 1][2], dp[i - 1][1]);
+        }
+        return Math.max(dp[prices.length - 1][1], dp[prices.length - 1][2]);
+    }
+
+    /**
+     * 输入一个链表的头节点，从尾到头反过来返回每个节点的值（用数组返回）。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：head = [1,3,2]
+     * 输出：[2,3,1]
+     *  
+     * <p>
+     * 限制：
+     * <p>
+     * 0 <= 链表长度 <= 10000
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param head
+     * @return
+     */
+    public int[] reversePrint(ListNode head) {
+        LinkedList<ListNode> deque = new LinkedList<>();
+        while (head != null) {
+            deque.push(head);
+            head = head.next;
+        }
+        int[] ans = new int[deque.size()];
+        int i = 0;
+        while (!deque.isEmpty()) {
+            ans[i++] = deque.pop().val;
+        }
+        return ans;
+    }
+
+    public void gameOfLife(int[][] board) {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                int live = 0;
+                for (int[] d : new int[][]{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}) {
+                    if (gameOfLifeCheck(d[0] + i, d[1] + j, board) && (board[d[0] + i][d[1] + j] & 1) == 1) {
+                        live++;
+                    }
+                }
+                if ((board[i][j] & 1) == 1) {
+                    if (!(live < 2 || live > 3)) {
+                        board[i][j] = 3;
+                    }
+                } else if (live == 3) {
+                    board[i][j] = 2;
+                }
+            }
+        }
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                board[i][j] >>= 1;
+            }
+        }
+    }
+
+    private boolean gameOfLifeCheck(int i, int j, int[][] board) {
+        return i >= 0 && j >= 0 && i < board.length && j < board[i].length;
+    }
+
+    public void sortColors(int[] nums) {
+        int i = 0, j = 0, k = nums.length - 1;
+        while (i <= k) {
+            if (nums[i] == 2) {
+                sortColorsSwap(nums, i, k--);
+            } else if (nums[i] == 0) {
+                sortColorsSwap(nums, i++, j++);
+            } else {
+                i++;
+            }
+        }
+    }
+
+    private void sortColorsSwap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    public void nextPermutation(int[] nums) {
+        int i = nums.length - 1;
+        while (i > 0 && nums[i] <= nums[i - 1]) {
+            i--;
+        }
+        int j = i;
+        while (j < nums.length && i - 1 >= 0 && nums[j] > nums[i - 1]) {
+            j++;
+        }
+        if (i - 1 >= 0 && j - 1 >= 0) {
+            int temp = nums[i - 1];
+            nums[i - 1] = nums[j - 1];
+            nums[j - 1] = temp;
+        }
+        Arrays.sort(nums, i, nums.length);
+    }
+
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        LinkedList<Integer> deque = new LinkedList<>();
+        while (l1 != null) {
+            deque.push(l1.val);
+            l1 = l1.next;
+        }
+        LinkedList<Integer> deque2 = new LinkedList<>();
+        while (l2 != null) {
+            deque2.push(l2.val);
+            l2 = l2.next;
+        }
+        ListNode ans = null;
+        int carry = 0;
+        while (!deque.isEmpty() || !deque2.isEmpty() || carry != 0) {
+            int sum = (deque.isEmpty() ? 0 : deque.pop()) + (deque2.isEmpty() ? 0 : deque2.pop()) + carry;
+            carry = sum / 10;
+            ListNode node = new ListNode(sum % 10);
+            node.next = ans;
+            ans = node;
+        }
+        return ans;
+    }
+
+    public int fib(int n) {
+        int i = 0, j = 1, sum = 0;
+        for (int k = 2; k <= n; k++) {
+            sum = (i + j) % 1000000007;
+            i = j;
+            j = sum;
+        }
+        return n < 2 ? n : sum;
+    }
 }
