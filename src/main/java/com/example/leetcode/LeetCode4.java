@@ -840,4 +840,381 @@ public class LeetCode4 {
         }
         return dp[sentence.length()];
     }
+
+    /**
+     * 给定一个单词列表，我们将这个列表编码成一个索引字符串 S 与一个索引列表 A。
+     * <p>
+     * 例如，如果这个列表是 ["time", "me", "bell"]，我们就可以将其表示为 S = "time#bell#" 和 indexes = [0, 2, 5]。
+     * <p>
+     * 对于每一个索引，我们可以通过从字符串 S 中索引的位置开始读取字符串，直到 "#" 结束，来恢复我们之前的单词列表。
+     * <p>
+     * 那么成功对给定单词列表进行编码的最小字符串长度是多少呢？
+     * <p>
+     *  
+     * <p>
+     * 示例：
+     * <p>
+     * 输入: words = ["time", "me", "bell"]
+     * 输出: 10
+     * 说明: S = "time#bell#" ， indexes = [0, 2, 5] 。
+     *  
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= words.length <= 2000
+     * 1 <= words[i].length <= 7
+     * 每个单词都是小写字母 。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/short-encoding-of-words
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param words
+     * @return
+     */
+    public int minimumLengthEncoding(String[] words) {
+        Set<String> set = new HashSet<>(Arrays.asList(words));
+        for (String s : words) {
+            for (int k = 1; k < s.length(); k++) {
+                set.remove(s.substring(k));
+            }
+        }
+        int ans = 0;
+        for (String s : set) {
+            ans += s.length() + 1;
+        }
+        return ans;
+    }
+
+    /**
+     * 实现 pow(x, n) ，即计算 x 的 n 次幂函数。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: 2.00000, 10
+     * 输出: 1024.00000
+     * 示例 2:
+     * <p>
+     * 输入: 2.10000, 3
+     * 输出: 9.26100
+     * 示例 3:
+     * <p>
+     * 输入: 2.00000, -2
+     * 输出: 0.25000
+     * 解释: 2-2 = 1/22 = 1/4 = 0.25
+     * 说明:
+     * <p>
+     * -100.0 < x < 100.0
+     * n 是 32 位有符号整数，其数值范围是 [−231, 231 − 1] 。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/powx-n
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param x
+     * @param n
+     * @return
+     */
+    public double myPow(double x, int n) {
+        long N = n;
+        return N >= 0 ? myPowPositive(x, N) : 1 / myPowPositive(x, -N);
+    }
+
+    private double myPowPositive(double x, long n) {
+        if (n == 0) {
+            return 1;
+        }
+        double half = myPowPositive(x, n / 2);
+        return n % 2 == 0 ? half * half : half * half * x;
+    }
+
+    /**
+     * 你必须在原地旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要使用另一个矩阵来旋转图像。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 给定 matrix =
+     * [
+     * [1,2,3],
+     * [4,5,6],
+     * [7,8,9]
+     * ],
+     * <p>
+     * 原地旋转输入矩阵，使其变为:
+     * [
+     * [7,4,1],
+     * [8,5,2],
+     * [9,6,3]
+     * ]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/rotate-image
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param matrix
+     */
+    public void rotateII(int[][] matrix) {
+        int n = matrix.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n / 2; j++) {
+                int temp = matrix[i][j];
+                matrix[i][j] = matrix[i][n - j - 1];
+                matrix[i][n - j - 1] = temp;
+            }
+        }
+    }
+
+    /**
+     * 给定一个排序链表，删除所有重复的元素，使得每个元素只出现一次。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: 1->1->2
+     * 输出: 1->2
+     * 示例 2:
+     * <p>
+     * 输入: 1->1->2->3->3
+     * 输出: 1->2->3
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param head
+     * @return
+     */
+    public ListNode deleteDuplicates(ListNode head) {
+        ListNode cur = head, pre = null;
+        while (cur != null) {
+            if (pre != null && cur.val == pre.val) {
+                pre.next = cur.next;
+            } else {
+                pre = cur;
+            }
+            cur = cur.next;
+        }
+        return head;
+    }
+
+    /**
+     * 字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。
+     * 比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
+     * <p>
+     *  
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入: s = "abcdefg", k = 2
+     * 输出: "cdefgab"
+     * 示例 2：
+     * <p>
+     * 输入: s = "lrloseumgh", k = 6
+     * 输出: "umghlrlose"
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param s
+     * @param n
+     * @return
+     */
+    public String reverseLeftWords(String s, int n) {
+        return s.substring(n) + s.substring(0, n);
+    }
+
+    /**
+     * 给定一个二叉树，找出其最小深度。
+     * <p>
+     * 最小深度是从根节点到最近叶子节点的最短路径上的节点数量。
+     * <p>
+     * 说明: 叶子节点是指没有子节点的节点。
+     * <p>
+     * 示例:
+     * <p>
+     * 给定二叉树 [3,9,20,null,null,15,7],
+     * <p>
+     * 3
+     * / \
+     * 9  20
+     * /  \
+     * 15   7
+     * 返回它的最小深度  2.
+     *
+     * @param root
+     * @return
+     */
+    public int minDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        } else if (root.left == null) {
+            return minDepth(root.right) + 1;
+        } else if (root.right == null) {
+            return minDepth(root.left) + 1;
+        }
+        return Math.min(minDepth(root.left), minDepth(root.right)) + 1;
+    }
+
+    /**
+     * 反转从位置 m 到 n 的链表。请使用一趟扫描完成反转。
+     * <p>
+     * 说明:
+     * 1 ≤ m ≤ n ≤ 链表长度。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: 1->2->3->4->5->NULL, m = 2, n = 4
+     * 输出: 1->4->3->2->5->NULL
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/reverse-linked-list-ii
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param head
+     * @param m
+     * @param n
+     * @return
+     */
+    public ListNode reverseBetween(ListNode head, int m, int n) {
+        LinkedList<ListNode> deque = new LinkedList<>();
+        ListNode start = new ListNode(0), cur = start;
+        for (int i = 1; i < m && head != null; i++) {
+            cur.next = head;
+            head = head.next;
+            cur = cur.next;
+        }
+        for (int i = m; i <= n && head != null; i++) {
+            deque.push(head);
+            head = head.next;
+        }
+        while (!deque.isEmpty()) {
+            cur.next = deque.pop();
+            cur = cur.next;
+        }
+        cur.next = head;
+        return start.next;
+    }
+
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        LinkedList<TreeNode> deque = new LinkedList<>();
+        List<List<Integer>> ans = new ArrayList<>();
+        if (root == null) {
+            return ans;
+        }
+        deque.add(root);
+        boolean toLeft = false;
+        while (!deque.isEmpty()) {
+            List<Integer> temp = new ArrayList<>();
+            for (int size = deque.size(); size > 0; size--) {
+                TreeNode poll = deque.poll();
+                temp.add(poll.val);
+                if (poll.left != null) {
+                    deque.add(poll.left);
+                }
+                if (poll.right != null) {
+                    deque.add(poll.right);
+                }
+            }
+            if (toLeft) {
+                Collections.reverse(temp);
+            }
+            toLeft = !toLeft;
+            ans.add(temp);
+        }
+        return ans;
+    }
+
+    public ListNode deleteDuplicatesII(ListNode head) {
+        LinkedList<ListNode> deque = new LinkedList<>();
+        while (head != null) {
+            if (deque.isEmpty() || deque.peek().val != head.val) {
+                deque.push(head);
+                head = head.next;
+            } else {
+                ListNode pop = deque.pop();
+                while (head != null && head.val == pop.val) {
+                    head = head.next;
+                }
+            }
+        }
+        ListNode ans = null;
+        while (!deque.isEmpty()) {
+            ListNode pop = deque.pop();
+            pop.next = ans;
+            ans = pop;
+        }
+        return ans;
+    }
+
+    /**
+     * 给定一个整数数组 nums，按要求返回一个新数组 counts。数组 counts 有该性质：
+     * counts[i] 的值是  nums[i] 右侧小于 nums[i] 的元素的数量。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: [5,2,6,1]
+     * 输出: [2,1,1,0]
+     * 解释:
+     * 5 的右侧有 2 个更小的元素 (2 和 1).
+     * 2 的右侧仅有 1 个更小的元素 (1).
+     * 6 的右侧有 1 个更小的元素 (1).
+     * 1 的右侧有 0 个更小的元素.
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/count-of-smaller-numbers-after-self
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param nums
+     * @return
+     */
+    public List<Integer> countSmaller(int[] nums) {
+        int[] indexes = new int[nums.length];
+        for (int i = 0; i < indexes.length; i++) {
+            indexes[i] = i;
+        }
+        int[] temp = new int[nums.length];
+        int[] ans = new int[indexes.length];
+        mergeSort(0, indexes.length - 1, nums, indexes, temp, ans);
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int an : ans) {
+            list.add(an);
+        }
+        return list;
+    }
+
+    private void mergeSort(int left, int right, int[] nums, int[] indexes, int[] temp, int[] ans) {
+        if (left >= right) {
+            return;
+        }
+        int mid = (left + right) / 2;
+        mergeSort(left, mid, nums, indexes, temp, ans);
+        mergeSort(mid + 1, right, nums, indexes, temp, ans);
+        int i = left, j = mid + 1, k = 0;
+        while (i <= mid && j <= right) {
+            if (nums[indexes[i]] < nums[indexes[j]]) {
+                ans[indexes[i]] += j - mid - 1;
+                temp[k++] = indexes[i++];
+            } else {
+                temp[k++] = indexes[j++];
+            }
+        }
+        while (i <= mid) {
+            ans[indexes[i]] += right - mid;
+            temp[k++] = indexes[i++];
+        }
+        while (j <= right) {
+            temp[k++] = indexes[j++];
+        }
+        k = 0;
+        while (left <= right) {
+            indexes[left++] = temp[k++];
+        }
+    }
 }
