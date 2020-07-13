@@ -2,6 +2,7 @@ package com.example.leetcode;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 class LeetCode4Test {
@@ -70,5 +71,15 @@ class LeetCode4Test {
     @Test
     void countSmaller() {
         List<Integer> integers = t.countSmaller(new int[]{5, 2, 6, 1});
+    }
+
+    @Test
+    void levelOrderBottom() {
+        List<List<Integer>> list = t.levelOrderBottom(TreeNode.create(new Integer[]{3, 9, 20, null, null, 15, 7}));
+    }
+
+    @Test
+    void buildTree() {
+        TreeNode treeNode = t.buildTree(new int[]{3, 9, 20, 15, 7}, new int[]{9, 3, 15, 20, 7});
     }
 }

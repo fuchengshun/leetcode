@@ -1386,4 +1386,231 @@ public class LeetCode4 {
         }
         return n < 2 ? n : sum;
     }
+
+    public int[] intersect(int[] nums1, int[] nums2) {
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int i = 0, j = 0;
+        List<Integer> list = new ArrayList<>();
+        while (i < nums1.length && j < nums2.length) {
+            if (nums1[i] < nums2[j]) {
+                i++;
+            } else if (nums1[i] > nums2[j]) {
+                j++;
+            } else {
+                list.add(nums1[i]);
+                i++;
+                j++;
+            }
+        }
+        return list.stream().mapToInt(a -> a).toArray();
+    }
+
+    public List<List<Integer>> levelOrderBottom(TreeNode root) {
+        List<List<Integer>> ans = new ArrayList<>();
+        if (root == null) {
+            return ans;
+        }
+        LinkedList<TreeNode> deque = new LinkedList<>();
+        deque.add(root);
+        while (!deque.isEmpty()) {
+            List<Integer> temp = new ArrayList<>();
+            for (int size = deque.size(); size > 0; size--) {
+                TreeNode pop = deque.pop();
+                temp.add(pop.val);
+                if (pop.left != null) {
+                    deque.add(pop.left);
+                }
+                if (pop.right != null) {
+                    deque.add(pop.right);
+                }
+            }
+            ans.add(temp);
+        }
+        Collections.reverse(ans);
+        return ans;
+    }
+
+    /**
+     * 定义一个函数，输入一个链表的头节点，反转该链表并输出反转后链表的头节点。
+     * <p>
+     *  
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: 1->2->3->4->5->NULL
+     * 输出: 5->4->3->2->1->NULL
+     *  
+     * <p>
+     * 限制：
+     * <p>
+     * 0 <= 节点个数 <= 5000
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param head
+     * @return
+     */
+    public ListNode reverseList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode node = reverseList(head.next);
+        head.next.next = head;
+        head.next = null;
+        return node;
+    }
+
+    /**
+     * 给定一个三角形，找出自顶向下的最小路径和。每一步只能移动到下一行中相邻的结点上。
+     * <p>
+     * 相邻的结点 在这里指的是 下标 与 上一层结点下标 相同或者等于 上一层结点下标 + 1 的两个结点。
+     * <p>
+     *  
+     * <p>
+     * 例如，给定三角形：
+     * <p>
+     * [
+     * [2],
+     * [3,4],
+     * [6,5,7],
+     * [4,1,8,3]
+     * ]
+     * 自顶向下的最小路径和为 11（即，2 + 3 + 5 + 1 = 11）。
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/triangle
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param triangle
+     * @return
+     */
+    public int minimumTotal(List<List<Integer>> triangle) {
+        return minimumTotalDfs(triangle, 0, 0, new Integer[triangle.size()][triangle.get(triangle.size() - 1).size()]);
+    }
+
+    private int minimumTotalDfs(List<List<Integer>> triangle, int level, int c, Integer[][] memo) {
+        if (level == triangle.size()) {
+            return 0;
+        }
+        if (memo[level][c] != null) {
+            return memo[level][c];
+        }
+        int i = minimumTotalDfs(triangle, level + 1, c, memo);
+        int j = minimumTotalDfs(triangle, level + 1, c + 1, memo);
+        return memo[level][c] = Math.min(i, j) + triangle.get(level).get(c);
+    }
+
+    public void rotate(int[] nums, int k) {
+        int count = nums.length;
+        k = k % nums.length;
+        for (int i = 0; i < nums.length && count > 0; i++) {
+            int index = i, temp = nums[index];
+            do {
+                int next = (index - k + nums.length) % nums.length;
+                nums[index] = next == i ? temp : nums[next];
+                index = next;
+                count--;
+            } while (index != i);
+        }
+    }
+
+    public boolean isAnagram(String s, String t) {
+        char[] c1 = s.toCharArray();
+        char[] c2 = t.toCharArray();
+        Arrays.sort(c1);
+        Arrays.sort(c2);
+        return Arrays.equals(c1, c2);
+    }
+
+    public int[] exchange(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            if (nums[right] % 2 == 0) {
+                right--;
+            } else if (nums[left] % 2 == 1) {
+                left++;
+            } else {
+                int temp = nums[left];
+                nums[left++] = nums[right];
+                nums[right--] = temp;
+            }
+        }
+        return nums;
+    }
+
+    public boolean isBalanced(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
+        if (!isBalanced(root.left) || !isBalanced(root.right)) {
+            return false;
+        }
+        return Math.abs(isBalancedHeight(root.left) - isBalancedHeight(root.right)) <= 1;
+    }
+
+    private int isBalancedHeight(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        return Math.max(isBalancedHeight(root.left), isBalancedHeight(root.right)) + 1;
+    }
+
+    public boolean CheckPermutation(String s1, String s2) {
+        char[] c1 = s1.toCharArray();
+        char[] c2 = s2.toCharArray();
+        Arrays.sort(c1);
+        Arrays.sort(c2);
+        return Arrays.equals(c1, c2);
+    }
+
+    /**
+     * 输入某二叉树的前序遍历和中序遍历的结果，请重建该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。
+     * <p>
+     *  
+     * <p>
+     * 例如，给出
+     * <p>
+     * 前序遍历 preorder = [3,9,20,15,7]
+     * 中序遍历 inorder = [9,3,15,20,7]
+     * 返回如下的二叉树：
+     * <p>
+     * 3
+     * / \
+     * 9  20
+     * /  \
+     * 15   7
+     *  
+     * <p>
+     * 限制：
+     * <p>
+     * 0 <= 节点个数 <= 5000
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param preorder
+     * @param inorder
+     * @return
+     */
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        return buildTreeHelper(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1);
+    }
+
+    private TreeNode buildTreeHelper(int[] preorder, int i, int j, int[] inorder, int m, int n) {
+        if (i > j) {
+            return null;
+        }
+        TreeNode root = new TreeNode(preorder[i]);
+        for (int k = m; k <= n; k++) {
+            if (preorder[i]==inorder[k]){
+                root.left = buildTreeHelper(preorder, i + 1, i + k - m, inorder, m, k - 1);
+                root.right = buildTreeHelper(preorder, i + 1 + k - m, j, inorder, k + 1, n);
+            }
+        }
+        return root;
+    }
 }
