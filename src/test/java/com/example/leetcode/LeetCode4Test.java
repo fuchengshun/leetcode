@@ -2,6 +2,7 @@ package com.example.leetcode;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,5 +82,26 @@ class LeetCode4Test {
     @Test
     void buildTree() {
         TreeNode treeNode = t.buildTree(new int[]{3, 9, 20, 15, 7}, new int[]{9, 3, 15, 20, 7});
+    }
+
+    @Test
+    void minimumTotalII() {
+        Integer[][] arr= {{2}, {3, 4}, {6, 5, 7}, {4, 1, 8, 3}};
+        List<List<Integer>> list = new ArrayList<>();
+        list.add(Arrays.asList(arr[0]));
+        list.add(Arrays.asList(arr[1]));
+        list.add(Arrays.asList(arr[2]));
+        list.add(Arrays.asList(arr[3]));
+        t.minimumTotalII(list);
+    }
+
+    @Test
+    void divide() {
+//        int divide = t.divide(1004958205, -2137325331);
+    }
+
+    @Test
+    void hammingWeight() {
+        t.hammingWeight(4294967293);
     }
 }

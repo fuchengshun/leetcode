@@ -1491,6 +1491,17 @@ public class LeetCode4 {
         return minimumTotalDfs(triangle, 0, 0, new Integer[triangle.size()][triangle.get(triangle.size() - 1).size()]);
     }
 
+    public int minimumTotalII(List<List<Integer>> triangle) {
+        int m = triangle.size(), n = triangle.get(m - 1).size();
+        int[][] dp = new int[m][n];
+        for (int i = m - 1; i >= 0; i--) {
+            for (int j = triangle.get(i).size() - 1; j >= 0; j--) {
+                dp[i][j] = (i + 1 >= m ? 0 : Math.min(dp[i + 1][j], dp[i + 1][j + 1])) + triangle.get(i).get(j);
+            }
+        }
+        return dp[0][0];
+    }
+
     private int minimumTotalDfs(List<List<Integer>> triangle, int level, int c, Integer[][] memo) {
         if (level == triangle.size()) {
             return 0;
@@ -1606,11 +1617,361 @@ public class LeetCode4 {
         }
         TreeNode root = new TreeNode(preorder[i]);
         for (int k = m; k <= n; k++) {
-            if (preorder[i]==inorder[k]){
+            if (preorder[i] == inorder[k]) {
                 root.left = buildTreeHelper(preorder, i + 1, i + k - m, inorder, m, k - 1);
                 root.right = buildTreeHelper(preorder, i + 1 + k - m, j, inorder, k + 1, n);
             }
         }
         return root;
+    }
+
+    public ListNode deleteNode(ListNode head, int val) {
+        ListNode start = new ListNode(0), cur = head, pre = start;
+        start.next = cur;
+        while (cur != null) {
+            if (cur.val == val) {
+                pre.next = cur.next;
+                return start.next;
+            } else {
+                pre = cur;
+            }
+            cur = cur.next;
+        }
+        return start.next;
+    }
+
+    public int numJewelsInStones(String J, String S) {
+        int[] arr = new int[128];
+        for (int i = 0; i < S.length(); i++) {
+            arr[S.charAt(i)]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < J.length(); i++) {
+            ans += arr[J.charAt(i)];
+        }
+        return ans;
+    }
+
+    public int missingNumber(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            if (i != nums[i]) {
+                return i;
+            }
+        }
+        return nums.length;
+    }
+
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        List<List<Integer>> ans = new ArrayList<>();
+        if (root == null) {
+            return ans;
+        } else if (root.left == null && root.right == null && root.val == sum) {
+            ArrayList<Integer> temp = new ArrayList<>();
+            temp.add(root.val);
+            ans.add(temp);
+            return ans;
+        }
+        List<List<Integer>> L = pathSum(root.left, sum - root.val);
+        List<List<Integer>> R = pathSum(root.right, sum - root.val);
+        for (List<Integer> integers : L) {
+            integers.add(0, root.val);
+        }
+        for (List<Integer> integers : R) {
+            integers.add(0, root.val);
+        }
+        ans.addAll(L);
+        ans.addAll(R);
+        return ans;
+    }
+
+    public TreeNode mirrorTree(TreeNode root) {
+        if (root == null) {
+            return null;
+        }
+        TreeNode temp = root.left;
+        root.left = mirrorTree(root.right);
+        root.right = mirrorTree(temp);
+        return root;
+    }
+
+    public int numWays(int n) {
+        if (n < 2) {
+            return 1;
+        }
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++) {
+            dp[i] = (dp[i - 1] + dp[i - 2]) % 1000000007;
+        }
+        return dp[n];
+    }
+
+    public int cuttingRope(int n) {
+        int[] dp = new int[n + 1];
+        dp[2] = 1;
+        for (int i = 3; i <= n; i++) {
+            for (int j = 1; j <= i / 2; j++) {
+                dp[i] = Math.max(Math.max(dp[i - j] * j, (i - j) * j), dp[i]);
+            }
+        }
+        return dp[n];
+    }
+
+    public int[] printNumbers(int n) {
+        int pow = (int) Math.pow(10, n);
+        int[] ans = new int[pow - 1];
+        for (int i = 0; i < ans.length; i++) {
+            ans[i] = i + 1;
+        }
+        return ans;
+    }
+
+    public boolean isValidSudoku(char[][] board) {
+        boolean[][] r = new boolean[10][9], c = new boolean[10][9], b = new boolean[10][9];
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] == '.') {
+                    continue;
+                }
+                int number = board[i][j] - '0';
+                if (r[number][i] || c[number][j] || b[number][i / 3 + j / 3 * 3]) {
+                    return false;
+                }
+                r[number][i] = true;
+                c[number][j] = true;
+                b[number][i / 3 + j / 3 * 3] = true;
+            }
+        }
+        return true;
+    }
+
+    public List<Integer> getRow(int rowIndex) {
+        List<Integer> ans = new ArrayList<>();
+        ans.add(1);
+        if (rowIndex == 0) {
+            return ans;
+        }
+        List<Integer> row = getRow(rowIndex - 1);
+        for (int i = 1; i < row.size(); i++) {
+            ans.add(row.get(i) + row.get(i - 1));
+        }
+        ans.add(1);
+        return ans;
+    }
+
+    public int hammingDistance(int x, int y) {
+        int ans = 0;
+        int z = x ^ y;
+        for (int i = 0; i < 32; i++) {
+            ans += (z & 1) == 1 ? 1 : 0;
+            z >>= 1;
+        }
+        return ans;
+    }
+
+    public int maxDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        return Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
+    }
+
+    public int missingNumberII(int[] nums) {
+        int ans = 0;
+        for (int i = 0; i < nums.length; i++) {
+            ans ^= nums[i] ^ i;
+        }
+        return ans ^ nums.length;
+    }
+
+    public String defangIPaddr(String address) {
+        return address.replace(".", "[.]");
+    }
+
+    public int minArray(int[] numbers) {
+        for (int i = 1; i < numbers.length; i++) {
+            if (numbers[i - 1] > numbers[i]) {
+                return numbers[i];
+            }
+        }
+        return numbers[0];
+    }
+
+    public int[] smallerNumbersThanCurrent(int[] nums) {
+        int[] indexes = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            int temp = 0;
+            for (int num : nums) {
+                if (num < nums[i]) {
+                    temp++;
+                }
+            }
+            indexes[i] = temp;
+        }
+        return indexes;
+    }
+
+    public boolean searchMatrix(int[][] matrix, int target) {
+        for (int[] ints : matrix) {
+            if (ints.length > 0 && ints[ints.length - 1] < target) {
+                continue;
+            }
+            for (int anInt : ints) {
+                if (anInt == target) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public int hammingWeight(int n) {
+        int ans = 0;
+        while (n != 0) {
+            ans += n & 1;
+            n >>>= 1;
+        }
+        return ans;
+    }
+
+    public int search(int[] nums, int target) {
+        int left = 0, right = nums.length - 1, ans = 0;
+        while (left <= right) {
+            int mid = (left + right) >>> 1;
+            if (nums[mid] < target) {
+                left = mid + 1;
+            } else if (nums[mid] > target) {
+                right = mid - 1;
+            } else {
+                int i = mid, j = mid;
+                while (i >= 0 && nums[i] == nums[mid]) {
+                    i--;
+                }
+                while (j < nums.length && nums[j] == nums[mid]) {
+                    j++;
+                }
+                return j - i - 1;
+            }
+        }
+        return ans;
+    }
+
+    public int game(int[] guess, int[] answer) {
+        int ans = 0;
+        for (int i = 0; i < 3; i++) {
+            ans += guess[i] == answer[i] ? 1 : 0;
+        }
+        return ans;
+    }
+
+    public int numberOfSteps(int num) {
+        int ans = 0;
+        while (num > 0) {
+            if (num % 2 == 0) {
+                num /= 2;
+            } else {
+                num -= 1;
+            }
+            ans++;
+        }
+        return ans;
+    }
+
+    public int subtractProductAndSum(int n) {
+        int mul = 1, sum = 0;
+        while (n > 0) {
+            sum += n % 10;
+            mul *= n % 10;
+            n /= 10;
+        }
+        return mul - sum;
+    }
+
+    public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
+        if (t1 == null) {
+            return t2;
+        } else if (t2 == null) {
+            return t1;
+        }
+        t1.left = mergeTrees(t1.left, t2.left);
+        t1.right = mergeTrees(t1.right, t2.right);
+        t1.val += t2.val;
+        return t1;
+    }
+
+    public int kthToLast(ListNode head, int k) {
+        ListNode slow = head, fast = head;
+        while (k > 0) {
+            fast = fast.next;
+            k--;
+        }
+        while (fast != null) {
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return slow.val;
+    }
+
+    public int firstUniqChar(String s) {
+        int[] letters = new int[26];
+        for (char c : s.toCharArray()) {
+            letters[c - 'a']++;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (letters[s.charAt(i) - 'a'] == 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int[][] updateMatrix(int[][] matrix) {
+        boolean[][] visit = new boolean[matrix.length][matrix[0].length];
+        LinkedList<int[]> deque = new LinkedList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] == 0) {
+                    deque.add(new int[]{i, j});
+                    visit[i][j] = true;
+                }
+            }
+        }
+        int depth = 0;
+        while (!deque.isEmpty()) {
+            for (int size = deque.size(); size > 0; size--) {
+                int[] p = deque.poll();
+                for (int[] d : new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}}) {
+                    if (p[0] + d[0] >= matrix.length || p[0] + d[0] < 0 || p[1] + d[1] < 0 || p[1] + d[1] >= matrix[0].length || visit[p[0] + d[0]][p[1] + d[1]]) {
+                        continue;
+                    }
+                    matrix[p[0] + d[0]][p[1] + d[1]] += depth;
+                    deque.add(new int[]{p[0] + d[0], p[1] + d[1]});
+                    visit[p[0] + d[0]][p[1] + d[1]] = true;
+                }
+            }
+            depth++;
+        }
+        return matrix;
+    }
+
+    public List<String> binaryTreePaths(TreeNode root) {
+        ArrayList<String> ans = new ArrayList<>();
+        binaryTreePathsDfs(root, new ArrayList<>(), ans);
+        return ans;
+    }
+
+    private void binaryTreePathsDfs(TreeNode root, List<String> path, List<String> ans) {
+        if (root == null) {
+            return;
+        } else if (root.left == null && root.right == null) {
+            path.add(String.valueOf(root.val));
+            ans.add(String.join("->", path));
+            return;
+        }
+        path.add(String.valueOf(root.val));
+        binaryTreePathsDfs(root.left, path, ans);
+        binaryTreePathsDfs(root.right, path, ans);
+        path.remove(path.size() - 1);
     }
 }
