@@ -1961,6 +1961,17 @@ public class LeetCode4 {
         return ans;
     }
 
+    public int numTrees(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                dp[i] += dp[j] * dp[i - j - 1];
+            }
+        }
+        return dp[n];
+    }
+
     private void binaryTreePathsDfs(TreeNode root, List<String> path, List<String> ans) {
         if (root == null) {
             return;
@@ -1971,7 +1982,284 @@ public class LeetCode4 {
         }
         path.add(String.valueOf(root.val));
         binaryTreePathsDfs(root.left, path, ans);
+        path.remove(path.size() - 1);
+        path.add(String.valueOf(root.val));
         binaryTreePathsDfs(root.right, path, ans);
         path.remove(path.size() - 1);
+    }
+
+    public ListNode partition(ListNode head, int x) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode partition = partition(head.next, x);
+        ListNode start = new ListNode(0), pre = start;
+        start.next = partition;
+        while (partition != null && partition.val < x && head.val >= x) {
+            pre = partition;
+            partition = partition.next;
+        }
+        head.next = partition;
+        pre.next = head;
+        return start.next;
+    }
+
+    public int kthLargest(TreeNode root, int k) {
+        PriorityQueue<Integer> queue = new PriorityQueue<>();
+        kthLargestDfs(root, k, queue);
+        return queue.peek();
+    }
+
+    private void kthLargestDfs(TreeNode root, int k, PriorityQueue<Integer> queue) {
+        if (root == null) {
+            return;
+        }
+        if (queue.size() < k) {
+            queue.add(root.val);
+        } else if (root.val > queue.peek()) {
+            queue.poll();
+            queue.add(root.val);
+        }
+        kthLargestDfs(root.left, k, queue);
+        kthLargestDfs(root.right, k, queue);
+    }
+
+    public String reverseVowels(String s) {
+        List<Character> list = Arrays.asList('a', 'e', 'o', 'u', 'i', 'A', 'E', 'O', 'U', 'I');
+        int left = 0, right = s.length() - 1;
+        StringBuilder sb = new StringBuilder(s);
+        while (left < right) {
+            if (!list.contains(s.charAt(left))) {
+                left++;
+            } else if (!list.contains(s.charAt(right))) {
+                right--;
+            } else {
+                char temp = sb.charAt(left);
+                sb.setCharAt(left++, sb.charAt(right));
+                sb.setCharAt(right--, temp);
+            }
+        }
+        return sb.toString();
+    }
+
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if (l1 == null) {
+            return l2;
+        }
+        ListNode node = mergeTwoLists(l1.next, l2);
+        ListNode start = new ListNode(0), pre = start;
+        start.next = node;
+        while (node != null && l1.val > node.val) {
+            pre = node;
+            node = node.next;
+        }
+        l1.next = node;
+        pre.next = l1;
+        return start.next;
+    }
+
+    public int sumOfLeftLeaves(TreeNode root) {
+        return sumOfLeftLeavesDfs(root, false);
+    }
+
+    private int sumOfLeftLeavesDfs(TreeNode root, boolean left) {
+        if (root == null) {
+            return 0;
+        } else if (root.left == null && root.right == null && left) {
+            return root.val;
+        }
+        return sumOfLeftLeavesDfs(root.left, true) + sumOfLeftLeavesDfs(root.right, false);
+    }
+
+    public char firstUniqCharII(String s) {
+        int[] letters = new int[128];
+        for (char c : s.toCharArray()) {
+            letters[c]++;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (letters[s.charAt(i)] == 1) {
+                return s.charAt(i);
+            }
+        }
+        return ' ';
+    }
+
+    public int findNumbers(int[] nums) {
+        int ans = 0;
+        for (int num : nums) {
+            int temp = 0;
+            while (num > 0) {
+                num /= 10;
+                temp++;
+            }
+            ans += (temp & 1) == 0 ? 1 : 0;
+        }
+        return ans;
+    }
+
+    public void solve(char[][] board) {
+        LinkedList<int[]> deque = new LinkedList<>();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if ((i == 0 || j == 0 || i == board.length - 1 || j == board[i].length - 1) && board[i][j] == 'O') {
+                    board[i][j] = 'o';
+                    deque.add(new int[]{i, j});
+                }
+            }
+        }
+        while (!deque.isEmpty()) {
+            int[] p = deque.pop();
+            for (int[] d : new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}}) {
+                int i = d[0] + p[0];
+                int j = d[1] + p[1];
+                if (i >= 0 && j >= 0 && i < board.length && j < board[0].length && board[i][j] == 'O') {
+                    board[i][j] = 'o';
+                    deque.add(new int[]{i, j});
+                }
+            }
+        }
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] == 'O') {
+                    board[i][j] = 'X';
+                    deque.add(new int[]{i, j});
+                } else if (board[i][j] == 'o') {
+                    board[i][j] = 'O';
+                    deque.add(new int[]{i, j});
+                }
+            }
+        }
+    }
+
+    public boolean canPermutePalindrome(String s) {
+        int[] letters = new int[128];
+        char[] chars = s.toCharArray();
+        Arrays.sort(chars);
+        for (char c : chars) {
+            letters[c]++;
+        }
+        int ans = 0;
+        for (int i = 0; i < chars.length; i++) {
+            if (i > 0 && chars[i] == chars[i - 1]) {
+                continue;
+            }
+            ans += (letters[s.charAt(i)] & 1) == 1 ? 1 : 0;
+        }
+        return ans <= 1;
+    }
+
+    public int findMin(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            int mid = (right - left) / 2 + left;
+            if (nums[mid] > nums[right]) {
+                left = mid + 1;
+            } else if (nums[mid] < nums[right]) {
+                right = mid - 1;
+            }
+        }
+        return nums[left];
+    }
+
+    public int majorityElement(int[] nums) {
+        int ans = 0, count = 0;
+        for (int num : nums) {
+            if (count == 0) {
+                ans = num;
+            }
+            count += ans == num ? 1 : -1;
+        }
+        return ans;
+    }
+
+    public int balancedStringSplit(String s) {
+        int ans = 0;
+        int[] counts = new int[26];
+        for (int k = 0; k < s.length(); k++) {
+            counts[s.charAt(k) - 'A']++;
+            if (counts['L' - 'A'] == counts['R' - 'A']) {
+                ans++;
+            }
+        }
+        return ans;
+    }
+
+    public boolean isSymmetric(TreeNode root) {
+        return isSymmetricHelper(root, root);
+    }
+
+    private boolean isSymmetricHelper(TreeNode q, TreeNode p) {
+        if (q == null) {
+            return p == null;
+        } else if (p == null) {
+            return false;
+        }
+        return p.val == q.val && isSymmetricHelper(q.left, p.right) && isSymmetricHelper(q.right, p.left);
+    }
+
+    public int[] sortArrayByParity(int[] A) {
+        int left = 0, right = A.length - 1;
+        while (left < right) {
+            if ((A[right] & 1) == 1) {
+                right--;
+            } else if ((A[left] & 1) == 0) {
+                left++;
+            } else {
+                int temp = A[left];
+                A[left] = A[right];
+                A[right] = temp;
+            }
+        }
+        return A;
+    }
+
+    public int getDecimalValue(ListNode head) {
+        int ans = 0;
+        while (head != null) {
+            ans = (ans << 1) | head.val;
+            head = head.next;
+        }
+        return ans;
+    }
+
+    public boolean detectCapitalUse(String word) {
+        boolean lowerCase = false;
+        for (int i = 0; i < word.length(); i++) {
+            if (word.charAt(i) >= 'a' && word.charAt(i) <= 'z') {
+                lowerCase = true;
+            }
+        }
+        for (int i = word.length() - 1; i >= 0; i--) {
+            if (word.charAt(i) >= 'A' && word.charAt(i) <= 'Z' && i != 0 && lowerCase) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int titleToNumber(String s) {
+        int ans = 0;
+        for (int i = 0; i < s.length(); i++) {
+            ans *= i == 0 ? 1 : 26;
+            ans += s.charAt(i) - 'A' + 1;
+        }
+        return ans;
+    }
+
+    public boolean isStraight(int[] nums) {
+        int min = 14, max = -1;
+        HashSet<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            if (num==0){
+                continue;
+            }
+            if (set.contains(num)) {
+                return false;
+            }
+            set.add(num);
+            max = Math.max(max, num);
+            min = Math.min(min, num);
+        }
+        return max - min < 5;
     }
 }
