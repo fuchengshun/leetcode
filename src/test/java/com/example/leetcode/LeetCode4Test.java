@@ -102,6 +102,11 @@ class LeetCode4Test {
 
     @Test
     void hammingWeight() {
-        t.hammingWeight(4294967293);
+//        t.hammingWeight(4294967293);
+        int[] a={8};
+        f(a);
+    }
+    public void f(int[] i){
+        i[0]=10;
     }
 }

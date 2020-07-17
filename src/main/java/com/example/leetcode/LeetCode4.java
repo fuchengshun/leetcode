@@ -1957,7 +1957,20 @@ public class LeetCode4 {
 
     public List<String> binaryTreePaths(TreeNode root) {
         ArrayList<String> ans = new ArrayList<>();
-        binaryTreePathsDfs(root, new ArrayList<>(), ans);
+        if (root == null) {
+            return ans;
+        } else if (root.left == null && root.right == null) {
+            ans.add(String.valueOf(root.val));
+            return ans;
+        }
+        List<String> left = binaryTreePaths(root.left);
+        List<String> right = binaryTreePaths(root.right);
+        for (String s : left) {
+            ans.add(root.val + "->" + s);
+        }
+        for (String s : right) {
+            ans.add(root.val + "->" + s);
+        }
         return ans;
     }
 
@@ -1970,22 +1983,6 @@ public class LeetCode4 {
             }
         }
         return dp[n];
-    }
-
-    private void binaryTreePathsDfs(TreeNode root, List<String> path, List<String> ans) {
-        if (root == null) {
-            return;
-        } else if (root.left == null && root.right == null) {
-            path.add(String.valueOf(root.val));
-            ans.add(String.join("->", path));
-            return;
-        }
-        path.add(String.valueOf(root.val));
-        binaryTreePathsDfs(root.left, path, ans);
-        path.remove(path.size() - 1);
-        path.add(String.valueOf(root.val));
-        binaryTreePathsDfs(root.right, path, ans);
-        path.remove(path.size() - 1);
     }
 
     public ListNode partition(ListNode head, int x) {
@@ -2250,7 +2247,7 @@ public class LeetCode4 {
         int min = 14, max = -1;
         HashSet<Integer> set = new HashSet<>();
         for (int num : nums) {
-            if (num==0){
+            if (num == 0) {
                 continue;
             }
             if (set.contains(num)) {
