@@ -221,6 +221,29 @@ public class LeetCode5 {
     }
 
     public int searchInsertII(int[] nums, int target) {
-        return (target = Arrays.binarySearch(nums, target)) < 0 ? -target-1 : target;
+        return (target = Arrays.binarySearch(nums, target)) < 0 ? -target - 1 : target;
+    }
+
+    public String[] trulyMostPopular(String[] names, String[] synonyms) {
+        DisjoinSet<String> djs = new DisjoinSet<>();
+        for (String synonym : synonyms) {
+            String[] s = synonym.replaceAll("[()]", "").split(",");
+            s[0] = djs.find(s[0]);
+            s[1] = djs.find(s[1]);
+            boolean b = s[0].compareTo(s[1]) > 0;
+            djs.union(b ? s[0] : s[1], b ? s[1] : s[0]);
+        }
+        Map<String, Integer> map = new HashMap<>();
+        for (String name : names) {
+            String[] s = name.replace(")", "").split("\\(");
+            String key = djs.find(s[0]);
+            map.put(key, map.getOrDefault(key, 0) + Integer.parseInt(s[1]));
+        }
+        String[] ans = new String[map.size()];
+        int i = 0;
+        for (String s : map.keySet()) {
+            ans[i++] = s + "(" + map.get(s) + ")";
+        }
+        return ans;
     }
 }

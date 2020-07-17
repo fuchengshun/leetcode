@@ -11,11 +11,10 @@ class UnionFind {
     }
 
     public int findRoot(int index) {
-        while (roots[index] != index) {
-            roots[index] = roots[roots[index]];
-            index = roots[index];
+        if (index==roots[index]){
+            return index;
         }
-        return index;
+        return roots[index]=findRoot(roots[index]);
     }
 
     public void union(int x, int y) {
