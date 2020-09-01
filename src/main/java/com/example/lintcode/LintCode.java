@@ -24,14 +24,32 @@ public class LintCode {
         if (root.start == start && root.end == end) {
             return root.max;
         }
-        int mid = start + end >>> 1;
+        int mid = root.start + root.end >>> 1;
         if (end <= mid) {
             return query(root.left, start, end);
-        } else if (start >= mid) {
+        } else if (start > mid) {
             return query(root.right, start, end);
         } else {
             return Math.max(query(root.left, start, mid), query(root.right, mid + 1, end));
         }
+        // write your code here
+    }
+
+    public void modify(SegmentTreeNode root, int index, int value) {
+        if (root == null || root.start > index || root.end < index) {
+            return;
+        }
+        if (root.start == index && root.end == index) {
+            root.max = value;
+            return;
+        }
+        int mid = root.start + root.end >>> 1;
+        if (index <= mid) {
+            modify(root.left, index, value);
+        } else {
+            modify(root.right, index, value);
+        }
+        root.max = Math.max(root.left.max, root.right.max);
         // write your code here
     }
 }
