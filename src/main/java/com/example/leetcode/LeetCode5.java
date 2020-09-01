@@ -1514,10 +1514,10 @@ public class LeetCode5 {
             count[s.charAt(i) - 'a']++;
         }
         ArrayList<Integer> split = new ArrayList<>();
-        int max=0;
+        int max = 0;
         for (int i = 0; i < s.length(); i++) {
             int b = count[s.charAt(i) - 'a'];
-            max=Math.max(max, b);
+            max = Math.max(max, b);
             if (b < k) {
                 split.add(i);
             }
@@ -1525,7 +1525,7 @@ public class LeetCode5 {
         if (split.isEmpty()) {
             return s.length();
         }
-        if(max<k){
+        if (max < k) {
             return 0;
         }
         int ans = 0, pre = 0;
@@ -1535,5 +1535,96 @@ public class LeetCode5 {
             pre = i + 1;
         }
         return ans;
+    }
+
+    private String reorganizeString(String S,int n) {
+        int[][] count = new int[26][2];
+        for (int i = 0; i < S.length(); i++) {
+            count[S.charAt(i)-'a'][1]++;
+            count[S.charAt(i)-'a'][0] = S.charAt(i);
+        }
+        Arrays.sort(count, (a, b) -> a[1] - b[1]);
+        int temp = 0,max = count[25][1];
+        for (int[] i : count) {
+            if (i[1] == max) {
+                temp++;
+            }
+        }
+        if (S.length() < (max - 1) * (n + 1) + temp) {
+            return "";
+        } else {
+            List<List<Character>> list=new LinkedList<>();
+            for (int i = 0; i < max; i++) {
+                list.add(new ArrayList<>());
+            }
+            for (int i = 25, j = 0; i >= 0 && count[i][1] > 0; i--) {
+                for (int l = 0; l < count[i][1]; l++) {
+                    list.get(j).add((char)count[i][0]);
+                    j++;
+                    if (j == (count[i][1] == max ? max : max - 1)) {
+                        j = 0;
+                    }
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            for (List<Character> li : list) {
+                for (Character i : li) {
+                    sb.append(i);
+                }
+            }
+            return sb.toString();
+        }
+    }
+
+    public int rob(TreeNode root) {
+        return robDfs(root, new HashMap<>(), new HashMap<>(), new HashMap<>());
+    }
+
+    private int robDfs(TreeNode root, Map<TreeNode, Integer> map, Map<TreeNode, Integer> m1, Map<TreeNode, Integer> m2) {
+        if (map.containsKey(root)) {
+            return map.get(root);
+        }
+        int max = Math.max(robDfs(root, true, m1, m2), robDfs(root, false, m1, m2));
+        map.put(root, max);
+        return max;
+    }
+
+    private int robDfs(TreeNode root, boolean include, Map<TreeNode, Integer> m1, Map<TreeNode, Integer> m2) {
+        if (root == null) {
+            return 0;
+        }
+        if (include) {
+            if (m1.containsKey(root)) {
+                return m1.get(root);
+            }
+            m1.put(root, robDfs(root.left, false, m1, m2) + robDfs(root.right, false, m1, m2) + root.val);
+            return m1.get(root);
+        } else {
+            if (m2.containsKey(root)) {
+                return m2.get(root);
+            }
+            m1.put(root, rob(root.left) + rob(root.right));
+            return m2.get(root);
+        }
+    }
+
+    public int robDfs(TreeNode root, boolean include) {
+        if (root == null) {
+            return 0;
+        }
+        if (include) {
+            return robDfs(root.left, false) + robDfs(root.right, false) + root.val;
+        } else {
+            return Math.max(robDfs(root.left, true), robDfs(root.left, false)) + Math.max(robDfs(root.right, true), robDfs(root.right, false));
+        }
+    }
+
+    public int[] robDfs(TreeNode root) {
+        if (root == null) {
+            return new int[]{0, 0};
+        }
+        int[] left = robDfs(root.left);
+        int[] right = robDfs(root.right);
+        return new int[]{left[1] + right[1] + root.val, Math.max(left[0], left[1]) + Math.max(right[0], right[1])};
     }
 }
