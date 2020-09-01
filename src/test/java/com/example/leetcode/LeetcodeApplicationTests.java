@@ -14,7 +14,10 @@ class LeetcodeApplicationTests {
 
     @Test
     void contextLoads() {
-        int i = new LeetCode3().uniquePathsWithObstacles(new int[][]{{0, 0, 0}, {0, 1, 0}, {0, 0, 0}});
+        char[] chars = "dddd".toCharArray();
+
+        int obstacleGrid[][] = {{0, 0, 0}, {0, 1, 0}, {0, 0, 0}};
+        int i = new LeetCode3().uniquePathsWithObstacles(obstacleGrid);
         ArrayList<Integer> objects = new ArrayList<>(10);
     }
 }

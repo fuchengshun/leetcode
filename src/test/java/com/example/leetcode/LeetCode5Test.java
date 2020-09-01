@@ -2,7 +2,10 @@ package com.example.leetcode;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 class LeetCode5Test {
     private LeetCode5 t = new LeetCode5();
@@ -51,5 +54,79 @@ class LeetCode5Test {
     @Test
     void shortestSubarray() {
         int i = t.shortestSubarray(new int[]{1}, 1);
+    }
+
+    @Test
+    void minTransfers() {
+        int i = t.minTransfers(new int[][]{{1,8,1},{1,13,21},{2,8,10},{3,9,20},{4,10,61},{5,11,61},{6,12,59},{7,13,60}});
+    }
+
+    @Test
+    void boldWords() {
+        String aabcd = t.boldWords(new String[]{"ab", "bc"}, "aabcd");
+    }
+
+    @Test
+    void repeatedSubstringPattern() {
+        boolean abab = t.repeatedSubstringPattern("abaababaab");
+    }
+
+    @Test
+    void isPalindrome() {
+        boolean palindrome = t.isPalindrome3(ListNode.create(new int[]{1, 2,2,1}));
+    }
+
+    @Test
+    void addTwoNumbers() {
+        ListNode node = t.addTwoNumbers(ListNode.create(new int[]{2, 4, 3}), ListNode.create(new int[]{5, 6, 4}));
+    }
+
+    @Test
+    void nextLargerNodes() {
+        int[] ints = t.nextLargerNodes(ListNode.create(new int[]{2, 7, 4, 3, 5}));
+    }
+
+    @Test
+    void findSubsequences() {
+        List<List<Integer>> subsequences = t.findSubsequences(new int[]{1,9,1,1,1});
+    }
+
+    @Test
+    void letterCombinations() {
+        HashMap<String, List<String>> map = new HashMap<>();
+        List<String> s = new ArrayList<>();
+        s.add("d");
+        s.add("e");
+        s.add("f");
+        map.put("a", s);
+        List<String> a = map.get("a");
+        for (int i = 0; i < 3; i++) {
+            s.remove(s.size()-1);
+        }
+    }
+
+    @Test
+    void subsetsWithDup() {
+        List<List<Integer>> list = t.subsetsWithDup(new int[]{1, 2, 2});
+    }
+
+    @Test
+    void getPermutation2() {
+        String permutation2 = t.getPermutation2(3, 3);
+    }
+
+    @Test
+    void canVisitAllRooms() {
+        List<List<Integer>> rooms = new ArrayList<>();
+        rooms.add(Arrays.asList(1,3));
+        rooms.add(Arrays.asList(3,0,1));
+        rooms.add(Arrays.asList(2));
+        rooms.add(Arrays.asList(0));
+        boolean b = t.canVisitAllRooms(rooms);
+    }
+
+    @Test
+    void restoreIpAddresses() {
+        List<String> strings = t.restoreIpAddresses("25525511135");
     }
 }
