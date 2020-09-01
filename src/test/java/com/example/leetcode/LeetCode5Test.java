@@ -129,4 +129,9 @@ class LeetCode5Test {
     void findKthNumber() {
         int kthNumber = t.findKthNumber(2, 2);
     }
+
+    @Test
+    void reorganizeString() {
+        String string = t.reorganizeString("bfrbs");
+    }
 }

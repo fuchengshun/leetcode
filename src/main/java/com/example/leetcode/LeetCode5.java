@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class LeetCode5 {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -845,7 +846,7 @@ public class LeetCode5 {
         return false;
     }
 
-    public List<String> findItinerary(List<List<String>> tickets) {
+    public List<String> findItinerary2(List<List<String>> tickets) {
         Map<String, PriorityQueue<String>> map = new HashMap<>();
         for (List<String> ticket : tickets) {
             PriorityQueue<String> queue = map.getOrDefault(ticket.get(0), new PriorityQueue<>());
@@ -890,5 +891,740 @@ public class LeetCode5 {
             i *= 10;
         }
         return count;
+    }
+
+    public int minDays2(int n, Map<Integer, Integer> map) {
+        if (map.get(n) != null) {
+            return map.get(n);
+        }
+        if (n == 1) {
+            return 1;
+        } else if (n == 2 || n == 3) {
+            return 2;
+        }
+        int ans = minDays2(n - 1, map) + 1;
+        if (n % 2 == 0) {
+            ans = Math.min(ans, minDays(n / 2, map) + 1);
+        }
+        if (n % 3 == 0) {
+            ans = Math.min(ans, minDays2(n / 3, map) + 1);
+        }
+        map.put(n, ans);
+        return ans;
+    }
+
+    public char[][] updateBoard(char[][] board, int[] click) {
+        Deque<int[]> deque = new LinkedList<>();
+        boolean[][] visit = new boolean[board.length][board[0].length];
+        int[][] direction = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {-1, 1}, {1, -1}};
+        deque.add(click);
+        visit[click[0]][click[1]] = true;
+        while (!deque.isEmpty()) {
+            int[] p = deque.poll();
+            char c = board[p[0]][p[1]];
+            if (c == 'M') {
+                board[p[0]][p[1]] = 'X';
+            } else {
+                int count = 0;
+                for (int[] d : direction) {
+                    if (d[0] + p[0] < 0 || d[0] + p[0] >= board.length || d[1] + p[1] < 0 || d[1] + p[1] >= board[0].length) {
+                        continue;
+                    }
+                    if (board[d[0] + p[0]][d[1] + p[1]] == 'M') {
+                        count++;
+                    }
+                }
+                if (count > 0) {
+                    board[p[0]][p[1]] = (char) (count + '0');
+                } else {
+                    board[p[0]][p[1]] = 'B';
+                    for (int[] d : direction) {
+                        if (d[0] + p[0] < 0 || d[0] + p[0] >= board.length || d[1] + p[1] < 0 || d[1] + p[1] >= board[0].length || visit[d[0] + p[0]][d[1] + p[1]] || board[d[0] + p[0]][d[1] + p[1]] != 'E') {
+                            continue;
+                        }
+                        deque.add(new int[]{d[0] + p[0], d[1] + p[1]});
+                        visit[d[0] + p[0]][d[1] + p[1]] = true;
+                    }
+                }
+            }
+        }
+        return board;
+    }
+
+    int minTransfersAns = Integer.MAX_VALUE;
+
+    public int minTransfers(int[][] transactions) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int[] tx : transactions) {
+            map.put(tx[0], map.getOrDefault(tx[0], 0) - tx[2]);
+            map.put(tx[1], map.getOrDefault(tx[1], 0) + tx[2]);
+        }
+        List<Integer> list = map.values().stream().filter(a -> a != 0).collect(Collectors.toList());
+        List<Integer> li = new ArrayList<>();
+        int m = 0;
+        for (int i = 0; i < list.size(); i++) {
+            if (list.contains(-list.get(i))) {
+                m++;
+            } else {
+                li.add(list.get(i));
+            }
+        }
+        minTransfersDfs(li, new LinkedList<>());
+        return minTransfersAns + m / 2;
+    }
+
+    private void minTransfersDfs(List<Integer> list, Deque<Integer> path) {
+        if (path.size() == list.size()) {
+            minTransfersAns = Math.min(minTransfersSteps(new ArrayList<>(list), new LinkedList<>(path)), minTransfersAns);
+            return;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            if (path.contains(i)) {
+                continue;
+            }
+            if (list.get(i) > 0) {
+                path.addLast(i);
+                minTransfersDfs(list, path);
+                path.removeLast();
+            } else {
+                path.addFirst(i);
+                minTransfersDfs(list, path);
+                path.removeFirst();
+            }
+        }
+    }
+
+    private int minTransfersSteps(List<Integer> list, Deque<Integer> path) {
+        int ans = 0;
+        while (!path.isEmpty()) {
+            ans++;
+            int k = list.get(path.getFirst()) + list.get(path.getLast());
+            if (k >= 0) {
+                path.pollFirst();
+                list.set(path.getLast(), k);
+                if (k == 0) {
+                    path.pollLast();
+                }
+            } else {
+                path.pollLast();
+                ;
+                list.set(path.getFirst(), k);
+            }
+        }
+        return ans;
+    }
+
+    public int minDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int left = minDepth(root.left);
+        int right = minDepth(root.right);
+        return left == 0 ? right + 1 : right == 0 ? left + 1 : Math.min(left, right) + 1;
+    }
+
+    public int minimumMoves(int[] arr, int i, int j, Integer[][] dp) {
+        if (dp[i][j] != null) {
+            return dp[i][j];
+        }
+        if (i == j) {
+            return 1;
+        }
+//        for (int k = i; k <= j; k++) {
+//            minimumMoves(arr, i, k, dp) + minimumMoves(arr, k + 1, j, dp);
+//        }
+        return dp[0][arr.length - 1];
+    }
+
+    public String boldWords(String[] words, String S) {
+        boolean[] bold = new boolean[S.length()];
+        for (String word : words) {
+            for (int i = 0; i < S.length(); i++) {
+                int k = S.indexOf(word, i);
+                if (k >= 0) {
+                    for (int j = 0; j < word.length(); j++) {
+                        bold[k + j] = true;
+                    }
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < bold.length; i++) {
+            if (bold[i]) {
+                if (i == 0 || !bold[i - 1]) {
+                    sb.append("<b>");
+                }
+            } else {
+                if (i > 0 && bold[i - 1]) {
+                    sb.append("</b>");
+                }
+            }
+            sb.append(S.charAt(i));
+        }
+        if (bold[S.length() - 1]) {
+            sb.append("</b>");
+        }
+        return sb.toString();
+    }
+
+    public int longestCommonSubsequence(String text1, String text2) {
+        int m = text1.length(), n = text2.length(), ans = 0;
+        int[][] dp = new int[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (text1.charAt(i) == text2.charAt(j)) {
+                    dp[i][j] = i - 1 < 0 || j - 1 < 0 ? 1 : dp[i - 1][j - 1] + 1;
+                    ans = Math.max(ans, dp[i][j]);
+                }
+            }
+        }
+        return ans;
+    }
+
+    public boolean repeatedSubstringPattern(String s) {
+        return (s + s).indexOf(s, 1) < s.length();
+    }
+
+    public ListNode removeZeroSumSublists(ListNode head) {
+        boolean modify = false;
+        HashMap<Integer, ListNode> map = new HashMap<>();
+        ListNode start = new ListNode(0);
+        start.next = head;
+        map.put(0, start);
+        ListNode cur = head;
+        int sum = 0;
+        while (cur != null) {
+            sum += cur.val;
+            if (map.containsKey(sum)) {
+                map.get(sum).next = cur.next;
+                modify = true;
+            } else {
+                map.put(sum, cur);
+            }
+            cur = cur.next;
+        }
+        if (!modify) {
+            return start.next;
+        }
+        return removeZeroSumSublists(start.next);
+    }
+
+    public boolean checkSubTree(TreeNode t1, TreeNode t2) {
+        if (t1 == null) {
+            return t2 == null;
+        } else if (t2 == null) {
+            return true;
+        }
+        return t1.val == t2.val && isSameTree(t1.left, t2.left) && isSameTree(t1.right, t2.right) || checkSubTree(t1.left, t2) || checkSubTree(t1.right, t2);
+    }
+
+    private boolean isSameTree(TreeNode t1, TreeNode t2) {
+        if (t1 == null) {
+            return t2 == null;
+        } else if (t2 == null) {
+            return true;
+        }
+        return t1.val == t2.val && isSameTree(t1.left, t2.left) && isSameTree(t1.right, t2.right);
+    }
+
+    public boolean isSubPath(ListNode head, TreeNode root) {
+        if (root == null) {
+            return head == null;
+        } else if (head == null) {
+            return true;
+        }
+        return root.val == head.val && (isSubPath2(head.next, root.left) || isSubPath2(head.next, root.right)) || isSubPath(head, root.left) || isSubPath(head, root.right);
+    }
+
+    private boolean isSubPath2(ListNode head, TreeNode root) {
+        if (root == null) {
+            return head == null;
+        } else if (head == null) {
+            return true;
+        }
+        return root.val == head.val && (isSubPath2(head.next, root.left) || isSubPath2(head.next, root.right));
+    }
+
+    public void deleteNode(ListNode node) {
+        ListNode pre = null;
+        while (node != null) {
+            if (node.next != null) {
+                node.val = node.next.val;
+            } else if (pre != null) {
+                pre.next = null;
+            }
+            pre = node;
+            node = node.next;
+        }
+    }
+
+    public boolean isPalindrome(ListNode head) {
+        ListNode node = head;
+        int k = 0;
+        while (head != null) {
+            head = head.next;
+            k++;
+        }
+        return isPalindrome2(node, k);
+    }
+
+    public boolean isPalindrome3(ListNode head) {
+        ListNode node = reverseListNode(head);
+        return node == null || node.next == null;
+    }
+
+    public ListNode reverseListNode(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode node = reverseListNode(head.next);
+        if (node.val == head.val) {
+            head.next.next = null;
+            return node.next;
+        }
+        head.next.next = head;
+        head.next = null;
+        return node;
+    }
+
+    private boolean isPalindrome2(ListNode head, int k) {
+        if (k <= 1) {
+            return true;
+        }
+        ListNode node = head;
+        int m = k;
+        while (k - 1 > 0) {
+            node = node.next;
+            k--;
+        }
+        return head.val == node.val && isPalindrome2(head.next, m - 2);
+    }
+
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode start = new ListNode(0), cur = start;
+        int carry = 0;
+        while (l1 != null || l2 != null) {
+            cur.next = new ListNode((l1 != null ? l1.val : 0) + (l2 != null ? l2.val : 0) + carry);
+            if (cur.next.val > 9) {
+                cur.next.val %= 10;
+                carry = 1;
+            } else {
+                carry = 0;
+            }
+            if (l1 != null) {
+                l1 = l1.next;
+            }
+            if (l2 != null) {
+                l2 = l2.next;
+            }
+            cur = cur.next;
+        }
+        if (carry > 0) {
+            cur.next = new ListNode(1);
+        }
+        return start.next;
+    }
+
+    public int[] nextLargerNodes(ListNode head) {
+        ListNode cur = head;
+        int k = 0;
+        while (cur != null) {
+            cur = cur.next;
+            k++;
+        }
+        LinkedList<int[]> stack = new LinkedList<>();
+        int[] ans = new int[k];
+        k = 0;
+        while (head != null) {
+            if (!stack.isEmpty() && stack.peek()[1] < head.val) {
+                ans[stack.pop()[0]] = head.val;
+            } else {
+                stack.push(new int[]{k, head.val});
+                head = head.next;
+                k++;
+            }
+        }
+        return ans;
+    }
+
+    public ListNode insertionSortList(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode node = insertionSortList(head.next), start = new ListNode(0), pre = start;
+        start.next = node;
+        while (node != null) {
+            if (node.val > head.val) {
+                pre.next = head;
+                head.next = node;
+                break;
+            }
+            pre = node;
+            node = node.next;
+        }
+        if (node == null) {
+            pre.next = head;
+            head.next = null;
+        }
+        return start.next;
+    }
+
+    public List<List<Integer>> findSubsequences(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        findSubsequences2(nums, -1, new ArrayList<>(), ans);
+        return ans;
+    }
+
+    private void findSubsequences2(int[] nums, int i, List<Integer> path, List<List<Integer>> ans) {
+        if (path.size() > 1) {
+            ans.add(new ArrayList<>(path));
+        }
+        HashSet<Integer> set = new HashSet<>();
+        for (int j = i + 1; j < nums.length; j++) {
+            if (set.contains(nums[j])) {
+                continue;
+            }
+            set.add(nums[j]);
+            if (i > -1 && nums[j] < nums[i]) {
+                continue;
+            }
+            path.add(nums[j]);
+            findSubsequences2(nums, j, path, ans);
+            path.remove(path.size() - 1);
+        }
+    }
+
+    public void findSubsequences(int[] nums, List<Integer> path, List<List<Integer>> ans) {
+        if (path.size() >= 2) {
+            ans.add(path.stream().map(a -> nums[a]).collect(Collectors.toList()));
+        }
+        for (int i = path.isEmpty() ? 0 : path.get(path.size() - 1) + 1; i < nums.length; i++) {
+            boolean b = false;
+            for (int j = path.size(); j < i; j++) {
+                if (nums[j] == nums[i]) {
+                    b = true;
+                    break;
+                }
+            }
+            if (b || !path.isEmpty() && nums[i] < nums[path.get(path.size() - 1)]) {
+                continue;
+            }
+            path.add(i);
+            findSubsequences(nums, path, ans);
+            path.remove(path.size() - 1);
+        }
+    }
+
+    public List<String> letterCombinations(String digits) {
+        List<String> ans = new ArrayList<>();
+        if (digits.length() == 0) {
+            return ans;
+        }
+        String[] words = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        letterDfs(ans, words, digits, "");
+        return ans;
+    }
+
+    private void letterDfs(List<String> ans, String[] words, String digits, String s) {
+        if (s.length() == digits.length()) {
+            ans.add(s);
+            return;
+        }
+        String s1 = words[digits.charAt(s.length()) - '2'];
+        for (int i = 0; i < s1.length(); i++) {
+            s += s1.charAt(i);
+            letterDfs(ans, words, digits, s);
+            s = s.substring(0, s.length() - 1);
+        }
+    }
+
+    public List<List<Integer>> permute(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> ans = new ArrayList<>();
+        permuteDfs(ans, nums, new LinkedList<>(), new boolean[nums.length]);
+        return ans;
+    }
+
+    private void permuteDfs(List<List<Integer>> ans, int[] nums, Deque<Integer> stack, boolean[] used) {
+        if (stack.size() == nums.length) {
+            ans.add(new ArrayList<>(stack));
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i] || i > 0 && !used[i - 1] && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            stack.push(nums[i]);
+            used[i] = true;
+            permuteDfs(ans, nums, stack, used);
+            stack.pop();
+            used[i] = false;
+        }
+    }
+
+    public List<String> findItinerary(List<List<String>> tickets) {
+        Map<String, PriorityQueue<String[]>> map = new HashMap<>();
+        for (List<String> ticket : tickets) {
+            PriorityQueue<String[]> queue = map.getOrDefault(ticket.get(0), new PriorityQueue<>());
+            queue.add(new String[]{"0", ticket.get(1)});
+            map.put(ticket.get(0), queue);
+        }
+        List<String> ans = new ArrayList<>();
+        String temp = "JFK";
+        do {
+            ans.add(temp);
+            if (!map.containsKey(map.get(temp).peek()[1])) {
+                String[] poll = map.get(temp).poll();
+                poll[0] = "1";
+                map.get(temp).add(poll);
+            } else {
+                temp = map.get(temp).poll()[1];
+            }
+        } while (temp != null && !map.containsKey(temp) && map.get(temp).isEmpty());
+        return ans;
+    }
+
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        List<List<Integer>> ans = new ArrayList<>();
+        combinationSumDfs(candidates, 0, target, ans, new ArrayList<>());
+        return ans;
+    }
+
+    private void combinationSumDfs(int[] candidates, int start, int target, List<List<Integer>> ans, List<Integer> path) {
+        if (target == 0) {
+            ans.add(new ArrayList<>(path));
+        }
+        for (int i = start; i < candidates.length && target >= candidates[i]; i++) {
+            if (i == start && candidates[i] == candidates[i - 1]) {
+                continue;
+            }
+            path.add(candidates[i]);
+            combinationSumDfs(candidates, i + 1, target - candidates[i], ans, path);
+            path.remove(path.size() - 1);
+        }
+    }
+
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> ans = new ArrayList<>();
+        combineDfs(ans, n, k, 0, new ArrayList<>());
+        return ans;
+    }
+
+    private void combineDfs(List<List<Integer>> ans, int n, int k, int start, ArrayList<Integer> path) {
+        if (path.size() == k) {
+            ans.add(new ArrayList<>(path));
+        }
+        for (int i = start; i < n + 1; i++) {
+            path.add(i);
+            combineDfs(ans, n, k, i + 1, path);
+            path.remove(path.size() - 1);
+        }
+    }
+
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> ans = new ArrayList<>();
+        subsetsWithDupDfs(ans, 0, nums, new ArrayList<>());
+        return ans;
+    }
+
+    private void subsetsWithDupDfs(List<List<Integer>> ans, int i, int[] nums, List<Integer> path) {
+        logger.info("i:{},path:{}", i, path.stream().map(String::valueOf).collect(Collectors.joining(",")));
+        ans.add(new ArrayList<>(path));
+        for (int j = i; j < nums.length; j++) {
+            if (j > i && nums[j] == nums[j - 1]) {
+                continue;
+            }
+            path.add(nums[j]);
+            subsetsWithDupDfs(ans, j + 1, nums, path);
+            path.remove(path.size() - 1);
+        }
+    }
+
+    public String getPermutation2(int n, int k) {
+        int[] a = new int[10];
+        a[0] = 1;
+        for (int i = 1; i < 10; i++) {
+            a[i] = a[i - 1] * i;
+        }
+        ;
+        List<Integer> path = new ArrayList<>();
+        getPermutationDfs(n, k, path, a);
+        return path.stream().map(String::valueOf).collect(Collectors.joining(""));
+    }
+
+    private void getPermutationDfs(int n, int k, List<Integer> path, int[] a) {
+        if (path.size() == n && k == 1) {
+            return;
+        }
+        int b = a[n - 1 - path.size()];
+        for (int i = 1; i <= n; i++) {
+            if (path.contains(i)) {
+                continue;
+            }
+            if (k > b) {
+                k -= b;
+                continue;
+            }
+            path.add(i);
+            getPermutationDfs(n, k, path, a);
+        }
+    }
+
+    public boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        return canVisitAllRoomsDfs(new boolean[rooms.size()], rooms, 0) == rooms.size();
+    }
+
+    private int canVisitAllRoomsDfs(boolean[] visit, List<List<Integer>> rooms, int cur) {
+        int count = 1;
+        visit[cur] = true;
+        for (Integer i : rooms.get(cur)) {
+            if (!visit[i]) {
+                visit[i] = true;
+                count += canVisitAllRoomsDfs(visit, rooms, i);
+            }
+        }
+        return count;
+    }
+
+    public List<String> restoreIpAddresses(String s) {
+        List<String> ans = new ArrayList<>();
+        restoreIpAddressesDfs(s, ans, new ArrayList<>(), 0);
+        return ans;
+    }
+
+    private void restoreIpAddressesDfs(String s, List<String> ans, ArrayList<String> path, int cur) {
+        if (path.size() == 4) {
+            ans.add(String.join(".", path));
+        }
+        int min = Math.max(s.length() - cur - 3 * (4 - path.size() - 1), 1), max = Math.min(3, s.length() - cur - (4 - path.size() - 1));
+        for (int length = min; length <= max; length++) {
+            if (length > 1 && s.charAt(cur) == '0' || length == 3 && Integer.parseInt(s.substring(cur, cur + length)) > 255) {
+                continue;
+            }
+            path.add(s.substring(cur, cur + length));
+            restoreIpAddressesDfs(s, ans, path, cur + length);
+            path.remove(path.size() - 1);
+        }
+    }
+
+    public int longestSubstring(String s, int k) {
+        int[] count = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - 'a']++;
+        }
+        ArrayList<Integer> split = new ArrayList<>();
+        int max = 0;
+        for (int i = 0; i < s.length(); i++) {
+            int b = count[s.charAt(i) - 'a'];
+            max = Math.max(max, b);
+            if (b < k) {
+                split.add(i);
+            }
+        }
+        if (split.isEmpty()) {
+            return s.length();
+        }
+        if (max < k) {
+            return 0;
+        }
+        int ans = 0, pre = 0;
+        split.add(s.length());
+        for (Integer i : split) {
+            ans = i > pre ? Math.max(ans, longestSubstring(s.substring(pre, i), k)) : ans;
+            pre = i + 1;
+        }
+        return ans;
+    }
+
+    private String reorganizeString(String S,int n) {
+        int[][] count = new int[26][2];
+        for (int i = 0; i < S.length(); i++) {
+            count[S.charAt(i)-'a'][1]++;
+            count[S.charAt(i)-'a'][0] = S.charAt(i);
+        }
+        Arrays.sort(count, (a, b) -> a[1] - b[1]);
+        int temp = 0,max = count[25][1];
+        for (int[] i : count) {
+            if (i[1] == max) {
+                temp++;
+            }
+        }
+        if (S.length() < (max - 1) * (n + 1) + temp) {
+            return "";
+        } else {
+            List<List<Character>> list=new LinkedList<>();
+            for (int i = 0; i < max; i++) {
+                list.add(new ArrayList<>());
+            }
+            for (int i = 25, j = 0; i >= 0 && count[i][1] > 0; i--) {
+                for (int l = 0; l < count[i][1]; l++) {
+                    list.get(j).add((char)count[i][0]);
+                    j++;
+                    if (j == (count[i][1] == max ? max : max - 1)) {
+                        j = 0;
+                    }
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            for (List<Character> li : list) {
+                for (Character i : li) {
+                    sb.append(i);
+                }
+            }
+            return sb.toString();
+        }
+    }
+
+    public int rob(TreeNode root) {
+        return robDfs(root, new HashMap<>(), new HashMap<>(), new HashMap<>());
+    }
+
+    private int robDfs(TreeNode root, Map<TreeNode, Integer> map, Map<TreeNode, Integer> m1, Map<TreeNode, Integer> m2) {
+        if (map.containsKey(root)) {
+            return map.get(root);
+        }
+        int max = Math.max(robDfs(root, true, m1, m2), robDfs(root, false, m1, m2));
+        map.put(root, max);
+        return max;
+    }
+
+    private int robDfs(TreeNode root, boolean include, Map<TreeNode, Integer> m1, Map<TreeNode, Integer> m2) {
+        if (root == null) {
+            return 0;
+        }
+        if (include) {
+            if (m1.containsKey(root)) {
+                return m1.get(root);
+            }
+            m1.put(root, robDfs(root.left, false, m1, m2) + robDfs(root.right, false, m1, m2) + root.val);
+            return m1.get(root);
+        } else {
+            if (m2.containsKey(root)) {
+                return m2.get(root);
+            }
+            m1.put(root, rob(root.left) + rob(root.right));
+            return m2.get(root);
+        }
+    }
+
+    public int robDfs(TreeNode root, boolean include) {
+        if (root == null) {
+            return 0;
+        }
+        if (include) {
+            return robDfs(root.left, false) + robDfs(root.right, false) + root.val;
+        } else {
+            return Math.max(robDfs(root.left, true), robDfs(root.left, false)) + Math.max(robDfs(root.right, true), robDfs(root.right, false));
+        }
+    }
+
+    public int[] robDfs(TreeNode root) {
+        if (root == null) {
+            return new int[]{0, 0};
+        }
+        int[] left = robDfs(root.left);
+        int[] right = robDfs(root.right);
+        return new int[]{left[1] + right[1] + root.val, Math.max(left[0], left[1]) + Math.max(right[0], right[1])};
     }
 }
