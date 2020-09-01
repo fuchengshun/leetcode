@@ -846,7 +846,7 @@ public class LeetCode5 {
         return false;
     }
 
-    public List<String> findItinerary(List<List<String>> tickets) {
+    public List<String> findItinerary2(List<List<String>> tickets) {
         Map<String, PriorityQueue<String>> map = new HashMap<>();
         for (List<String> ticket : tickets) {
             PriorityQueue<String> queue = map.getOrDefault(ticket.get(0), new PriorityQueue<>());
@@ -893,7 +893,7 @@ public class LeetCode5 {
         return count;
     }
 
-    public int minDays(int n, Map<Integer, Integer> map) {
+    public int minDays2(int n, Map<Integer, Integer> map) {
         if (map.get(n) != null) {
             return map.get(n);
         }
@@ -902,12 +902,12 @@ public class LeetCode5 {
         } else if (n == 2 || n == 3) {
             return 2;
         }
-        int ans = minDays(n - 1, map) + 1;
+        int ans = minDays2(n - 1, map) + 1;
         if (n % 2 == 0) {
             ans = Math.min(ans, minDays(n / 2, map) + 1);
         }
         if (n % 3 == 0) {
-            ans = Math.min(ans, minDays(n / 3, map) + 1);
+            ans = Math.min(ans, minDays2(n / 3, map) + 1);
         }
         map.put(n, ans);
         return ans;
