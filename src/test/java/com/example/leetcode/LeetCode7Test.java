@@ -29,4 +29,9 @@ class LeetCode7Test {
     void lengthOfLIS() {
         int i = t.lengthOfLIS(new int[]{10, 9, 2, 5, 3, 7, 101, 18});
     }
+
+    @Test
+    void isNumber() {
+        boolean number = t.isNumber("+100");
+    }
 }

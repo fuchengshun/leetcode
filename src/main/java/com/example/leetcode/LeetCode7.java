@@ -158,4 +158,13 @@ public class LeetCode7 {
         return ans;
     }
 
+    public boolean isNumber(String s) {
+        FDATree fdaTree = new FDATree();
+        for (FDATree.Node node : fdaTree.root) {
+            if (fdaTree.check(node,s.trim(),0)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
