@@ -159,9 +159,13 @@ public class LeetCode7 {
     }
 
     public boolean isNumber(String s) {
+        String trim = s.trim();
+        if (trim.isEmpty()){
+            return false;
+        }
         FDATree fdaTree = new FDATree();
         for (FDATree.Node node : fdaTree.root) {
-            if (fdaTree.check(node,s.trim(),0)){
+            if (fdaTree.check(node, trim,0)){
                 return true;
             }
         }

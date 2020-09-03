@@ -32,6 +32,6 @@ class LeetCode7Test {
 
     @Test
     void isNumber() {
-        boolean number = t.isNumber("+100");
+        boolean number = t.isNumber("12e+5.4");
     }
 }
