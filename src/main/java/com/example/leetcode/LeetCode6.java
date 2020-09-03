@@ -237,15 +237,53 @@ public class LeetCode6 {
 
     public int leastInterval(char[] tasks, int n) {
         int[] count = new int[26];
-        int max = 0,temp=0;
+        int max = 0, temp = 0;
         for (char t : tasks) {
             max = Math.max(max, ++count[t - 'A']);
         }
         for (int i : count) {
-            if (i==max){
+            if (i == max) {
                 temp++;
             }
         }
-        return Math.max (tasks.length,(max-1)*(n+1)+temp);
+        return Math.max(tasks.length, (max - 1) * (n + 1) + temp);
+    }
+
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> ans = new ArrayList<>();
+        solveNQueensDfs(n, new ArrayList<>(), ans);
+        return ans;
+    }
+
+    private void solveNQueensDfs(int n, List<String> path, List<List<String>> ans) {
+        if (path.size() == n) {
+            ans.add(new ArrayList<>(path));
+        }
+        for (int i = 0; i < n; i++) {
+            if (solveNQueensCheck(path, i, n)) {
+                StringBuilder sb = new StringBuilder();
+                for (int j = 0; j < n; j++) {
+                    if (j == i) {
+                        sb.append('Q');
+                    } else {
+                        sb.append('.');
+                    }
+                }
+                path.add(sb.toString());
+                solveNQueensDfs(n, path, ans);
+                path.remove(path.size() - 1);
+            }
+        }
+    }
+
+    private boolean solveNQueensCheck(List<String> path, int i, int k) {
+        for (int j = path.size() - 1, m = i - 1, n = i + 1; j >= 0; j--) {
+            if (path.get(j).charAt(i) == 'Q' || m >= 0 && path.get(j).charAt(m) == 'Q' || n < k && path.get(j).charAt(n) == 'Q') {
+                return false;
+            }
+            m--;
+            n++;
+        }
+        return true;
     }
 }
