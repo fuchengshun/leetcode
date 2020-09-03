@@ -1,6 +1,7 @@
 package com.example.leetcode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FDATree {
@@ -56,18 +57,12 @@ public class FDATree {
         Node node8 = new Node(NUMBER, true);
         node8.next.add(node8);
         node7.next.add(node8);
-        node6.next.add(node7);
-        node6.next.add(node8);
-        node5.next.add(node6);
-        node5.next.add(node5);
+        node6.next.addAll(Arrays.asList(node7,node8));
+        node5.next.addAll(Arrays.asList(node5,node6));
         node4.next.add(node5);
-        node1.next.add(node4);
-        node1.next.add(node2);
-        node2.next.add(node3);
-        node2.next.add(node2);
-        node2.next.add(node6);
-        node3.next.add(node5);
-        node3.next.add(node6);
+        node3.next.addAll(Arrays.asList(node5,node6));
+        node2.next.addAll(Arrays.asList(node2,node3,node6));
+        node1.next.addAll(Arrays.asList(node2,node4));
         root.add(node1);
         root.add(node2);
         root.add(node4);
