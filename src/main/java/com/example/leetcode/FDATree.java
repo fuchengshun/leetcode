@@ -10,6 +10,32 @@ public class FDATree {
     public static final String NUMBER = "0123456789";
     List<Node> root = new ArrayList<>();
 
+    public boolean isNumber(String s){
+        for (FDATree.Node node : root) {
+            if (check(node, s.trim(),0)){
+                return true;
+            }
+        }
+        return false;
+    }
+    //node节点下是否存在一条路径，使得s从下标i开始的字符都在这条路径中
+    private boolean check(Node node, String s, int i) {
+        //把s字符串遍历完了，说明找到了一条合法的路径
+        if (i >= s.length()) {
+            return true;
+        }
+        //下标i对应的字符不在当前节点中，或者i已经到末尾了，但是当前节点不允许作为最后一个节点，说明这次选择的路径不合法
+        if (s.length()==0||node.value.indexOf(s.charAt(i)) == -1 || i == s.length() - 1 && !node.canBeLast) {
+            return false;
+        }
+        for (Node n : node.next) {
+            if (check(n, s, i + 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static class Node {
         String value;
         boolean canBeLast;
@@ -51,23 +77,5 @@ public class FDATree {
         node0.next.add(node1);
         node0.next.add(node2);
         root.add(node0);
-    }
-
-    //node节点下是否存在一条路径，使得s从下标i开始的字符都在这条路径中
-    public boolean check(Node node, String s, int i) {
-        //把s字符串遍历完了，说明找到了一条合法的路径
-        if (i >= s.length()) {
-            return true;
-        }
-        //下标i对应的字符不在当前节点中，或者i已经到末尾了，但是当前节点不允许作为最后一个节点，说明这次选择的路径不合法
-        if (node.value.indexOf(s.charAt(i)) == -1 || i == s.length() - 1 && !node.canBeLast) {
-            return false;
-        }
-        for (Node n : node.next) {
-            if (check(n, s, i + 1)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
