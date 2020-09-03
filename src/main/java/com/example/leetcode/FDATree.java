@@ -63,8 +63,6 @@ public class FDATree {
         node3.next.addAll(Arrays.asList(node5,node6));
         node2.next.addAll(Arrays.asList(node2,node3,node6));
         node1.next.addAll(Arrays.asList(node2,node4));
-        root.add(node1);
-        root.add(node2);
-        root.add(node4);
+        root.addAll(Arrays.asList(node1,node2,node4));
     }
 }
