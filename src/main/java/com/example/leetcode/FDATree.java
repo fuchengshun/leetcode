@@ -10,22 +10,20 @@ public class FDATree {
     public static final String NUMBER = "0123456789";
     List<Node> root = new ArrayList<>();
 
-    public boolean isNumber(String s){
+    public boolean isNumber(String s) {
         for (FDATree.Node node : root) {
-            if (check(node, s.trim(),0)){
+            if (check(node, s.trim(), 0)) {
                 return true;
             }
         }
         return false;
     }
-    //node节点下是否存在一条路径，使得s从下标i开始的字符都在这条路径中
+
     private boolean check(Node node, String s, int i) {
-        //把s字符串遍历完了，说明找到了一条合法的路径
-        if (i >= s.length()) {
+        if (i >= s.length() && s.length() > 0) {
             return true;
         }
-        //下标i对应的字符不在当前节点中，或者i已经到末尾了，但是当前节点不允许作为最后一个节点，说明这次选择的路径不合法
-        if (s.length()==0||node.value.indexOf(s.charAt(i)) == -1 || i == s.length() - 1 && !node.canBeLast) {
+        if (s.length() == 0 || node.value.indexOf(s.charAt(i)) == -1 || i == s.length() - 1 && !node.canBeLast) {
             return false;
         }
         for (Node n : node.next) {
@@ -48,34 +46,30 @@ public class FDATree {
     }
 
     public FDATree() {
-        Node node111 = new Node(NUMBER, true);
-        node111.next.add(node111);
-        Node node20 = new Node(NUMBER, true);
-        node20.next.add(node20);
-        Node node2 = new Node(DOT, false);
-        node2.next.add(node20);
-        root.add(node2);
-        Node node10 = new Node(NUMBER, true);
-        node10.next.add(node10);
-        Node node1 = new Node(NUMBER, true);
-        node1.next.add(node10);
-        Node node110 = new Node(SIGN, false);
-        node110.next.add(node111);
-        Node node11 = new Node(E, false);
-        node11.next.add(node110);
-        node11.next.add(node111);
-        node10.next.add(node11);
-        node20.next.add(node11);
-        node1.next.add(node11);
-        Node node12 = new Node(DOT, true);
-        node12.next.add(node11);
-        node12.next.add(node20);
-        node10.next.add(node12);
-        node1.next.add(node12);
+        Node node1 = new Node(SIGN, false);
+        Node node2 = new Node(NUMBER, true);
+        Node node3 = new Node(DOT, true);
+        Node node4 = new Node(DOT, false);
+        Node node5 = new Node(NUMBER, true);
+        Node node6 = new Node(E, false);
+        Node node7 = new Node(SIGN, false);
+        Node node8 = new Node(NUMBER, true);
+        node8.next.add(node8);
+        node7.next.add(node8);
+        node6.next.add(node7);
+        node6.next.add(node8);
+        node5.next.add(node6);
+        node5.next.add(node5);
+        node4.next.add(node5);
+        node1.next.add(node4);
+        node1.next.add(node2);
+        node2.next.add(node3);
+        node2.next.add(node2);
+        node2.next.add(node6);
+        node3.next.add(node5);
+        node3.next.add(node6);
         root.add(node1);
-        Node node0 = new Node(SIGN, false);
-        node0.next.add(node1);
-        node0.next.add(node2);
-        root.add(node0);
+        root.add(node2);
+        root.add(node4);
     }
 }
