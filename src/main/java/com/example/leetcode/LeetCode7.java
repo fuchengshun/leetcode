@@ -162,5 +162,22 @@ public class LeetCode7 {
         return new FDATree().isNumber(s);
     }
 
+    public List<String> binaryTreePaths(TreeNode root) {
+        List<String> ans=new ArrayList<>();
+        if (root==null){
+            return ans;
+        }
+        if (root.left==null&&root.right==null){
+            ans.add(String.valueOf(root.val));
+            return ans;
+        }
+        for (String s : binaryTreePaths(root.left)) {
+            ans.add(root.val+"->"+s);
+        }
+        for (String s : binaryTreePaths(root.right)) {
+            ans.add(root.val+"->"+s);
+        }
+        return ans;
+    }
 
 }

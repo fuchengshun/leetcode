@@ -12,7 +12,7 @@ public class FDATree {
     List<Node> root = new ArrayList<>();
 
     public boolean isNumber(String s) {
-        for (FDATree.Node node : root) {
+        for (Node node : root) {
             if (check(node, s.trim(), 0)) {
                 return true;
             }
