@@ -1,6 +1,7 @@
 package com.example.leetcode;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LeetCode7 {
     public boolean increasingTriplet(int[] nums) {
@@ -151,7 +152,7 @@ public class LeetCode7 {
         Arrays.fill(dp, 1);
         for (int i = 1; i < nums.length; i++) {
             for (int j = 0; j < i; j++) {
-                dp[i] =Math.max(dp[i], nums[i] <= nums[j] ? 1 : dp[j] + 1);
+                dp[i] = Math.max(dp[i], nums[i] <= nums[j] ? 1 : dp[j] + 1);
             }
             ans = Math.max(ans, dp[i]);
         }
@@ -163,21 +164,78 @@ public class LeetCode7 {
     }
 
     public List<String> binaryTreePaths(TreeNode root) {
-        List<String> ans=new ArrayList<>();
-        if (root==null){
+        List<String> ans = new ArrayList<>();
+        if (root == null) {
             return ans;
         }
-        if (root.left==null&&root.right==null){
+        if (root.left == null && root.right == null) {
             ans.add(String.valueOf(root.val));
             return ans;
         }
         for (String s : binaryTreePaths(root.left)) {
-            ans.add(root.val+"->"+s);
+            ans.add(root.val + "->" + s);
         }
         for (String s : binaryTreePaths(root.right)) {
-            ans.add(root.val+"->"+s);
+            ans.add(root.val + "->" + s);
         }
         return ans;
     }
 
+    public int findKthNumber(int n, int k) {
+        return findKthNumber(n, k, 1);
+    }
+
+    public int findKthNumber(int n, int k, int i) {
+        if (k == 1) {
+            return i;
+        }
+        int count = getCount(n, i);
+        if (count >= k) {
+            return findKthNumber(n, k - 1, i * 10);
+        } else {
+            return findKthNumber(n, k - count, i + 1);
+        }
+    }
+
+    private int getCount(int n, long i) {
+        long ans = 0, j = i + 1;
+        while (i <= n) {
+            ans += Math.min(j, 1 + n) - i;
+            j *= 10;
+            i *= 10;
+        }
+        return (int) ans;
+    }
+
+    public String getPermutation(int n, int k) {
+        ArrayList<Integer> path = new ArrayList<>();
+        getPermutationDfs(n,k, path);
+        return path.stream().map(String::valueOf).collect(Collectors.joining());
+    }
+
+    public void getPermutationDfs(int n, int k, List<Integer> path) {
+        for (int i = 1; i < n + 1; i++) {
+            if (path.contains(i)) {
+                continue;
+            }
+            int factorial = factorial(n -1- path.size());
+            if (factorial < k) {
+                k -= factorial;
+                continue;
+            }
+            path.add(i);
+            getPermutationDfs(n,k,path);
+        }
+    }
+
+    private int factorial(int n) {
+        if (n <= 1) {
+            return 1;
+        }
+        return n * factorial(n - 1);
+    }
+
+    public void heapSort(int[] arr) throws Exception {
+        new Heap().sort(arr);
+    }
 }

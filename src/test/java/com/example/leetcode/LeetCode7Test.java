@@ -34,4 +34,10 @@ class LeetCode7Test {
     void isNumber() {
         boolean number = t.isNumber("  ");
     }
+
+    @Test
+    void heapSort() throws Exception {
+        int[] arr = {6, 4, 3, 5, 1, 2, 7};
+        t.heapSort(arr);
+    }
 }
